@@ -3348,4 +3348,472 @@ function sendGroupMessage(id){
     $("groupInput");
 
 
-  if
+  if(!input)
+    return;
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text)
+    return;
+
+
+  const key =
+    "ract-group-chat-" + id;
+
+
+  const messages =
+    JSON.parse(
+      localStorage.getItem(
+        key
+      ) || "[]"
+    );
+
+
+  messages.push({
+
+    user:
+      me,
+
+    text,
+
+    time:
+      new Date().toISOString()
+
+  });
+
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(messages)
+  );
+
+
+  openGroup(id);
+
+}
+
+
+/* =========================================================
+   MY PROFILE
+   ========================================================= */
+
+async function loadMyProfile(){
+
+  const {
+    data:posts
+  } =
+    await db
+      .from("posts")
+      .select("id")
+      .eq(
+        "user_id",
+        me
+      );
+
+
+  const {
+    data:followers
+  } =
+    await db
+      .from("follows")
+      .select("follower_id")
+      .eq(
+        "following_id",
+        me
+      );
+
+
+  const {
+    data:following
+  } =
+    await db
+      .from("follows")
+      .select("following_id")
+      .eq(
+        "follower_id",
+        me
+      );
+
+
+  $("view").innerHTML = `
+
+    <section class="page">
+
+
+      <div class="profileCover"></div>
+
+
+      <section class="myProfile card">
+
+
+        <div class="myProfileTop">
+
+          ${avatar(
+            profile,
+            "profileAvatar"
+          )}
+
+
+          <button
+            class="ghost"
+            onclick="showEditProfile()"
+          >
+            Edit
+          </button>
+
+        </div>
+
+
+        <span class="eyebrow">
+          FOUNDER
+        </span>
+
+
+        <h1>
+          ${esc(profile.full_name)}
+        </h1>
+
+
+        <p class="headline">
+
+          ${esc(
+            profile.headline ||
+            "Building something new."
+          )}
+
+        </p>
+
+
+        <div class="startupLine">
+
+          ${esc(
+            profile.startup_name ||
+            "Independent founder"
+          )}
+
+          ${
+            profile.verified
+              ? `<span class="verified">✓</span>`
+              : ""
+          }
+
+        </div>
+
+
+        <p class="profileBio">
+
+          ${esc(
+            profile.bio ||
+            "Add a bio to tell your story."
+          )}
+
+        </p>
+
+
+        <div class="tags">
+
+          ${
+            profile.industry
+              ? `<span>${esc(profile.industry)}</span>`
+              : ""
+          }
+
+          ${
+            profile.stage
+              ? `<span>${esc(profile.stage)}</span>`
+              : ""
+          }
+
+        </div>
+
+
+        <div class="stats">
+
+
+          <div>
+
+            <b>
+              ${posts?.length || 0}
+            </b>
+
+            <span>
+              Posts
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <b>
+              ${followers?.length || 0}
+            </b>
+
+            <span>
+              Followers
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <b>
+              ${following?.length || 0}
+            </b>
+
+            <span>
+              Following
+            </span>
+
+          </div>
+
+
+        </div>
+
+
+        ${
+          profile.website_url
+
+            ? `
+
+              <a
+                class="website"
+                href="${esc(profile.website_url)}"
+                target="_blank"
+                rel="noopener"
+              >
+                ↗ ${esc(profile.website_url)}
+              </a>
+
+            `
+
+            : ""
+        }
+
+
+      </section>
+
+
+      <div class="profileActions">
+
+        <button
+          class="ghost full"
+          onclick="signOut()"
+        >
+          Leave Ract
+        </button>
+
+      </div>
+
+
+    </section>
+
+  `;
+
+}
+
+
+/* -------------------- OPEN MY PROFILE -------------------- */
+
+function openMyProfile(){
+
+  switchTab("me");
+
+}
+
+
+/* -------------------- EDIT PROFILE -------------------- */
+
+function showEditProfile(){
+
+  showProfile(false);
+
+
+  setTimeout(() => {
+
+    $("fullName").value =
+      profile.full_name || "";
+
+    $("startup").value =
+      profile.startup_name || "";
+
+    $("headline").value =
+      profile.headline || "";
+
+    $("industry").value =
+      profile.industry || "";
+
+    $("stage").value =
+      profile.stage || "";
+
+    $("bio").value =
+      profile.bio || "";
+
+    $("website").value =
+      profile.website_url || "";
+
+
+    if(profile.avatar_url){
+
+      $("avatarPreview").innerHTML = `
+
+        <img
+          class="avatar huge"
+          src="${esc(profile.avatar_url)}"
+          alt=""
+        >
+
+      `;
+
+    }
+
+  },0);
+
+}
+
+
+/* =========================================================
+   LEAVE RACT
+   ========================================================= */
+
+async function signOut(){
+
+  const confirmed =
+    confirm(
+
+      "Are you sure you want to leave Ract?\n\n" +
+
+      "This will remove your Ract profile and " +
+      "all database data connected to it, including " +
+      "your posts, comments, likes, follows and messages.\n\n" +
+
+      "This action cannot be undone."
+
+    );
+
+
+  if(!confirmed)
+    return;
+
+
+  try{
+
+    /*
+      Delete the profile first.
+
+      Your Supabase schema should have
+      ON DELETE CASCADE on related tables.
+    */
+
+    if(me){
+
+      const {
+        error
+      } =
+        await db
+          .from("profiles")
+          .delete()
+          .eq(
+            "id",
+            me
+          );
+
+
+      if(error)
+        throw error;
+
+    }
+
+
+    /* Stop realtime */
+
+    if(realtimeChannel){
+
+      await db.removeChannel(
+        realtimeChannel
+      );
+
+      realtimeChannel =
+        null;
+
+    }
+
+
+    /* Clear local identity */
+
+    localStorage.removeItem(
+      "ract_founder_id"
+    );
+
+
+    /* Clear groups for this browser */
+
+    localStorage.removeItem(
+      "ract-groups"
+    );
+
+
+    me = null;
+
+    profile = null;
+
+    activeFounder = null;
+
+    activeConversation = null;
+
+
+    showWelcome();
+
+
+    toast(
+      "You have left Ract.",
+      "success"
+    );
+
+
+  }catch(err){
+
+    console.error(err);
+
+    toast(
+      "Could not leave Ract: " +
+      err.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   GLOBAL ERROR PROTECTION
+   ========================================================= */
+
+window.addEventListener(
+  "error",
+  event => {
+
+    console.error(
+      "Ract error:",
+      event.error || event.message
+    );
+
+  }
+);
+
+
+/* =========================================================
+   INIT
+   ========================================================= */
+
+boot();
+
+</script>
+
+</body>
+</html>
