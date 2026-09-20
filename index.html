@@ -535,9 +535,16 @@ function postHtml(post){
           </span>
         </div>
 
-        ${p.id!==me?`
+        ${p.id===me?`
+          <button class="dots deletePostBtn"
+            onclick="deletePost('${post.id}')"
+            title="Delete post">
+            🗑
+          </button>
+        `:`
           <button class="dots" onclick="openFounder('${p.id}')">•••</button>
-        `:""}
+        `}
+
       </div>
 
       ${post.content?`
@@ -577,6 +584,29 @@ function postHtml(post){
 
     </article>
   `;
+}
+
+async function deletePost(postId){
+  const confirmed=confirm("Delete this post?");
+
+  if(!confirmed)return;
+
+  try{
+    const {error}=await db
+      .from("posts")
+      .delete()
+      .eq("id",postId)
+      .eq("user_id",me);
+
+    if(error)throw error;
+
+    toast("Post deleted","success");
+    loadFeed();
+
+  }catch(err){
+    console.error(err);
+    toast(err.message,"error");
+  }
 }
 
 async function createPost(){
