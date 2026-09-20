@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ract</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap');
+:root{--ink:#17182B;--paper:#F2F4FA;--card:#fff;--accent:#3D3FD9;--soft:#E4E5FB;--gold:#D9A21B;--line:#DCDFEE;--muted:#6B6F8A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.45}
+button,input,textarea{font:inherit;color:inherit}
+.shell{max-width:640px;margin:0 auto;padding:16px 16px 92px}
+.logo{font-weight:800;font-size:30px;letter-spacing:-1.5px;color:var(--accent);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.avatar{border-radius:50%;object-fit:cover;flex:none}
+.ph{background:var(--soft);color:var(--accent);display:grid;place-items:center;font-weight:800}
+.name{font-weight:600}
+.badge{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:6px;border-radius:50%;background:var(--gold);color:#fff;font-size:11px;font-weight:800;vertical-align:middle}
+.muted{color:var(--muted);font-size:14px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:var(--soft);color:var(--accent)}
+.btn.small{padding:6px 12px;font-size:14px}
+.field{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;margin-bottom:10px}
+.field:focus,.btn:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+textarea.field{resize:vertical;min-height:70px}
+.post-img{width:100%;border-radius:10px;margin-top:10px;max-height:420px;object-fit:cover}
+.actions{display:flex;gap:18px;margin-top:10px}
+.act{background:none;border:0;cursor:pointer;color:var(--muted);padding:0;font-weight:600}
+.act.on{color:var(--accent)}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center}
+.tabs div{display:flex;width:100%;max-width:640px}
+.tab{flex:1;background:none;border:0;padding:16px 0;cursor:pointer;color:var(--muted);font-weight:600}
+.tab.on{color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.auth{max-width:380px;margin:12vh auto 0;padding:0 20px}
+.err{color:#C0362C;font-size:14px;margin:0 0 10px}
+.empty{text-align:center;color:var(--muted);padding:32px 0}
+.chat{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.msg{max-width:80%;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 12px}
+.msg.me{align-self:flex-end;background:var(--accent);color:#fff;border-color:var(--accent)}
+.msg small{display:block;opacity:.7;font-size:12px}
+.chatbar{position:sticky;bottom:64px;display:flex;gap:8px;background:var(--paper);padding:8px 0}
+.chatbar .field{margin:0}
+.meter{height:8px;background:var(--soft);border-radius:8px;overflow:hidden;margin:8px 0}
+.meter i{display:block;height:100%;background:var(--accent)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'
+const SUPABASE_KEY = 'YOUR-ANON-KEY'
+const THRESHOLD = 15 // keep in sync with the SQL
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+const app = document.getElementById('app')
+const $ = (s, r = document) => r.querySelector(s)
+let me = null, profile = null, tab = 'feed', chan = null
+
+/* ---------- helpers ---------- */
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+const ago = (d) => {
+  const s = (Date.now() - new Date(d)) / 1000
+  if (s < 60) return 'now'
+  if (s < 3600) return Math.floor(s / 60) + 'm'
+  if (s < 86400) return Math.floor(s / 3600) + 'h'
+  return Math.floor(s / 86400) + 'd'
+}
+const avatar = (p, size = 40) => p?.avatar_url
+  ? `<img class="avatar" src="${esc(p.avatar_url)}" width="${size}" height="${size}" alt="">`
+  : `<div class="avatar ph" style="width:${size}px;height:${size}px">${esc((p?.full_name || '?')[0].toUpperCase())}</div>`
+const nameHtml = (p) => `<span class="name">${esc(p?.full_name)}${p?.verified ? '<span class="badge" title="Verified founder">✓</span>' : ''}</span>`
+
+async function upload(bucket, file) {
+  const ext = file.name.split('.').pop()
+  const path = `${me.id}/${Date.now()}.${ext}`
+  const { error } = await db.storage.from(bucket).upload(path, file)
+  if (error) throw error
+  return db.storage.from(bucket).getPublicUrl(path).data.publicUrl
+}
+
+/* ---------- session ---------- */
+async function boot() {
+  const { data } = await db.auth.getSession()
+  await onSession(data.session)
+  db.auth.onAuthStateChange((_e, s) => {
+    if (s?.user?.id !== me?.id) setTimeout(() => onSession(s), 0)
+  })
+}
+async function onSession(s) {
+  me = s?.user ?? null
+  profile = null
+  if (!me) return showAuth()
+  const { data } = await db.from('profiles').select('*').eq('id', me.id).maybeSingle()
+  profile = data
+  profile ? showShell() : showProfileForm()
+}
+
+/* ---------- phone + OTP ---------- */
+function showAuth() {
+  app.innerHTML = `<div class="auth"><h1 class="logo">ract</h1>
+    <p class="muted">Where founders share ideas and find each other.</p><div id="authbox"></div></div>`
+  phoneStep()
+}
+function phoneStep(msg = '') {
+  $('#authbox').innerHTML = `<form id="f">
+    <input class="field" type="tel" name="phone" placeholder="+91 98765 43210" required>
+    <p class="err">${esc(msg)}</p><button class="btn">Send code</button></form>`
+  $('#f').onsubmit = async (e) => {
+    e.preventDefault()
+    const phone = e.target.phone.value.replace(/\s/g, '')
+    e.target.querySelector('button').disabled = true
+    const { error } = await db.auth.signInWithOtp({ phone })
+    error ? phoneStep(error.message) : codeStep(phone)
+  }
+}
+function codeStep(phone, msg = '') {
+  $('#authbox').innerHTML = `<form id="f">
+    <p class="muted">Enter the 6-digit code sent to ${esc(phone)}</p>
+    <input class="field" name="code" inputmode="numeric" maxlength="6" placeholder="123456" required>
+    <p class="err">${esc(msg)}</p>
+    <div class="row"><button class="btn">Verify and continue</button>
+    <button type="button" class="btn ghost" id="chg">Change number</button></div></form>`
+  $('#chg').onclick = () => phoneStep()
+  $('#f').onsubmit = async (e) => {
+    e.preventDefault()
+    e.target.querySelector('.btn').disabled = true
+    const { error } = await db.auth.verifyOtp({ phone, token: e.target.code.value.trim(), type: 'sms' })
+    if (error) codeStep(phone, error.message) // on success the session listener takes over
+  }
+}
+
+/* ---------- profile create / edit ---------- */
+function showProfileForm(editing = false) {
+  const p = profile || {}
+  app.innerHTML = `<div class="shell"><h1 class="logo">ract</h1>
+    <h2>${editing ? 'Edit profile' : 'Create your founder profile'}</h2>
+    <form id="pf" class="card">
+      <div class="row" style="margin-bottom:12px"><div id="pv">${avatar(p, 64)}</div>
+        <input type="file" name="photo" accept="image/*"></div>
+      <input class="field" name="full_name" placeholder="Your name" value="${esc(p.full_name)}" required>
+      <input class="field" name="startup_name" placeholder="Startup name" value="${esc(p.startup_name)}">
+      <input class="field" name="headline" placeholder="One-line headline" value="${esc(p.headline)}">
+      <textarea class="field" name="bio" placeholder="What are you building? (20+ characters counts toward verification)">${esc(p.bio)}</textarea>
+      <p class="err" id="perr"></p>
+      <div class="row"><button class="btn">Save profile</button>
+        ${editing ? '<button type="button" class="btn ghost" id="cancel">Cancel</button>' : ''}</div>
+    </form></div>`
+  const form = $('#pf')
+  form.photo.onchange = () => {
+    const f = form.photo.files[0]
+    if (f) $('#pv').innerHTML = `<img class="avatar" width="64" height="64" src="${URL.createObjectURL(f)}" alt="">`
+  }
+  if (editing) $('#cancel').onclick = showShell
+  form.onsubmit = async (e) => {
+    e.preventDefault()
+    const btn = form.querySelector('.btn'); btn.disabled = true
+    try {
+      let avatar_url = p.avatar_url ?? null
+      const file = form.photo.files[0]
+      if (file) avatar_url = await upload('avatars', file)
+      const row = {
+        id: me.id,
+        full_name: form.full_name.value.trim(),
+        startup_name: form.startup_name.value.trim(),
+        headline: form.headline.value.trim(),
+        bio: form.bio.value.trim(),
+        avatar_url,
+      }
+      const { data, error } = await db.from('profiles').upsert(row).select().single()
+      if (error) throw error
+      profile = data
+      showShell()
+    } catch (err) {
+      $('#perr').textContent = err.message
+      btn.disabled = false
+    }
+  }
+}
+
+/* ---------- shell + tabs ---------- */
+function showShell() {
+  const tabs = [['feed', 'Feed'], ['discover', 'Discover'], ['groups', 'Groups'], ['me', 'Profile']]
+  app.innerHTML = `<div class="shell"><h1 class="logo">ract</h1><main id="main"></main></div>
+    <nav class="tabs"><div>${tabs.map(([k, l]) => `<button class="tab" data-tab="${k}">${l}</button>`).join('')}</div></nav>`
+  document.querySelectorAll('.tab').forEach((b) => (b.onclick = () => go(b.dataset.tab)))
+  go(tab)
+}
+function go(t) {
+  tab = t
+  if (chan) { db.removeChannel(chan); chan = null }
+  document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === t))
+  const views = { feed: viewFeed, discover: viewDiscover, groups: viewGroups, me: viewMe }
+  views[t]()
+}
+
+/* ---------- feed ---------- */
+async function viewFeed() {
+  $('#main').innerHTML = `<form id="cf" class="card">
+    <textarea class="field" name="content" placeholder="Share an idea, a milestone, or a question…"></textarea>
+    <div id="cprev"></div><p class="err" id="cerr"></p>
+    <div class="row"><input type="file" name="image" accept="image/*" class="grow"><button class="btn">Post</button></div>
+    </form><div id="posts"><p class="empty">Loading…</p></div>`
+  const cf = $('#cf')
+  cf.image.onchange = () => {
+    const f = cf.image.files[0]
+    $('#cprev').innerHTML = f ? `<img class="post-img" src="${URL.createObjectURL(f)}" alt="">` : ''
+  }
+  cf.onsubmit = async (e) => {
+    e.preventDefault()
+    const content = cf.content.value.trim()
+    const file = cf.image.files[0]
+    if (!content && !file) return
+    const btn = cf.querySelector('.btn'); btn.disabled = true
+    try {
+      const image_url = file ? await upload('posts', file) : null
+      const { error } = await db.from('posts').insert({ user_id: me.id, content, image_url })
+      if (error) throw error
+      viewFeed()
+    } catch (err) {
+      $('#cerr').textContent = err.message
+      btn.disabled = false
+    }
+  }
+  $('#posts').onclick = onPostClick
+  loadPosts()
+}
+
+async function loadPosts() {
+  const { data, error } = await db.from('posts')
+    .select('*, profiles(id, full_name, startup_name, avatar_url, verified), likes(user_id), comments(count)')
+    .order('created_at', { ascending: false }).limit(50)
+  const box = $('#posts')
+  if (!box) return
+  if (error) return (box.innerHTML = `<p class="err">${esc(error.message)}</p>`)
+  if (!data.length) return (box.innerHTML = '<p class="empty">No posts yet. Share the first idea.</p>')
+  box.innerHTML = data.map(postHtml).join('')
+}
+
+function postHtml(p) {
+  const n = p.likes.length
+  const liked = p.likes.some((l) => l.user_id === me.id)
+  return `<article class="card post" data-id="${p.id}">
+    <div class="row">${avatar(p.profiles)}
+      <div class="grow">${nameHtml(p.profiles)}
+        <div class="muted">${esc(p.profiles?.startup_name || 'Founder')} &nbsp; ${ago(p.created_at)}</div></div></div>
+    ${p.content ? `<p style="white-space:pre-wrap">${esc(p.content)}</p>` : ''}
+    ${p.image_url ? `<img class="post-img" src="${esc(p.image_url)}" alt="">` : ''}
+    <div class="actions">
+      <button class="act ${liked ? 'on' : ''}" data-act="like" data-n="${n}">${liked ? 'Liked' : 'Like'} ${n}</button>
+      <button class="act" data-act="comments">Comments ${p.comments[0]?.count ?? 0}</button>
+    </div><div class="cbox"></div></article>`
+}
+
+async function onPostClick(e) {
+  const btn = e.target.closest('[data-act]')
+  if (!btn) return
+  const card = btn.closest('.post')
+  const id = card.dataset.id
+  if (btn.dataset.act === 'like') {
+    const liked = btn.classList.contains('on')
+    const { error } = liked
+      ? await db.from('likes').delete().match({ post_id: id, user_id: me.id })
+      : await db.from('likes').insert({ post_id: id, user_id: me.id })
+    if (error) return
+    const n = +btn.dataset.n + (liked ? -1 : 1)
+    btn.dataset.n = n
+    btn.classList.toggle('on')
+    btn.textContent = `${liked ? 'Like' : 'Liked'} ${n}`
+  } else {
+    const box = $('.cbox', card)
+    if (box.innerHTML) return (box.innerHTML = '')
+    box.innerHTML = '<p class="muted">Loading…</p>'
+    renderComments(card, id)
+  }
+}
+
+async function renderComments(card, id) {
+  const box = $('.cbox', card)
+  const { data } = await db.from('comments')
+    .select('*, profiles(full_name, avatar_url, verified)').eq('post_id', id).order('created_at')
+  const list = data || []
+  $('[data-act=comments]', card).textContent = `Comments ${list.length}`
+  box.innerHTML = list.map((c) => `<div class="row" style="align-items:flex-start;margin-top:10px">
+      ${avatar(c.profiles, 28)}<div class="grow"><div>${nameHtml(c.profiles)} <span class="muted">${ago(c.created_at)}</span></div>
+      <div>${esc(c.content)}</div></div></div>`).join('') +
+    `<form class="row" style="margin-top:10px"><input class="field grow" name="c" placeholder="Add a comment" style="margin:0" required>
+     <button class="btn small">Reply</button></form>`
+  $('form', box).onsubmit = async (e) => {
+    e.preventDefault()
+    const content = e.target.c.value.trim()
+    if (!content) return
+    await db.from('comments').insert({ post_id: id, user_id: me.id, content })
+    renderComments(card, id)
+  }
+}
+
+/* ---------- discover founders ---------- */
+async function viewDiscover() {
+  $('#main').innerHTML = `<input class="field" id="q" placeholder="Search founders or startups"><div id="list"><p class="empty">Loading…</p></div>`
+  const [{ data: people }, { data: fl }] = await Promise.all([
+    db.from('profiles').select('*').neq('id', me.id).order('score', { ascending: false }),
+    db.from('follows').select('following_id').eq('follower_id', me.id),
+  ])
+  const following = new Set((fl || []).map((x) => x.following_id))
+  const list = $('#list')
+  if (!list) return
+  const draw = () => {
+    const q = $('#q').value.toLowerCase()
+    const rows = (people || []).filter((p) => (p.full_name + ' ' + (p.startup_name || '')).toLowerCase().includes(q))
+    list.innerHTML = rows.length ? rows.map((p) => `<div class="card row">${avatar(p, 48)}
+      <div class="grow">${nameHtml(p)}<div class="muted">${esc(p.startup_name || '')}</div><div>${esc(p.headline || '')}</div></div>
+      <button class="btn small ${following.has(p.id) ? 'ghost' : ''}" data-id="${p.id}">${following.has(p.id) ? 'Following' : 'Follow'}</button></div>`).join('')
+      : '<p class="empty">No founders found yet. Invite someone to join Ract.</p>'
+  }
+  $('#q').oninput = draw
+  draw()
+  list.onclick = async (e) => {
+    const b = e.target.closest('button[data-id]')
+    if (!b) return
+    const id = b.dataset.id
+    if (following.has(id)) {
+      await db.from('follows').delete().match({ follower_id: me.id, following_id: id })
+      following.delete(id)
+    } else {
+      await db.from('follows').insert({ follower_id: me.id, following_id: id })
+      following.add(id)
+    }
+    draw()
+  }
+}
+
+/* ---------- groups + chat ---------- */
+async function viewGroups() {
+  $('#main').innerHTML = `<form id="gf" class="card row">
+    <input class="field grow" name="gname" placeholder="New group, e.g. Fintech founders" style="margin:0" required>
+    <button class="btn">Create</button></form><div id="glist"><p class="empty">Loading…</p></div>`
+  $('#gf').onsubmit = async (e) => {
+    e.preventDefault()
+    const name = e.target.gname.value.trim()
+    if (!name) return
+    const { data, error } = await db.from('groups').insert({ name, created_by: me.id }).select().single()
+    if (error) return alert(error.message)
+    await db.from('group_members').insert({ group_id: data.id, user_id: me.id })
+    viewGroups()
+  }
+  const { data } = await db.from('groups').select('*, group_members(user_id)').order('created_at', { ascending: false })
+  const gl = $('#glist')
+  if (!gl) return
+  if (!data?.length) return (gl.innerHTML = '<p class="empty">No groups yet. Create the first one.</p>')
+  gl.innerHTML = data.map((g) => {
+    const joined = g.group_members.some((x) => x.user_id === me.id)
+    return `<div class="card row"><div class="grow"><div class="name">${esc(g.name)}</div>
+      <div class="muted">${g.group_members.length} members</div></div>
+      ${joined ? `<button class="btn small" data-open="${g.id}">Open</button>`
+               : `<button class="btn small ghost" data-join="${g.id}">Join</button>`}</div>`
+  }).join('')
+  gl.onclick = async (e) => {
+    const b = e.target.closest('button')
+    if (!b) return
+    if (b.dataset.join) {
+      await db.from('group_members').insert({ group_id: b.dataset.join, user_id: me.id })
+      viewGroups()
+    }
+    if (b.dataset.open) openChat(data.find((g) => g.id === b.dataset.open))
+  }
+}
+
+async function openChat(g) {
+  $('#main').innerHTML = `<div class="row"><button class="btn ghost small" id="back">Back</button>
+    <h2 style="margin:0">${esc(g.name)}</h2></div><div class="chat" id="chat"></div>
+    <form class="chatbar" id="cbar"><input class="field grow" name="text" placeholder="Message the group" autocomplete="off" required>
+    <button class="btn">Send</button></form>`
+  $('#back').onclick = () => go('groups')
+  const load = async () => {
+    const { data } = await db.from('messages').select('*, profiles(full_name)')
+      .eq('group_id', g.id).order('created_at').limit(200)
+    const box = $('#chat')
+    if (!box) return
+    box.innerHTML = (data || []).map((x) => `<div class="msg ${x.user_id === me.id ? 'me' : ''}">
+      <small>${esc(x.profiles?.full_name)}</small>${esc(x.content)}</div>`).join('') || '<p class="empty">No messages yet. Say hello.</p>'
+    window.scrollTo(0, document.body.scrollHeight)
+  }
+  await load()
+  chan = db.channel('group-' + g.id)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `group_id=eq.${g.id}` }, load)
+    .subscribe()
+  $('#cbar').onsubmit = async (e) => {
+    e.preventDefault()
+    const text = e.target.text.value.trim()
+    if (!text) return
+    e.target.text.value = ''
+    await db.from('messages').insert({ group_id: g.id, user_id: me.id, content: text })
+  }
+}
+
+/* ---------- my profile ---------- */
+async function viewMe() {
+  const { data } = await db.from('profiles').select('*').eq('id', me.id).single()
+  profile = data
+  const pct = Math.min(100, Math.round((profile.score / THRESHOLD) * 100))
+  $('#main').innerHTML = `<div class="card"><div class="row">${avatar(profile, 64)}
+      <div class="grow">${nameHtml(profile)}<div class="muted">${esc(profile.startup_name || '')}</div></div></div>
+      <p>${esc(profile.headline || '')}</p><p>${esc(profile.bio || '')}</p></div>
+    <div class="card"><strong>${profile.verified ? 'You are a verified founder' : 'Path to verification'}</strong>
+      <div class="meter"><i style="width:${pct}%"></i></div>
+      <p class="muted">Score ${profile.score} of ${THRESHOLD}. A profile photo gives 3, a bio of 20+ characters gives 2,
+      each post gives 2, each like receive
