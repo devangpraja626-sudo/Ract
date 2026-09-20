@@ -863,13 +863,12 @@ async function openFounder(id){
           ${esc(p.bio||"This founder hasn't written a bio yet.")}
         </p>
 
-      <div class="profileButtons">
+  <div class="profileButtons">
   <button
     type="button"
-    class="primary"
+    class="primary chatStartBtn"
     onclick="startMessage('${p.id}')">
-    <span>Message</span>
-    <span>✦</span>
+    💬 Start Chat
   </button>
 
   ${p.website_url ? `
