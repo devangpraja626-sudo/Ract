@@ -1,509 +1,2916 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ract – From connect to create</title>
-<script>document.documentElement.dataset.theme = localStorage.getItem('ract-theme') || 'dark'</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ract — Founders, Ideas, Connections</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --bg:#070707;
+    --bg2:#0c0c0f;
+    --card:rgba(20,20,24,.78);
+    --card2:rgba(25,25,30,.9);
+    --border:rgba(255,255,255,.09);
+    --border2:rgba(255,255,255,.14);
+
+    --text:#f5f5f7;
+    --muted:#92929b;
+
+    --gold:#d9b86c;
+    --gold2:#f0d98b;
+
+    --purple:#8b5cf6;
+    --purple2:#b18aff;
+
+    --silver:#d9d9df;
+
+    --danger:#ff5b73;
+
+    --shadow:
+        0 30px 100px rgba(0,0,0,.45);
+
+    --radius:22px;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:
+        radial-gradient(circle at 15% 10%,rgba(139,92,246,.12),transparent 28%),
+        radial-gradient(circle at 85% 15%,rgba(217,184,108,.10),transparent 25%),
+        radial-gradient(circle at 50% 100%,rgba(139,92,246,.07),transparent 35%),
+        var(--bg);
+
+    color:var(--text);
+    font-family:"DM Sans",sans-serif;
+    min-height:100vh;
+}
+
+/* subtle grain */
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.025;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index:999;
+}
+
+/* NAV */
+
+.nav{
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    height:76px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 5vw;
+
+    background:rgba(7,7,7,.72);
+    backdrop-filter:blur(25px);
+
+    border-bottom:1px solid var(--border);
+}
+
+.logo{
+    font-family:"Space Grotesk",sans-serif;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:-1px;
+
+    background:linear-gradient(
+        120deg,
+        #fff,
+        var(--silver),
+        var(--gold2)
+    );
+
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.logo span{
+    color:var(--purple2);
+}
+
+.nav-right{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.icon-btn{
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.04);
+
+    color:#ddd;
+
+    border-radius:13px;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.icon-btn:hover{
+    border-color:rgba(217,184,108,.4);
+    transform:translateY(-2px);
+}
+
+/* LAYOUT */
+
+.app{
+    width:min(1180px,92%);
+    margin:auto;
+
+    display:grid;
+    grid-template-columns:240px minmax(0,650px) 250px;
+
+    gap:28px;
+
+    padding:35px 0 80px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    position:sticky;
+    top:105px;
+    height:max-content;
+}
+
+.nav-card{
+    padding:14px;
+
+    border:1px solid var(--border);
+
+    background:rgba(16,16,19,.65);
+
+    border-radius:22px;
+
+    box-shadow:var(--shadow);
+}
+
+.nav-item{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+    gap:13px;
+
+    padding:13px 14px;
+
+    border:0;
+    background:none;
+
+    color:#9999a2;
+
+    border-radius:13px;
+
+    font-family:inherit;
+    font-size:14px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.nav-item:hover{
+    background:rgba(255,255,255,.05);
+    color:#fff;
+}
+
+.nav-item.active{
+    background:
+        linear-gradient(
+            100deg,
+            rgba(139,92,246,.17),
+            rgba(217,184,108,.08)
+        );
+
+    color:#fff;
+
+    border:1px solid rgba(139,92,246,.18);
+}
+
+.nav-icon{
+    font-size:18px;
+    width:23px;
+}
+
+/* MAIN */
+
+.main{
+    min-width:0;
+}
+
+/* HERO */
+
+.hero{
+    position:relative;
+    overflow:hidden;
+
+    padding:34px;
+
+    border-radius:28px;
+
+    border:1px solid var(--border);
+
+    background:
+        radial-gradient(
+            circle at 80% 0%,
+            rgba(139,92,246,.18),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 20% 100%,
+            rgba(217,184,108,.10),
+            transparent 35%
+        ),
+        rgba(15,15,18,.85);
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:22px;
+}
+
+.hero::after{
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    right:-70px;
+    top:-70px;
+
+    border-radius:50%;
+
+    border:1px solid rgba(217,184,108,.15);
+
+    box-shadow:
+        0 0 80px rgba(139,92,246,.12);
+}
+
+.eyebrow{
+    color:var(--gold2);
+
+    font-size:11px;
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:2px;
+
+    margin-bottom:12px;
+}
+
+.hero h1{
+    font-family:"Space Grotesk",sans-serif;
+
+    font-size:clamp(30px,5vw,48px);
+
+    line-height:1.02;
+
+    letter-spacing:-2px;
+
+    max-width:550px;
+}
+
+.hero h1 span{
+    background:
+        linear-gradient(
+            100deg,
+            var(--gold2),
+            #fff,
+            var(--purple2)
+        );
+
+    -webkit-background-clip:text;
+
+    color:transparent;
+}
+
+.hero p{
+    margin-top:14px;
+
+    color:var(--muted);
+
+    max-width:510px;
+
+    line-height:1.6;
+
+    font-size:14px;
+}
+
+/* CREATE POST */
+
+.composer{
+    padding:18px;
+
+    border:1px solid var(--border);
+
+    background:var(--card);
+
+    border-radius:22px;
+
+    margin-bottom:20px;
+
+    box-shadow:var(--shadow);
+}
+
+.composer-top{
+    display:flex;
+    gap:12px;
+}
+
+.avatar{
+    width:44px;
+    height:44px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:1px solid rgba(217,184,108,.35);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(139,92,246,.4),
+            rgba(217,184,108,.2)
+        );
+}
+
+.avatar.large{
+    width:76px;
+    height:76px;
+}
+
+.avatar.xlarge{
+    width:92px;
+    height:92px;
+}
+
+textarea{
+    width:100%;
+
+    min-height:90px;
+
+    resize:vertical;
+
+    border:0;
+    outline:0;
+
+    background:transparent;
+
+    color:#fff;
+
+    font-family:inherit;
+
+    font-size:15px;
+
+    padding:10px 0;
+}
+
+textarea::placeholder{
+    color:#6f6f77;
+}
+
+.composer-bottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    border-top:1px solid var(--border);
+
+    padding-top:13px;
+
+    margin-top:8px;
+}
+
+.upload-btn{
+    color:#aaa;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.upload-btn:hover{
+    color:var(--gold2);
+}
+
+input[type="file"]{
+    display:none;
+}
+
+/* BUTTON */
+
+.btn{
+    border:1px solid rgba(217,184,108,.35);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(217,184,108,.18),
+            rgba(139,92,246,.15)
+        );
+
+    color:#fff;
+
+    padding:10px 17px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+    font-weight:700;
+
+    transition:.2s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+
+    border-color:rgba(217,184,108,.65);
+
+    box-shadow:
+        0 10px 30px rgba(139,92,246,.15);
+}
+
+/* POSTS */
+
+.feed{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.post{
+    border:1px solid var(--border);
+
+    background:var(--card);
+
+    border-radius:22px;
+
+    padding:20px;
+
+    box-shadow:var(--shadow);
+
+    transition:.25s;
+}
+
+.post:hover{
+    border-color:rgba(255,255,255,.14);
+}
+
+.post-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.post-author{
+    flex:1;
+}
+
+.author-name{
+    font-weight:700;
+    font-size:14px;
+}
+
+.author-name span{
+    color:var(--gold2);
+}
+
+.post-meta{
+    color:#6f6f78;
+    font-size:12px;
+    margin-top:3px;
+}
+
+.post-content{
+    margin-top:16px;
+
+    line-height:1.65;
+
+    color:#ddd;
+
+    white-space:pre-wrap;
+}
+
+.post-image{
+    width:100%;
+
+    max-height:600px;
+
+    object-fit:cover;
+
+    border-radius:16px;
+
+    margin-top:15px;
+
+    border:1px solid var(--border);
+}
+
+.post-actions{
+    display:flex;
+
+    gap:5px;
+
+    margin-top:16px;
+
+    border-top:1px solid var(--border);
+
+    padding-top:12px;
+}
+
+.action{
+    border:0;
+
+    background:transparent;
+
+    color:#777;
+
+    padding:8px 11px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.action:hover{
+    color:#fff;
+    background:rgba(255,255,255,.04);
+}
+
+.action.liked{
+    color:#ff6681;
+}
+
+/* RIGHT SIDE */
+
+.right{
+    position:sticky;
+    top:105px;
+    height:max-content;
+
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.side-card{
+    border:1px solid var(--border);
+
+    background:rgba(15,15,18,.75);
+
+    border-radius:20px;
+
+    padding:18px;
+}
+
+.side-title{
+    font-family:"Space Grotesk",sans-serif;
+
+    font-size:14px;
+
+    margin-bottom:15px;
+}
+
+.founder-mini{
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:15px;
+}
+
+.founder-mini:last-child{
+    margin-bottom:0;
+}
+
+.founder-info{
+    flex:1;
+
+    min-width:0;
+}
+
+.founder-info strong{
+    display:block;
+
+    font-size:13px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.founder-info span{
+    display:block;
+
+    color:#777;
+
+    font-size:11px;
+
+    margin-top:2px;
+}
+
+.follow{
+    background:transparent;
+
+    color:var(--gold2);
+
+    border:1px solid rgba(217,184,108,.3);
+
+    padding:6px 9px;
+
+    border-radius:8px;
+
+    font-size:11px;
+
+    cursor:pointer;
+}
+
+/* PROFILE */
+
+.profile-page{
+    display:none;
+}
+
+.profile-cover{
+    height:160px;
+
+    border-radius:24px 24px 0 0;
+
+    background:
+        radial-gradient(
+            circle at 20% 30%,
+            rgba(139,92,246,.35),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 80% 40%,
+            rgba(217,184,108,.25),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #15131c,
+            #0a0a0c
+        );
+
+    border:1px solid var(--border);
+
+    position:relative;
+}
+
+.profile-info{
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-top:0;
+
+    border-radius:0 0 24px 24px;
+
+    padding:0 25px 25px;
+}
+
+.profile-avatar-wrap{
+    transform:translateY(-45px);
+
+    margin-bottom:-32px;
+}
+
+.profile-name{
+    font-family:"Space Grotesk",sans-serif;
+
+    font-size:27px;
+
+    margin-top:15px;
+}
+
+.profile-handle{
+    color:var(--gold2);
+
+    font-size:13px;
+
+    margin-top:4px;
+}
+
+.profile-bio{
+    color:#aaa;
+
+    line-height:1.6;
+
+    margin-top:14px;
+
+    font-size:14px;
+}
+
+.profile-stats{
+    display:flex;
+
+    gap:30px;
+
+    margin-top:20px;
+
+    padding-top:18px;
+
+    border-top:1px solid var(--border);
+}
+
+.stat strong{
+    display:block;
+
+    font-size:17px;
+}
+
+.stat span{
+    color:#777;
+
+    font-size:11px;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.75);
+
+    backdrop-filter:blur(12px);
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:500;
+
+    padding:20px;
+}
+
+.modal.open{
+    display:flex;
+}
+
+.modal-box{
+    width:min(500px,100%);
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    background:#111115;
+
+    border:1px solid var(--border2);
+
+    border-radius:25px;
+
+    padding:25px;
+
+    box-shadow:0 40px 120px rgba(0,0,0,.7);
+}
+
+.modal-head{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:22px;
+}
+
+.modal-head h2{
+    font-family:"Space Grotesk",sans-serif;
+}
+
+.close{
+    border:0;
+
+    background:rgba(255,255,255,.06);
+
+    color:#aaa;
+
+    width:35px;
+    height:35px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+}
+
+.field{
+    width:100%;
+
+    background:#09090c;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:12px 14px;
+
+    color:#fff;
+
+    outline:none;
+
+    font-family:inherit;
+
+    margin-bottom:13px;
+}
+
+.field:focus{
+    border-color:rgba(139,92,246,.5);
+}
+
+label{
+    display:block;
+
+    font-size:12px;
+
+    color:#999;
+
+    margin-bottom:7px;
+}
+
+/* COMMENTS */
+
+.comments{
+    margin-top:10px;
+
+    padding-top:10px;
+
+    border-top:1px solid var(--border);
+}
+
+.comment{
+    display:flex;
+
+    gap:9px;
+
+    margin-top:12px;
+}
+
+.comment-body{
+    background:rgba(255,255,255,.04);
+
+    padding:9px 11px;
+
+    border-radius:12px;
+
+    font-size:12px;
+
+    flex:1;
+}
+
+.comment-body strong{
+    display:block;
+
+    margin-bottom:3px;
+}
+
+.comment-form{
+    display:flex;
+
+    gap:8px;
+
+    margin-top:12px;
+}
+
+.comment-form input{
+    flex:1;
+
+    background:#09090c;
+
+    border:1px solid var(--border);
+
+    color:#fff;
+
+    padding:9px 11px;
+
+    border-radius:10px;
+
+    outline:none;
+}
+
+/* DISCOVER */
+
+.page-title{
+    font-family:"Space Grotesk",sans-serif;
+
+    font-size:30px;
+
+    margin-bottom:7px;
+}
+
+.page-sub{
+    color:#777;
+
+    font-size:13px;
+
+    margin-bottom:20px;
+}
+
+.search{
+    width:100%;
+
+    padding:14px 16px;
+
+    border:1px solid var(--border);
+
+    border-radius:15px;
+
+    background:var(--card);
+
+    color:#fff;
+
+    outline:none;
+
+    margin-bottom:17px;
+
+    font-family:inherit;
+}
+
+.founders-grid{
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:14px;
+}
+
+.founder-card{
+    border:1px solid var(--border);
+
+    background:var(--card);
+
+    border-radius:20px;
+
+    padding:20px;
+
+    transition:.25s;
+}
+
+.founder-card:hover{
+    transform:translateY(-3px);
+
+    border-color:rgba(217,184,108,.3);
+}
+
+.founder-card .avatar{
+    margin-bottom:13px;
+}
+
+.founder-card h3{
+    font-family:"Space Grotesk",sans-serif;
+
+    font-size:17px;
+}
+
+.founder-card .company{
+    color:var(--gold2);
+
+    font-size:12px;
+
+    margin-top:4px;
+}
+
+.founder-card p{
+    color:#888;
+
+    font-size:12px;
+
+    line-height:1.5;
+
+    margin-top:10px;
+
+    min-height:38px;
+}
+
+.tags{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:5px;
+
+    margin-top:12px;
+}
+
+.tag{
+    background:rgba(139,92,246,.1);
+
+    border:1px solid rgba(139,92,246,.15);
+
+    color:#b99cff;
+
+    padding:4px 7px;
+
+    border-radius:7px;
+
+    font-size:10px;
+}
+
+.empty{
+    text-align:center;
+
+    padding:50px 20px;
+
+    color:#666;
+
+    border:1px dashed var(--border);
+
+    border-radius:20px;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+
+    bottom:25px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:#17171b;
+
+    border:1px solid rgba(217,184,108,.3);
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    color:#eee;
+
+    z-index:1000;
+
+    box-shadow:0 20px 50px rgba(0,0,0,.5);
+
+    font-size:13px;
+}
+
+/* MOBILE */
+
+.mobile-nav{
+    display:none;
+}
+
+@media(max-width:1000px){
+
+    .app{
+        grid-template-columns:190px minmax(0,1fr);
+    }
+
+    .right{
+        display:none;
+    }
+}
+
+@media(max-width:720px){
+
+    .nav{
+        height:65px;
+
+        padding:0 18px;
+    }
+
+    .app{
+        display:block;
+
+        width:94%;
+
+        padding-top:20px;
+
+        padding-bottom:100px;
+    }
+
+    .sidebar{
+        display:none;
+    }
+
+    .hero{
+        padding:25px;
+    }
+
+    .hero h1{
+        font-size:34px;
+    }
+
+    .founders-grid{
+        grid-template-columns:1fr;
+    }
+
+    .mobile-nav{
+        position:fixed;
+
+        display:flex;
+
+        bottom:12px;
+
+        left:12px;
+        right:12px;
+
+        height:65px;
+
+        background:rgba(15,15,18,.92);
+
+        backdrop-filter:blur(20px);
+
+        border:1px solid var(--border);
+
+        border-radius:20px;
+
+        z-index:200;
+
+        justify-content:space-around;
+
+        align-items:center;
+
+        box-shadow:0 20px 60px rgba(0,0,0,.6);
+    }
+
+    .mobile-nav button{
+        background:none;
+
+        border:0;
+
+        color:#777;
+
+        font-family:inherit;
+
+        font-size:10px;
+
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:center;
+
+        gap:4px;
+
+        cursor:pointer;
+    }
+
+    .mobile-nav button.active{
+        color:var(--gold2);
+    }
+
+    .post{
+        padding:16px;
+    }
+}
+
+</style>
 </head>
-<body data-tab="auth">
-<div class="aurora"><i></i><i></i><i></i></div>
-<div class="float" id="float"></div>
-<button class="iconbtn" id="themebtn" aria-label="Toggle light and dark theme"></button>
-<div id="app"><div class="splash">ract</div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://inhxlwsjlddhnpalbocl.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B'
-const THRESHOLD = 15 // keep in sync with the SQL
-const INDUSTRIES = ['AI', 'SaaS', 'Fintech', 'Health', 'EdTech', 'E-commerce', 'Climate', 'Consumer', 'Other']
-const STAGES = ['Idea', 'Building MVP', 'Launched', 'Growing', 'Scaling']
+<body>
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-const app = document.getElementById('app')
-const $ = (s, r = document) => r.querySelector(s)
-let me = null, profile = null, tab = 'feed', chan = null, authMode = 'signin'
+<!-- NAVIGATION -->
 
-/* ---------- icons ---------- */
-const ICONS = {
-  bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
-  rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
-  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
-  chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-  star: '<polygon points="12 2 15.1 8.6 22 9.3 17 14 18.2 21 12 17.7 5.8 21 7 14 2 9.3 8.9 8.6 12 2"/>',
-  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
-  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
-  link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
-  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
-  compass: '<circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/>',
-  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-  moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
-  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
-  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
-  eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
-  send: '<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
-}
-const icon = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`
-const CHECK = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+<header class="nav">
 
-const FLOATERS = [
-  { i: 'bulb',   c: '#FFB84D', x: 4,  y: 8,  s: 58, t: 7,   d: 0, r: -10 },
-  { i: 'rocket', c: '#8B6CFF', x: 82, y: 10, s: 66, t: 8,   d: 2, r: 8 },
-  { i: 'heart',  c: '#FF5DA8', x: 9,  y: 36, s: 46, t: 6,   d: 1, r: 12 },
-  { i: 'chat',   c: '#2DE2C8', x: 84, y: 38, s: 54, t: 9,   d: 3, r: -8 },
-  { i: 'star',   c: '#FF8A4C', x: 4,  y: 62, s: 44, t: 7.5, d: 4, r: 14 },
-  { i: 'users',  c: '#4C8DFF', x: 80, y: 66, s: 60, t: 8.5, d: 1, r: -12 },
-  { i: 'image',  c: '#C56BFF', x: 12, y: 86, s: 50, t: 6.5, d: 2, r: 6 },
-  { i: 'link',   c: '#2DE2C8', x: 76, y: 88, s: 46, t: 7,   d: 5, r: -6 },
-]
-$('#float').innerHTML = FLOATERS.map((f) =>
-  `<div class="fi" style="left:${f.x}%;top:${f.y}%;width:${f.s}px;height:${f.s}px;--c:${f.c};--t:${f.t}s;--d:-${f.d}s;--r:${f.r}deg">${icon(f.i, 24)}</div>`
-).join('')
-
-/* ---------- theme ---------- */
-const themeBtn = $('#themebtn')
-const paintTheme = () => { themeBtn.innerHTML = icon(document.documentElement.dataset.theme === 'dark' ? 'sun' : 'moon', 20) }
-themeBtn.onclick = () => {
-  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
-  document.documentElement.dataset.theme = next
-  localStorage.setItem('ract-theme', next)
-  paintTheme()
-}
-paintTheme()
-
-/* ---------- helpers ---------- */
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
-const ago = (d) => {
-  const s = (Date.now() - new Date(d)) / 1000
-  if (s < 60) return 'now'
-  if (s < 3600) return Math.floor(s / 60) + 'm'
-  if (s < 86400) return Math.floor(s / 3600) + 'h'
-  return Math.floor(s / 86400) + 'd'
-}
-const avatar = (p, size = 40) => p?.avatar_url
-  ? `<img class="avatar" src="${esc(p.avatar_url)}" width="${size}" height="${size}" alt="">`
-  : `<div class="avatar ph" style="width:${size}px;height:${size}px">${esc((p?.full_name || '?')[0].toUpperCase())}</div>`
-const nameHtml = (p) => `<span class="name">${esc(p?.full_name)}${p?.verified ? `<span class="badge" title="Verified founder">${CHECK}</span>` : ''}</span>`
-const tagsHtml = (p) => (p?.industry || p?.stage)
-  ? `<div class="tags">${p.industry ? `<span class="tag">${esc(p.industry)}</span>` : ''}${p.stage ? `<span class="tag alt">${esc(p.stage)}</span>` : ''}</div>` : ''
-const tagline = 'From <span class="c1">connect</span> <span class="to">to</span> <span class="c2">create</span>'
-const skeleton = '<div class="card skel"><i></i><i></i><i></i></div>'
-
-function toast(msg) {
-  const t = document.createElement('div')
-  t.className = 'toast'
-  t.textContent = msg
-  document.body.appendChild(t)
-  setTimeout(() => t.remove(), 3400)
-}
-async function upload(bucket, file) {
-  const ext = file.name.split('.').pop()
-  const path = `${me.id}/${Date.now()}.${ext}`
-  const { error } = await db.storage.from(bucket).upload(path, file)
-  if (error) throw error
-  return db.storage.from(bucket).getPublicUrl(path).data.publicUrl
-}
-
-/* ---------- session ---------- */
-async function boot() {
-  const { data } = await db.auth.getSession()
-  await onSession(data.session)
-  db.auth.onAuthStateChange((_e, s) => {
-    if (s?.user?.id !== me?.id) setTimeout(() => onSession(s), 0)
-  })
-}
-async function onSession(s) {
-  me = s?.user ?? null
-  profile = null
-  if (!me) return showAuth()
-  const { data } = await db.from('profiles').select('*').eq('id', me.id).maybeSingle()
-  profile = data
-  profile ? showShell() : showProfileForm()
-}
-
-/* ---------- landing + email auth ---------- */
-function showAuth() {
-  document.body.dataset.tab = 'auth'
-  app.innerHTML = `<div class="auth"><div class="hero">
-    <h1 class="brand">ract</h1>
-    <h2 class="tagline">${tagline}</h2>
-    <p class="lede">The home for founders to share ideas, earn a verified badge and build together.</p>
-    <div class="glass" id="authbox"></div>
-    <div class="chips">
-      <span class="chip" style="--c:#FFB84D">${icon('bulb', 16)}Share ideas</span>
-      <span class="chip" style="--c:#FF5DA8">${icon('star', 16)}Get verified</span>
-      <span class="chip" style="--c:#4C8DFF">${icon('users', 16)}Group chats</span>
-    </div></div></div>`
-  authForm()
-}
-function authForm(msg = '', kind = 'err', email = '') {
-  const signin = authMode === 'signin'
-  $('#authbox').innerHTML = `
-    <div class="seg">
-      <button type="button" data-m="signin" class="${signin ? 'on' : ''}">Sign in</button>
-      <button type="button" data-m="signup" class="${signin ? '' : 'on'}">Create account</button>
+    <div class="logo">
+        r<span>a</span>ct
     </div>
-    <form id="af">
-      <label class="lbl" for="em">Email</label>
-      <div class="inp">${icon('mail', 18)}<input id="em" type="email" name="email" autocomplete="email" placeholder="you@startup.com" value="${esc(email)}" required></div>
-      <label class="lbl" for="pw">Password</label>
-      <div class="inp">${icon('lock', 18)}<input id="pw" type="password" name="password" minlength="6"
-        autocomplete="${signin ? 'current-password' : 'new-password'}" placeholder="At least 6 characters" required>
-        <button type="button" class="eye" id="eye" aria-label="Show or hide password">${icon('eye', 18)}</button></div>
-      <p class="note ${kind}">${esc(msg)}</p>
-      <button class="btn block">${signin ? 'Sign in' : 'Create account'}</button>
-    </form>`
-  document.querySelectorAll('.seg button').forEach((b) => (b.onclick = () => {
-    authMode = b.dataset.m
-    authForm('', 'err', $('#em').value)
-  }))
-  $('#eye').onclick = () => { const i = $('#pw'); i.type = i.type === 'password' ? 'text' : 'password' }
-  $('#af').onsubmit = async (e) => {
-    e.preventDefault()
-    const email = e.target.email.value.trim()
-    const password = e.target.password.value
-    const btn = e.target.querySelector('.btn')
-    btn.disabled = true; btn.textContent = 'Please wait…'
-    if (signin) {
-      const { error } = await db.auth.signInWithPassword({ email, password })
-      if (error) authForm(error.message, 'err', email)
-    } else {
-      const { data, error } = await db.auth.signUp({ email, password })
-      if (error) return authForm(error.message, 'err', email)
-      if (!data.session) {
-        authMode = 'signin'
-        authForm('Account created. Confirm your email from the message we sent, then sign in.', 'ok', email)
-      }
+
+    <div class="nav-right">
+
+        <button class="icon-btn" onclick="openProfileEditor()">
+            ✦
+        </button>
+
+    </div>
+
+</header>
+
+
+<div class="app">
+
+    <!-- LEFT -->
+
+    <aside class="sidebar">
+
+        <div class="nav-card">
+
+            <button class="nav-item active" data-page="home">
+                <span class="nav-icon">⌂</span>
+                Home
+            </button>
+
+            <button class="nav-item" data-page="discover">
+                <span class="nav-icon">◈</span>
+                Discover
+            </button>
+
+            <button class="nav-item" data-page="profile">
+                <span class="nav-icon">◎</span>
+                My Profile
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main" id="main"></main>
+
+
+    <!-- RIGHT -->
+
+    <aside class="right" id="rightSide"></aside>
+
+</div>
+
+
+<!-- MOBILE -->
+
+<nav class="mobile-nav">
+
+    <button class="active" data-page="home">
+        <span>⌂</span>
+        Home
+    </button>
+
+    <button data-page="discover">
+        <span>◈</span>
+        Discover
+    </button>
+
+    <button data-page="profile">
+        <span>◎</span>
+        Profile
+    </button>
+
+</nav>
+
+
+<!-- PROFILE MODAL -->
+
+<div class="modal" id="profileModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>Your founder profile</h2>
+
+            <button class="close" onclick="closeModal('profileModal')">
+                ×
+            </button>
+
+        </div>
+
+        <form id="profileForm">
+
+            <label>Profile picture</label>
+
+            <input
+                class="field"
+                type="file"
+                id="profilePhoto"
+                accept="image/*"
+                style="display:block"
+            >
+
+            <label>Your name</label>
+
+            <input
+                class="field"
+                id="profileName"
+                placeholder="Your name"
+                required
+            >
+
+            <label>Startup / Company</label>
+
+            <input
+                class="field"
+                id="profileCompany"
+                placeholder="Your startup"
+            >
+
+            <label>What are you building?</label>
+
+            <textarea
+                class="field"
+                id="profileBio"
+                placeholder="Tell founders what you're building..."
+                style="min-height:110px"
+            ></textarea>
+
+            <label>Industry</label>
+
+            <input
+                class="field"
+                id="profileIndustry"
+                placeholder="AI, SaaS, Fintech..."
+            >
+
+            <button class="btn" style="width:100%">
+                Save profile
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   RACT — FOUNDER NETWORK
+   No authentication.
+   Browser-based MVP using localStorage.
+========================================================= */
+
+
+/* ---------- STORAGE ---------- */
+
+const STORAGE_KEY = "ract_founder_network_v1";
+
+
+let state = JSON.parse(
+    localStorage.getItem(STORAGE_KEY)
+) || {
+
+    currentUser:"me",
+
+    users:{
+        me:{
+            id:"me",
+            name:"Your Name",
+            company:"Your Startup",
+            bio:"Building something meaningful.",
+            industry:"Technology",
+            photo:"",
+            following:[]
+        },
+
+        alex:{
+            id:"alex",
+            name:"Alex Morgan",
+            company:"Nova Labs",
+            bio:"Building AI tools for modern teams.",
+            industry:"AI",
+            photo:"",
+            following:[]
+        },
+
+        sara:{
+            id:"sara",
+            name:"Sara Chen",
+            company:"Orbit",
+            bio:"Creating the next generation of collaboration.",
+            industry:"SaaS",
+            photo:"",
+            following:[]
+        },
+
+        arjun:{
+            id:"arjun",
+            name:"Arjun Mehta",
+            company:"Finora",
+            bio:"Making financial infrastructure accessible.",
+            industry:"Fintech",
+            photo:"",
+            following:[]
+        }
+    },
+
+    posts:[
+        {
+            id:Date.now()-3000,
+            userId:"alex",
+            text:"The most interesting startups don't start with perfect products. They start with a problem that refuses to disappear.",
+            image:"",
+            likes:[],
+            comments:[
+                {
+                    userId:"sara",
+                    text:"Absolutely agree."
+                }
+            ],
+            createdAt:Date.now()-3600000
+        },
+
+        {
+            id:Date.now()-2000,
+            userId:"sara",
+            text:"Working on a new way for small teams to collaborate without drowning in meetings.",
+            image:"",
+            likes:["me"],
+            comments:[],
+            createdAt:Date.now()-7200000
+        }
+    ]
+
+};
+
+
+function save(){
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(state)
+    );
+
+}
+
+
+/* ---------- HELPERS ---------- */
+
+function currentUser(){
+
+    return state.users[state.currentUser];
+
+}
+
+
+function escapeHTML(text){
+
+    return String(text || "")
+        .replace(/[&<>"']/g,function(c){
+
+            return {
+                "&":"&amp;",
+                "<":"&lt;",
+                ">":"&gt;",
+                '"':"&quot;",
+                "'":"&#039;"
+            }[c];
+
+        });
+
+}
+
+
+function timeAgo(time){
+
+    const seconds =
+        Math.floor(
+            (Date.now()-time)/1000
+        );
+
+    if(seconds < 60)
+        return "just now";
+
+    if(seconds < 3600)
+        return Math.floor(seconds/60)+"m";
+
+    if(seconds < 86400)
+        return Math.floor(seconds/3600)+"h";
+
+    return Math.floor(seconds/86400)+"d";
+
+}
+
+
+function avatar(user,size=""){
+
+    if(user.photo){
+
+        return `
+        <img
+            class="avatar ${size}"
+            src="${user.photo}"
+            alt=""
+        >
+        `;
+
     }
-  }
+
+    const letter =
+        (user.name || "?")
+        .charAt(0)
+        .toUpperCase();
+
+    return `
+    <div class="avatar ${size}"
+         style="
+         display:flex;
+         align-items:center;
+         justify-content:center;
+         font-weight:700;
+         color:#fff;
+         ">
+        ${letter}
+    </div>
+    `;
+
 }
 
-/* ---------- profile create / edit ---------- */
-function showProfileForm(editing = false) {
-  document.body.dataset.tab = 'me'
-  const p = profile || {}
-  const opts = (list, cur, ph) => `<option value="">${ph}</option>` +
-    list.map((o) => `<option ${o === cur ? 'selected' : ''}>${esc(o)}</option>`).join('')
-  app.innerHTML = `<div class="shell"><div class="top"><h1 class="logo">ract</h1><p class="sub">${tagline}</p></div>
-    <h2 class="sect">${editing ? 'Edit profile' : 'Create your founder profile'}</h2>
-    <form id="pf" class="card">
-      <div class="row" style="margin-bottom:14px"><div id="pv">${avatar(p, 64)}</div>
-        <input type="file" name="photo" accept="image/*"></div>
-      <input class="field" name="full_name" placeholder="Your name" value="${esc(p.full_name)}" required>
-      <input class="field" name="startup_name" placeholder="Startup name" value="${esc(p.startup_name)}">
-      <input class="field" name="headline" placeholder="One-line headline" value="${esc(p.headline)}">
-      <div class="row">
-        <select class="field grow" name="industry">${opts(INDUSTRIES, p.industry, 'Industry')}</select>
-        <select class="field grow" name="stage">${opts(STAGES, p.stage, 'Stage')}</select>
-      </div>
-      <textarea class="field" name="bio" placeholder="What are you building? (20+ characters counts toward verification)">${esc(p.bio)}</textarea>
-      <p class="err" id="perr"></p>
-      <div class="row"><button class="btn">Save profile</button>
-        ${editing ? '<button type="button" class="btn ghost" id="cancel">Cancel</button>' : '<button type="button" class="btn ghost" id="out">Sign out</button>'}</div>
-    </form></div>`
-  const form = $('#pf')
-  form.photo.onchange = () => {
-    const f = form.photo.files[0]
-    if (f) $('#pv').innerHTML = `<img class="avatar" width="64" height="64" src="${URL.createObjectURL(f)}" alt="">`
-  }
-  if (editing) $('#cancel').onclick = showShell
-  else $('#out').onclick = () => db.auth.signOut()
-  form.onsubmit = async (e) => {
-    e.preventDefault()
-    const btn = form.querySelector('.btn'); btn.disabled = true
-    try {
-      let avatar_url = p.avatar_url ?? null
-      const file = form.photo.files[0]
-      if (file) avatar_url = await upload('avatars', file)
-      const row = {
-        id: me.id,
-        full_name: form.full_name.value.trim(),
-        startup_name: form.startup_name.value.trim(),
-        headline: form.headline.value.trim(),
-        industry: form.industry.value || null,
-        stage: form.stage.value || null,
-        bio: form.bio.value.trim(),
-        avatar_url,
-      }
-      const { data, error } = await db.from('profiles').upsert(row).select().single()
-      if (error) throw error
-      profile = data
-      showShell()
-    } catch (err) {
-      $('#perr').textContent = err.message
-      btn.disabled = false
+
+function toast(message){
+
+    const el =
+        document.createElement("div");
+
+    el.className="toast";
+
+    el.textContent=message;
+
+    document.body.appendChild(el);
+
+    setTimeout(
+        ()=>el.remove(),
+        2600
+    );
+
+}
+
+
+/* ---------- NAVIGATION ---------- */
+
+document
+.querySelectorAll("[data-page]")
+.forEach(button=>{
+
+    button.addEventListener(
+        "click",
+        ()=>{
+
+            const page =
+                button.dataset.page;
+
+            navigate(page);
+
+        }
+    );
+
+});
+
+
+function navigate(page){
+
+    document
+    .querySelectorAll("[data-page]")
+    .forEach(button=>{
+
+        button.classList.toggle(
+            "active",
+            button.dataset.page===page
+        );
+
+    });
+
+    if(page==="home")
+        renderHome();
+
+    if(page==="discover")
+        renderDiscover();
+
+    if(page==="profile")
+        renderProfile();
+
+}
+
+
+/* ---------- HOME ---------- */
+
+function renderHome(){
+
+    const user =
+        currentUser();
+
+    document.getElementById("main").innerHTML=`
+
+        <section class="hero">
+
+            <div class="eyebrow">
+                THE FOUNDER NETWORK
+            </div>
+
+            <h1>
+                Ideas become
+                <span>companies.</span>
+            </h1>
+
+            <p>
+                Connect with founders, share what you're
+                building, discover new ideas and find the
+                people who can help you create them.
+            </p>
+
+        </section>
+
+
+        <section class="composer">
+
+            <div class="composer-top">
+
+                ${avatar(user)}
+
+                <textarea
+                    id="postText"
+                    placeholder="What are you building?"
+                ></textarea>
+
+            </div>
+
+
+            <div id="imagePreview"></div>
+
+
+            <div class="composer-bottom">
+
+                <label class="upload-btn">
+
+                    ◉ Add image
+
+                    <input
+                        type="file"
+                        id="postImage"
+                        accept="image/*"
+                    >
+
+                </label>
+
+                <button
+                    class="btn"
+                    onclick="createPost()"
+                >
+                    Publish
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <div
+            class="feed"
+            id="feed"
+        ></div>
+
+    `;
+
+
+    document
+    .getElementById("postImage")
+    .addEventListener(
+        "change",
+        previewPostImage
+    );
+
+
+    renderFeed();
+
+    renderRightSide();
+
+}
+
+
+function renderFeed(){
+
+    const feed =
+        document.getElementById("feed");
+
+    if(!feed) return;
+
+
+    const posts =
+        [...state.posts]
+        .sort(
+            (a,b)=>
+                b.createdAt-a.createdAt
+        );
+
+
+    if(!posts.length){
+
+        feed.innerHTML=`
+            <div class="empty">
+                No ideas yet.
+                Be the first founder to post.
+            </div>
+        `;
+
+        return;
+
     }
-  }
+
+
+    feed.innerHTML =
+        posts.map(
+            renderPost
+        ).join("");
+
 }
 
-/* ---------- shell + tabs ---------- */
-function showShell() {
-  const tabs = [
-    ['feed', 'Feed', 'home', '#7C5CFF'],
-    ['discover', 'Discover', 'compass', '#0E9F92'],
-    ['groups', 'Groups', 'users', '#F2691D'],
-    ['me', 'Profile', 'user', '#F0457F'],
-  ]
-  app.innerHTML = `<div class="shell"><div class="top"><h1 class="logo">ract</h1><p class="sub">${tagline}</p></div><main id="main"></main></div>
-    <nav class="tabs">${tabs.map(([k, l, ic, c]) =>
-      `<button class="tab" data-tab="${k}" style="--c:${c}">${icon(ic, 20)}<span>${l}</span></button>`).join('')}</nav>`
-  document.querySelectorAll('.tab').forEach((b) => (b.onclick = () => go(b.dataset.tab)))
-  go(tab)
-}
-function go(t) {
-  tab = t
-  document.body.dataset.tab = t
-  if (chan) { db.removeChannel(chan); chan = null }
-  document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === t))
-  const views = { feed: viewFeed, discover: viewDiscover, groups: viewGroups, me: viewMe }
-  views[t]()
+
+/* ---------- POST ---------- */
+
+function renderPost(post){
+
+    const user =
+        state.users[post.userId];
+
+    if(!user) return "";
+
+
+    const liked =
+        post.likes.includes(
+            state.currentUser
+        );
+
+
+    return `
+
+    <article
+        class="post"
+        id="post-${post.id}"
+    >
+
+        <div class="post-head">
+
+            ${avatar(user)}
+
+            <div class="post-author">
+
+                <div class="author-name">
+
+                    ${escapeHTML(user.name)}
+
+                    <span>✦</span>
+
+                </div>
+
+                <div class="post-meta">
+
+                    ${escapeHTML(
+                        user.company ||
+                        "Founder"
+                    )}
+
+                    ·
+
+                    ${timeAgo(
+                        post.createdAt
+                    )}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        ${
+            post.text
+            ?
+            `<div class="post-content">
+                ${escapeHTML(post.text)}
+            </div>`
+            :
+            ""
+        }
+
+
+        ${
+            post.image
+            ?
+            `<img
+                class="post-image"
+                src="${post.image}"
+                alt="Founder post"
+            >`
+            :
+            ""
+        }
+
+
+        <div class="post-actions">
+
+            <button
+                class="action ${liked ? "liked":""}"
+                onclick="toggleLike(${post.id})"
+            >
+                ${liked ? "♥":"♡"}
+                ${post.likes.length}
+            </button>
+
+
+            <button
+                class="action"
+                onclick="toggleComments(${post.id})"
+            >
+                ◌
+                ${post.comments.length}
+            </button>
+
+
+            <button
+                class="action"
+                onclick="openFounder('${user.id}')"
+            >
+                ↗ View founder
+            </button>
+
+        </div>
+
+
+        <div
+            class="comments"
+            id="comments-${post.id}"
+            style="display:none"
+        >
+
+            ${
+                post.comments
+                .map(comment=>{
+
+                    const author =
+                        state.users[
+                            comment.userId
+                        ];
+
+                    return `
+
+                    <div class="comment">
+
+                        ${avatar(author)}
+
+                        <div class="comment-body">
+
+                            <strong>
+                                ${escapeHTML(
+                                    author?.name ||
+                                    "Founder"
+                                )}
+                            </strong>
+
+                            ${escapeHTML(
+                                comment.text
+                            )}
+
+                        </div>
+
+                    </div>
+
+                    `;
+
+                })
+                .join("")
+            }
+
+
+            <form
+                class="comment-form"
+                onsubmit="addComment(event,${post.id})"
+            >
+
+                <input
+                    name="comment"
+                    placeholder="Add a thought..."
+                    required
+                >
+
+                <button class="btn">
+                    Send
+                </button>
+
+            </form>
+
+        </div>
+
+    </article>
+
+    `;
+
 }
 
-/* ---------- feed ---------- */
-async function viewFeed() {
-  $('#main').innerHTML = `<form id="cf" class="card">
-    <textarea class="field" name="content" placeholder="What are you building today?"></textarea>
-    <div id="cprev"></div><p class="err" id="cerr"></p>
-    <div class="row"><input type="file" name="image" accept="image/*" class="grow"><button class="btn">Post</button></div>
-    </form><div id="posts">${skeleton}${skeleton}</div>`
-  const cf = $('#cf')
-  cf.image.onchange = () => {
-    const f = cf.image.files[0]
-    $('#cprev').innerHTML = f ? `<img class="post-img" src="${URL.createObjectURL(f)}" alt="">` : ''
-  }
-  cf.onsubmit = async (e) => {
-    e.preventDefault()
-    const content = cf.content.value.trim()
-    const file = cf.image.files[0]
-    if (!content && !file) return
-    const btn = cf.querySelector('.btn'); btn.disabled = true
-    try {
-      const image_url = file ? await upload('posts', file) : null
-      const { error } = await db.from('posts').insert({ user_id: me.id, content, image_url })
-      if (error) throw error
-      toast('Posted')
-      viewFeed()
-    } catch (err) {
-      $('#cerr').textContent = err.message
-      btn.disabled = false
+
+let selectedPostImage="";
+
+
+function previewPostImage(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file) return;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload=function(e){
+
+        selectedPostImage =
+            e.target.result;
+
+
+        document.getElementById(
+            "imagePreview"
+        ).innerHTML=`
+
+            <img
+                class="post-image"
+                src="${selectedPostImage}"
+                style="max-height:250px"
+            >
+
+        `;
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+function createPost(){
+
+    const text =
+        document
+        .getElementById("postText")
+        .value
+        .trim();
+
+
+    if(!text && !selectedPostImage){
+
+        toast(
+            "Write something or add an image."
+        );
+
+        return;
+
     }
-  }
-  $('#posts').onclick = onPostClick
-  loadPosts()
+
+
+    state.posts.push({
+
+        id:Date.now(),
+
+        userId:state.currentUser,
+
+        text,
+
+        image:selectedPostImage,
+
+        likes:[],
+
+        comments:[],
+
+        createdAt:Date.now()
+
+    });
+
+
+    save();
+
+    selectedPostImage="";
+
+    renderHome();
+
+    toast("Idea published.");
+
 }
 
-async function loadPosts() {
-  const { data, error } = await db.from('posts')
-    .select('*, profiles(id, full_name, startup_name, avatar_url, verified, stage), likes(user_id), comments(count)')
-    .order('created_at', { ascending: false }).limit(50)
-  const box = $('#posts')
-  if (!box) return
-  if (error) return (box.innerHTML = `<p class="err">${esc(error.message)}</p>`)
-  if (!data.length) return (box.innerHTML = '<p class="empty">No posts yet. Share the first idea.</p>')
-  box.innerHTML = data.map(postHtml).join('')
+
+function toggleLike(id){
+
+    const post =
+        state.posts.find(
+            p=>p.id===id
+        );
+
+    if(!post) return;
+
+
+    const index =
+        post.likes.indexOf(
+            state.currentUser
+        );
+
+
+    if(index>=0)
+        post.likes.splice(index,1);
+
+    else
+        post.likes.push(
+            state.currentUser
+        );
+
+
+    save();
+
+    renderFeed();
+
 }
 
-function postHtml(p) {
-  const n = p.likes.length
-  const liked = p.likes.some((l) => l.user_id === me.id)
-  return `<article class="card post" data-id="${p.id}">
-    <div class="row">${avatar(p.profiles)}
-      <div class="grow">${nameHtml(p.profiles)}
-        <div class="muted">${esc(p.profiles?.startup_name || 'Founder')} &nbsp;·&nbsp; ${ago(p.created_at)}</div></div>
-      ${p.profiles?.stage ? `<span class="tag alt">${esc(p.profiles.stage)}</span>` : ''}</div>
-    ${p.content ? `<p style="white-space:pre-wrap">${esc(p.content)}</p>` : ''}
-    ${p.image_url ? `<img class="post-img" src="${esc(p.image_url)}" alt="">` : ''}
-    <div class="actions">
-      <button class="act ${liked ? 'on' : ''}" data-act="like" data-n="${n}" aria-label="Like">${icon('heart', 20)}<span>${n}</span></button>
-      <button class="act" data-act="comments" aria-label="Comments">${icon('chat', 20)}<span>${p.comments[0]?.count ?? 0}</span></button>
-    </div><div class="cbox"></div></article>`
+
+function toggleComments(id){
+
+    const el =
+        document.getElementById(
+            "comments-"+id
+        );
+
+    if(!el) return;
+
+    el.style.display =
+        el.style.display==="none"
+        ?
+        "block"
+        :
+        "none";
+
 }
 
-async function onPostClick(e) {
-  const btn = e.target.closest('[data-act]')
-  if (!btn) return
-  const card = btn.closest('.post')
-  const id = card.dataset.id
-  if (btn.dataset.act === 'like') {
-    const liked = btn.classList.contains('on')
-    const { error } = liked
-      ? await db.from('likes').delete().match({ post_id: id, user_id: me.id })
-      : await db.from('likes').insert({ post_id: id, user_id: me.id })
-    if (error) return toast(error.message)
-    const n = +btn.dataset.n + (liked ? -1 : 1)
-    btn.dataset.n = n
-    btn.classList.toggle('on')
-    btn.querySelector('span').textContent = n
-  } else {
-    const box = $('.cbox', card)
-    if (box.innerHTML) return (box.innerHTML = '')
-    box.innerHTML = '<p class="muted">Loading…</p>'
-    renderComments(card, id)
-  }
+
+function addComment(event,id){
+
+    event.preventDefault();
+
+
+    const post =
+        state.posts.find(
+            p=>p.id===id
+        );
+
+    const text =
+        event.target.comment
+        .value
+        .trim();
+
+
+    if(!text) return;
+
+
+    post.comments.push({
+
+        userId:state.currentUser,
+
+        text
+
+    });
+
+
+    save();
+
+    renderFeed();
+
+    setTimeout(
+        ()=>toggleComments(id),
+        20
+    );
+
 }
 
-async function renderComments(card, id) {
-  const box = $('.cbox', card)
-  const { data } = await db.from('comments')
-    .select('*, profiles(full_name, avatar_url, verified)').eq('post_id', id).order('created_at')
-  const list = data || []
-  $('[data-act=comments] span', card).textContent = list.length
-  box.innerHTML = list.map((c) => `<div class="row" style="align-items:flex-start;margin-top:12px">
-      ${avatar(c.profiles, 30)}<div class="grow"><div>${nameHtml(c.profiles)} <span class="muted">${ago(c.created_at)}</span></div>
-      <div>${esc(c.content)}</div></div></div>`).join('') +
-    `<form class="row" style="margin-top:14px"><input class="field grow" name="c" placeholder="Add a comment" style="margin:0" required>
-     <button class="btn small">Reply</button></form>`
-  $('form', box).onsubmit = async (e) => {
-    e.preventDefault()
-    const content = e.target.c.value.trim()
-    if (!content) return
-    const { error } = await db.from('comments').insert({ post_id: id, user_id: me.id, content })
-    if (error) return toast(error.message)
-    renderComments(card, id)
-  }
+
+/* ---------- RIGHT SIDE ---------- */
+
+function renderRightSide(){
+
+    const right =
+        document.getElementById(
+            "rightSide"
+        );
+
+
+    const users =
+        Object.values(state.users)
+        .filter(
+            u=>u.id!==state.currentUser
+        );
+
+
+    right.innerHTML=`
+
+        <div class="side-card">
+
+            <div class="side-title">
+                Founders to discover
+            </div>
+
+            ${
+                users.slice(0,4)
+                .map(user=>`
+
+                    <div class="founder-mini">
+
+                        ${avatar(user)}
+
+                        <div class="founder-info">
+
+                            <strong>
+                                ${escapeHTML(
+                                    user.name
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(
+                                    user.company ||
+                                    user.industry ||
+                                    "Founder"
+                                )}
+                            </span>
+
+                        </div>
+
+                        <button
+                            class="follow"
+                            onclick="toggleFollow('${user.id}')"
+                        >
+                            ${
+                                currentUser()
+                                .following
+                                .includes(user.id)
+                                ?
+                                "Following"
+                                :
+                                "Follow"
+                            }
+                        </button>
+
+                    </div>
+
+                `)
+                .join("")
+            }
+
+        </div>
+
+
+        <div class="side-card">
+
+            <div class="side-title">
+                Ract
+            </div>
+
+            <p style="
+                color:#777;
+                font-size:12px;
+                line-height:1.6;
+            ">
+                A place for founders to
+                connect, think openly and
+                build together.
+            </p>
+
+        </div>
+
+    `;
+
 }
 
-/* ---------- discover founders ---------- */
-async function viewDiscover() {
-  $('#main').innerHTML = `<input class="field" id="q" placeholder="Search founders, startups or industries"><div id="list">${skeleton}</div>`
-  const [{ data: people }, { data: fl }] = await Promise.all([
-    db.from('profiles').select('*').neq('id', me.id).order('score', { ascending: false }),
-    db.from('follows').select('following_id').eq('follower_id', me.id),
-  ])
-  const following = new Set((fl || []).map((x) => x.following_id))
-  const list = $('#list')
-  if (!list) return
-  const draw = () => {
-    const q = $('#q').value.toLowerCase()
-    const rows = (people || []).filter((p) =>
-      [p.full_name, p.startup_name, p.industry, p.stage].join(' ').toLowerCase().includes(q))
-    list.innerHTML = rows.length ? rows.map((p) => `<div class="card row">${avatar(p, 52)}
-      <div class="grow">${nameHtml(p)}<div class="muted">${esc(p.startup_name || '')}</div>
-        <div>${esc(p.headline || '')}</div>${tagsHtml(p)}</div>
-      <button class="btn small ${following.has(p.id) ? 'ghost' : ''}" data-id="${p.id}">${following.has(p.id) ? 'Following' : 'Follow'}</button></div>`).join('')
-      : '<p class="empty">No founders found yet. Invite someone to join Ract.</p>'
-  }
-  $('#q').oninput = draw
-  draw()
-  list.onclick = async (e) => {
-    const b = e.target.closest('button[data-id]')
-    if (!b) return
-    const id = b.dataset.id
-    if (following.has(id)) {
-      await db.from('follows').delete().match({ follower_id: me.id, following_id: id })
-      following.delete(id)
-    } else {
-      await db.from('follows').insert({ follower_id: me.id, following_id: id })
-      following.add(id)
+
+function toggleFollow(id){
+
+    const me =
+        currentUser();
+
+
+    const index =
+        me.following.indexOf(id);
+
+
+    if(index>=0)
+        me.following.splice(index,1);
+
+    else
+        me.following.push(id);
+
+
+    save();
+
+    renderHome();
+
+}
+
+
+/* ---------- DISCOVER ---------- */
+
+function renderDiscover(){
+
+    document.getElementById("main").innerHTML=`
+
+        <div class="page-title">
+            Discover founders
+        </div>
+
+        <div class="page-sub">
+            Find people building interesting things.
+        </div>
+
+        <input
+            class="search"
+            id="founderSearch"
+            placeholder="Search founders, startups or industries..."
+        >
+
+        <div
+            class="founders-grid"
+            id="foundersGrid"
+        ></div>
+
+    `;
+
+
+    document
+    .getElementById(
+        "founderSearch"
+    )
+    .addEventListener(
+        "input",
+        renderFounderCards
+    );
+
+
+    renderFounderCards();
+
+    renderRightSide();
+
+}
+
+
+function renderFounderCards(){
+
+    const query =
+        (
+            document
+            .getElementById(
+                "founderSearch"
+            )
+            .value || ""
+        )
+        .toLowerCase();
+
+
+    const users =
+        Object.values(state.users)
+        .filter(user=>{
+
+            if(user.id===state.currentUser)
+                return false;
+
+
+            return (
+
+                user.name+
+                " "+
+                user.company+
+                " "+
+                user.industry+
+                " "+
+                user.bio
+
+            )
+            .toLowerCase()
+            .includes(query);
+
+        });
+
+
+    const grid =
+        document.getElementById(
+            "foundersGrid"
+        );
+
+
+    if(!users.length){
+
+        grid.innerHTML=`
+            <div class="empty">
+                No founders found.
+            </div>
+        `;
+
+        return;
+
     }
-    draw()
-  }
+
+
+    grid.innerHTML =
+        users.map(user=>`
+
+            <div class="founder-card">
+
+                ${avatar(user,"large")}
+
+                <h3>
+                    ${escapeHTML(user.name)}
+                </h3>
+
+                <div class="company">
+                    ${escapeHTML(
+                        user.company ||
+                        "Independent Founder"
+                    )}
+                </div>
+
+                <p>
+                    ${escapeHTML(
+                        user.bio ||
+                        "Building something new."
+                    )}
+                </p>
+
+                <div class="tags">
+
+                    ${
+                        user.industry
+                        ?
+                        `<span class="tag">
+                            ${escapeHTML(
+                                user.industry
+                            )}
+                        </span>`
+                        :
+                        ""
+                    }
+
+                </div>
+
+                <button
+                    class="btn"
+                    style="margin-top:16px;width:100%"
+                    onclick="openFounder('${user.id}')"
+                >
+                    View founder
+                </button>
+
+            </div>
+
+        `)
+        .join("");
+
 }
 
-/* ---------- groups + chat ---------- */
-async function viewGroups() {
-  $('#main').innerHTML = `<form id="gf" class="card row">
-    <input class="field grow" name="gname" placeholder="New group, e.g. Fintech founders" style="margin:0" required>
-    <button class="btn">Create</button></form><div id="glist">${skeleton}</div>`
-  $('#gf').onsubmit = async (e) => {
-    e.preventDefault()
-    const name = e.target.gname.value.trim()
-    if (!name) return
-    const { data, error } = await db.from('groups').insert({ name, created_by: me.id }).select().single()
-    if (error) return toast(error.message)
-    await db.from('group_members').insert({ group_id: data.id, user_id: me.id })
-    viewGroups()
-  }
-  const { data } = await db.from('groups').select('*, group_members(user_id)').order('created_at', { ascending: false })
-  const gl = $('#glist')
-  if (!gl) return
-  if (!data?.length) return (gl.innerHTML = '<p class="empty">No groups yet. Create the first one.</p>')
-  gl.innerHTML = data.map((g) => {
-    const joined = g.group_members.some((x) => x.user_id === me.id)
-    return `<div class="card row"><div class="grow"><div class="name">${esc(g.name)}</div>
-      <div class="muted">${g.group_members.length} members</div></div>
-      ${joined ? `<button class="btn small" data-open="${g.id}">Open</button>`
-               : `<button class="btn small ghost" data-join="${g.id}">Join</button>`}</div>`
-  }).join('')
-  gl.onclick = async (e) => {
-    const b = e.target.closest('button')
-    if (!b) return
-    if (b.dataset.join) {
-      const { error } = await db.from('group_members').insert({ group_id: b.dataset.join, user_id: me.id })
-      if (error) return toast(error.message)
-      viewGroups()
+
+/* ---------- PROFILE ---------- */
+
+function renderProfile(){
+
+    const user =
+        currentUser();
+
+
+    const followers =
+        Object.values(state.users)
+        .filter(
+            u=>u.following.includes(user.id)
+        )
+        .length;
+
+
+    const posts =
+        state.posts.filter(
+            p=>p.userId===user.id
+        ).length;
+
+
+    document.getElementById("main").innerHTML=`
+
+        <div class="profile-cover"></div>
+
+        <section class="profile-info">
+
+            <div class="profile-avatar-wrap">
+
+                ${avatar(
+                    user,
+                    "xlarge"
+                )}
+
+            </div>
+
+            <div class="profile-name">
+
+                ${escapeHTML(
+                    user.name
+                )}
+
+                <span style="
+                    color:var(--gold2);
+                    font-size:15px;
+                ">
+                    ✦
+                </span>
+
+            </div>
+
+            <div class="profile-handle">
+
+                ${escapeHTML(
+                    user.company ||
+                    "Founder"
+                )}
+
+            </div>
+
+            <div class="profile-bio">
+
+                ${escapeHTML(
+                    user.bio ||
+                    "Tell the founder network what you're building."
+                )}
+
+            </div>
+
+            <div class="tags">
+
+                ${
+                    user.industry
+                    ?
+                    `<span class="tag">
+                        ${escapeHTML(
+                            user.industry
+                        )}
+                    </span>`
+                    :
+                    ""
+                }
+
+            </div>
+
+
+            <div class="profile-stats">
+
+                <div class="stat">
+
+                    <strong>
+                        ${posts}
+                    </strong>
+
+                    <span>
+                        Posts
+                    </span>
+
+                </div>
+
+                <div class="stat">
+
+                    <strong>
+                        ${followers}
+                    </strong>
+
+                    <span>
+                        Followers
+                    </span>
+
+                </div>
+
+                <div class="stat">
+
+                    <strong>
+                        ${user.following.length}
+                    </strong>
+
+                    <span>
+                        Following
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="btn"
+                style="margin-top:20px"
+                onclick="openProfileEditor()"
+            >
+                Edit profile
+            </button>
+
+        </section>
+
+
+        <div
+            class="feed"
+            style="margin-top:20px"
+        >
+
+            ${
+                state.posts
+                .filter(
+                    p=>p.userId===user.id
+                )
+                .sort(
+                    (a,b)=>
+                        b.createdAt-a.createdAt
+                )
+                .map(renderPost)
+                .join("")
+                ||
+                `
+                <div class="empty">
+                    You haven't posted anything yet.
+                </div>
+                `
+            }
+
+        </div>
+
+    `;
+
+    renderRightSide();
+
+}
+
+
+/* ---------- FOUNDER VIEW ---------- */
+
+function openFounder(id){
+
+    const user =
+        state.users[id];
+
+    if(!user) return;
+
+
+    const posts =
+        state.posts
+        .filter(
+            p=>p.userId===id
+        )
+        .sort(
+            (a,b)=>
+                b.createdAt-a.createdAt
+        );
+
+
+    const followers =
+        Object.values(state.users)
+        .filter(
+            u=>u.following.includes(id)
+        )
+        .length;
+
+
+    document.getElementById("main").innerHTML=`
+
+        <button
+            class="btn"
+            onclick="navigate('discover')"
+            style="margin-bottom:18px"
+        >
+            ← Back
+        </button>
+
+
+        <div class="profile-cover"></div>
+
+        <section class="profile-info">
+
+            <div class="profile-avatar-wrap">
+
+                ${avatar(
+                    user,
+                    "xlarge"
+                )}
+
+            </div>
+
+            <div class="profile-name">
+
+                ${escapeHTML(
+                    user.name
+                )}
+
+                <span style="
+                    color:var(--gold2)
+                ">
+                    ✦
+                </span>
+
+            </div>
+
+            <div class="profile-handle">
+
+                ${escapeHTML(
+                    user.company ||
+                    "Founder"
+                )}
+
+            </div>
+
+            <div class="profile-bio">
+
+                ${escapeHTML(
+                    user.bio ||
+                    ""
+                )}
+
+            </div>
+
+            <div class="tags">
+
+                ${
+                    user.industry
+                    ?
+                    `<span class="tag">
+                        ${escapeHTML(
+                            user.industry
+                        )}
+                    </span>`
+                    :
+                    ""
+                }
+
+            </div>
+
+
+            <div class="profile-stats">
+
+                <div class="stat">
+
+                    <strong>
+                        ${posts.length}
+                    </strong>
+
+                    <span>
+                        Posts
+                    </span>
+
+                </div>
+
+                <div class="stat">
+
+                    <strong>
+                        ${followers}
+                    </strong>
+
+                    <span>
+                        Followers
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="btn"
+                style="margin-top:20px"
+                onclick="toggleFollow('${id}')"
+            >
+                ${
+                    currentUser()
+                    .following
+                    .includes(id)
+                    ?
+                    "Following"
+                    :
+                    "Follow founder"
+                }
+            </button>
+
+        </section>
+
+
+        <div
+            class="feed"
+            style="margin-top:20px"
+        >
+
+            ${
+                posts
+                .map(renderPost)
+                .join("")
+                ||
+                `
+                <div class="empty">
+                    This founder hasn't posted yet.
+                </div>
+                `
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* ---------- PROFILE EDITOR ---------- */
+
+function openProfileEditor(){
+
+    const user =
+        currentUser();
+
+
+    document.getElementById(
+        "profileName"
+    ).value =
+        user.name || "";
+
+
+    document.getElementById(
+        "profileCompany"
+    ).value =
+        user.company || "";
+
+
+    document.getElementById(
+        "profileBio"
+    ).value =
+        user.bio || "";
+
+
+    document.getElementById(
+        "profileIndustry"
+    ).value =
+        user.industry || "";
+
+
+    document
+    .getElementById(
+        "profileModal"
+    )
+    .classList.add("open");
+
+}
+
+
+function closeModal(id){
+
+    document
+    .getElementById(id)
+    .classList.remove("open");
+
+}
+
+
+document
+.getElementById("profileForm")
+.addEventListener(
+    "submit",
+    function(event){
+
+        event.preventDefault();
+
+
+        const user =
+            currentUser();
+
+
+        user.name =
+            document
+            .getElementById(
+                "profileName"
+            )
+            .value
+            .trim()
+            ||
+            "Founder";
+
+
+        user.company =
+            document
+            .getElementById(
+                "profileCompany"
+            )
+            .value
+            .trim();
+
+
+        user.bio =
+            document
+            .getElementById(
+                "profileBio"
+            )
+            .value
+            .trim();
+
+
+        user.industry =
+            document
+            .getElementById(
+                "profileIndustry"
+            )
+            .value
+            .trim();
+
+
+        const file =
+            document
+            .getElementById(
+                "profilePhoto"
+            )
+            .files[0];
+
+
+        if(file){
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload=function(e){
+
+                user.photo =
+                    e.target.result;
+
+                save();
+
+                closeModal(
+                    "profileModal"
+                );
+
+                navigate("profile");
+
+                toast(
+                    "Profile updated."
+                );
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }else{
+
+            save();
+
+            closeModal(
+                "profileModal"
+            );
+
+            navigate("profile");
+
+            toast(
+                "Profile updated."
+            );
+
+        }
+
     }
-    if (b.dataset.open) openChat(data.find((g) => g.id === b.dataset.open))
-  }
-}
+);
 
-async function openChat(g) {
-  $('#main').innerHTML = `<div class="row"><button class="btn ghost small" id="back">Back</button>
-    <h2 style="font-size:1.4rem">${esc(g.name)}</h2></div><div class="chat" id="chat"></div>
-    <form class="chatbar" id="cbar"><input class="field grow" name="text" placeholder="Message the group" autocomplete="off" required>
-    <button class="btn" aria-label="Send">${icon('send', 18)}</button></form>`
-  $('#back').onclick = () => go('groups')
-  const load = async () => {
-    const { data } = await db.from('messages').select('*, profiles(full_name)')
-      .eq('group_id', g.id).order('created_at').limit(200)
-    const box = $('#chat')
-    if (!box) return
-    box.innerHTML = (data || []).map((x) => `<div class="msg ${x.user_id === me.id ? 'me' : ''}">
-      ${x.user_id === me.id ? '' : `<small>${esc(x.profiles?.full_name)}</small>`}${esc(x.content)}</div>`).join('')
-      || '<p class="empty">No messages yet. Say hello.</p>'
-    window.scrollTo(0, document.body.scrollHeight)
-  }
-  await load()
-  chan = db.channel('group-' + g.id)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `group_id=eq.${g.id}` }, load)
-    .subscribe()
-  $('#cbar').onsubmit = async (e) => {
-    e.preventDefault()
-    const text = e.target.text.value.trim()
-    if (!text) return
-    e.target.text.value = ''
-    const { error } = await db.from('messages').insert({ group_id: g.id, user_id: me.id, content: text })
-    if (error) toast(error.message)
-  }
-}
 
-/* ---------- my profile ---------- */
-async function viewMe() {
-  const count = (t, col) => db.from(t).select('*', { count: 'exact', head: true }).eq(col, me.id)
-  const [{ data }, po, fo, fi] = await Promise.all([
-    db.from('profiles').select('*').eq('id', me.id).single(),
-    count('posts', 'user_id'), count('follows', 'following_id'), count('follows', 'follower_id'),
-  ])
-  profile = data
-  const pct = Math.min(100, Math.round((profile.score / THRESHOLD) * 100))
-  $('#main').innerHTML = `<div class="card"><div class="cover"></div>
-      <div class="who">${avatar(profile, 76)}
-        <div class="grow" style="padding-bottom:4px">${nameHtml(profile)}<div class="muted">${esc(profile.startup_name || '')}</div></div></div>
-      ${profile.headline ? `<p style="margin:6px 0"><strong>${esc(profile.headline)}</strong></p>` : ''}
-      ${profile.bio ? `<p style="margin:6px 0">${esc(profile.bio)}</p>` : ''}
-      ${tagsHtml(profile)}
-      <div class="stats">
-        <div class="stat"><b>${po.count ?? 0}</b><span class="muted">Posts</span></div>
-        <div class="stat"><b>${fo.count ?? 0}</b><span class="muted">Followers</span></div>
-        <div class="stat"><b>${fi.count ?? 0}</b><span class="muted">Following</span></div>
-      </div></div>
-    <div class="card"><strong>${profile.verified ? 'You are a verified founder' : 'Path to verification'}</strong>
-      <div class="meter"><i style="width:${pct}%"></i></div>
-      <p class="muted" style="margin:0">Score ${profile.score} of ${THRESHOLD}. A profile photo gives 3, a bio of 20+ characters gives 2,
-      each post gives 2, each like received gives 1, and each follower gives 2.</p></div>
-    <div class="row"><button class="btn" id="edit">Edit profile</button>
-    <button class="btn ghost" id="out">Sign out</button></div>`
-  $('#edit').onclick = () => showProfileForm(true)
-  $('#out').onclick = () => db.auth.signOut()
-}
+/* ---------- START ---------- */
 
-boot()
+renderHome();
+
 </script>
+
 </body>
 </html>
