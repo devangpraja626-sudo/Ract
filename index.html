@@ -3,53 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ract</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap');
-:root{--ink:#17182B;--paper:#F2F4FA;--card:#fff;--accent:#3D3FD9;--soft:#E4E5FB;--gold:#D9A21B;--line:#DCDFEE;--muted:#6B6F8A}
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.45}
-button,input,textarea{font:inherit;color:inherit}
-.shell{max-width:640px;margin:0 auto;padding:16px 16px 92px}
-.logo{font-weight:800;font-size:30px;letter-spacing:-1.5px;color:var(--accent);margin:0 0 12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-.row{display:flex;align-items:center;gap:10px}
-.grow{flex:1;min-width:0}
-.avatar{border-radius:50%;object-fit:cover;flex:none}
-.ph{background:var(--soft);color:var(--accent);display:grid;place-items:center;font-weight:800}
-.name{font-weight:600}
-.badge{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:6px;border-radius:50%;background:var(--gold);color:#fff;font-size:11px;font-weight:800;vertical-align:middle}
-.muted{color:var(--muted);font-size:14px}
-.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer}
-.btn:disabled{opacity:.5;cursor:default}
-.btn.ghost{background:var(--soft);color:var(--accent)}
-.btn.small{padding:6px 12px;font-size:14px}
-.field{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;margin-bottom:10px}
-.field:focus,.btn:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-textarea.field{resize:vertical;min-height:70px}
-.post-img{width:100%;border-radius:10px;margin-top:10px;max-height:420px;object-fit:cover}
-.actions{display:flex;gap:18px;margin-top:10px}
-.act{background:none;border:0;cursor:pointer;color:var(--muted);padding:0;font-weight:600}
-.act.on{color:var(--accent)}
-.tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center}
-.tabs div{display:flex;width:100%;max-width:640px}
-.tab{flex:1;background:none;border:0;padding:16px 0;cursor:pointer;color:var(--muted);font-weight:600}
-.tab.on{color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
-.auth{max-width:380px;margin:12vh auto 0;padding:0 20px}
-.err{color:#C0362C;font-size:14px;margin:0 0 10px}
-.empty{text-align:center;color:var(--muted);padding:32px 0}
-.chat{display:flex;flex-direction:column;gap:8px;margin:12px 0}
-.msg{max-width:80%;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 12px}
-.msg.me{align-self:flex-end;background:var(--accent);color:#fff;border-color:var(--accent)}
-.msg small{display:block;opacity:.7;font-size:12px}
-.chatbar{position:sticky;bottom:64px;display:flex;gap:8px;background:var(--paper);padding:8px 0}
-.chatbar .field{margin:0}
-.meter{height:8px;background:var(--soft);border-radius:8px;overflow:hidden;margin:8px 0}
-.meter i{display:block;height:100%;background:var(--accent)}
-</style>
+<title>Ract – From connect to create</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-<div id="app"></div>
+<body data-tab="auth">
+<div class="aurora"><i></i><i></i><i></i></div>
+<div class="float" id="float"></div>
+<div id="app"><div class="splash">ract</div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -61,6 +24,36 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 const app = document.getElementById('app')
 const $ = (s, r = document) => r.querySelector(s)
 let me = null, profile = null, tab = 'feed', chan = null
+
+/* ---------- icons ---------- */
+const ICONS = {
+  bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+  rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+  chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  star: '<polygon points="12 2 15.1 8.6 22 9.3 17 14 18.2 21 12 17.7 5.8 21 7 14 2 9.3 8.9 8.6 12 2"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  compass: '<circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+}
+const icon = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`
+
+const FLOATERS = [
+  { i: 'bulb',   c: '#F59E0B', x: 4,  y: 8,  s: 58, t: 7,   d: 0, r: -10 },
+  { i: 'rocket', c: '#6C4CF5', x: 82, y: 10, s: 66, t: 8,   d: 2, r: 8 },
+  { i: 'heart',  c: '#E8388A', x: 9,  y: 36, s: 46, t: 6,   d: 1, r: 12 },
+  { i: 'chat',   c: '#0B9488', x: 84, y: 38, s: 54, t: 9,   d: 3, r: -8 },
+  { i: 'star',   c: '#F26A1B', x: 4,  y: 62, s: 44, t: 7.5, d: 4, r: 14 },
+  { i: 'users',  c: '#2563EB', x: 80, y: 66, s: 60, t: 8.5, d: 1, r: -12 },
+  { i: 'image',  c: '#A23DD6', x: 12, y: 86, s: 50, t: 6.5, d: 2, r: 6 },
+  { i: 'link',   c: '#0B9488', x: 76, y: 88, s: 46, t: 7,   d: 5, r: -6 },
+]
+$('#float').innerHTML = FLOATERS.map((f) =>
+  `<div class="fi" style="left:${f.x}%;top:${f.y}%;width:${f.s}px;height:${f.s}px;--c:${f.c};--t:${f.t}s;--d:-${f.d}s;--r:${f.r}deg">${icon(f.i, 24)}</div>`
+).join('')
 
 /* ---------- helpers ---------- */
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
@@ -75,6 +68,7 @@ const avatar = (p, size = 40) => p?.avatar_url
   ? `<img class="avatar" src="${esc(p.avatar_url)}" width="${size}" height="${size}" alt="">`
   : `<div class="avatar ph" style="width:${size}px;height:${size}px">${esc((p?.full_name || '?')[0].toUpperCase())}</div>`
 const nameHtml = (p) => `<span class="name">${esc(p?.full_name)}${p?.verified ? '<span class="badge" title="Verified founder">✓</span>' : ''}</span>`
+const tagline = '<span class="c1">From connect</span> <span class="to">to</span> <span class="c2">create</span>'
 
 async function upload(bucket, file) {
   const ext = file.name.split('.').pop()
@@ -101,16 +95,26 @@ async function onSession(s) {
   profile ? showShell() : showProfileForm()
 }
 
-/* ---------- phone + OTP ---------- */
+/* ---------- landing + phone OTP ---------- */
 function showAuth() {
-  app.innerHTML = `<div class="auth"><h1 class="logo">ract</h1>
-    <p class="muted">Where founders share ideas and find each other.</p><div id="authbox"></div></div>`
+  document.body.dataset.tab = 'auth'
+  app.innerHTML = `<div class="auth"><div class="hero">
+    <h1 class="brand">ract</h1>
+    <h2 class="tagline">${tagline}</h2>
+    <p class="lede">The home for founders to share ideas, earn a verified badge and build together.</p>
+    <div class="glass" id="authbox"></div>
+    <div class="chips">
+      <span class="chip" style="--c:#F59E0B">${icon('bulb', 16)}Share ideas</span>
+      <span class="chip" style="--c:#E8388A">${icon('star', 16)}Get verified</span>
+      <span class="chip" style="--c:#2563EB">${icon('users', 16)}Group chats</span>
+    </div></div></div>`
   phoneStep()
 }
 function phoneStep(msg = '') {
   $('#authbox').innerHTML = `<form id="f">
-    <input class="field" type="tel" name="phone" placeholder="+91 98765 43210" required>
-    <p class="err">${esc(msg)}</p><button class="btn">Send code</button></form>`
+    <label class="lbl" for="ph">Your phone number</label>
+    <input class="field" id="ph" type="tel" name="phone" placeholder="+91 98765 43210" required>
+    <p class="err">${esc(msg)}</p><button class="btn" style="width:100%">Send code</button></form>`
   $('#f').onsubmit = async (e) => {
     e.preventDefault()
     const phone = e.target.phone.value.replace(/\s/g, '')
@@ -121,10 +125,10 @@ function phoneStep(msg = '') {
 }
 function codeStep(phone, msg = '') {
   $('#authbox').innerHTML = `<form id="f">
-    <p class="muted">Enter the 6-digit code sent to ${esc(phone)}</p>
-    <input class="field" name="code" inputmode="numeric" maxlength="6" placeholder="123456" required>
+    <label class="lbl" for="cd">Enter the 6-digit code sent to ${esc(phone)}</label>
+    <input class="field" id="cd" name="code" inputmode="numeric" maxlength="6" placeholder="123456" required>
     <p class="err">${esc(msg)}</p>
-    <div class="row"><button class="btn">Verify and continue</button>
+    <div class="row"><button class="btn grow">Verify and continue</button>
     <button type="button" class="btn ghost" id="chg">Change number</button></div></form>`
   $('#chg').onclick = () => phoneStep()
   $('#f').onsubmit = async (e) => {
@@ -137,11 +141,12 @@ function codeStep(phone, msg = '') {
 
 /* ---------- profile create / edit ---------- */
 function showProfileForm(editing = false) {
+  document.body.dataset.tab = 'me'
   const p = profile || {}
-  app.innerHTML = `<div class="shell"><h1 class="logo">ract</h1>
+  app.innerHTML = `<div class="shell"><div class="top"><h1 class="logo">ract</h1><p class="sub">${tagline}</p></div>
     <h2>${editing ? 'Edit profile' : 'Create your founder profile'}</h2>
     <form id="pf" class="card">
-      <div class="row" style="margin-bottom:12px"><div id="pv">${avatar(p, 64)}</div>
+      <div class="row" style="margin-bottom:14px"><div id="pv">${avatar(p, 64)}</div>
         <input type="file" name="photo" accept="image/*"></div>
       <input class="field" name="full_name" placeholder="Your name" value="${esc(p.full_name)}" required>
       <input class="field" name="startup_name" placeholder="Startup name" value="${esc(p.startup_name)}">
@@ -185,14 +190,21 @@ function showProfileForm(editing = false) {
 
 /* ---------- shell + tabs ---------- */
 function showShell() {
-  const tabs = [['feed', 'Feed'], ['discover', 'Discover'], ['groups', 'Groups'], ['me', 'Profile']]
-  app.innerHTML = `<div class="shell"><h1 class="logo">ract</h1><main id="main"></main></div>
-    <nav class="tabs"><div>${tabs.map(([k, l]) => `<button class="tab" data-tab="${k}">${l}</button>`).join('')}</div></nav>`
+  const tabs = [
+    ['feed', 'Feed', 'home', '#6C4CF5'],
+    ['discover', 'Discover', 'compass', '#0B9488'],
+    ['groups', 'Groups', 'users', '#F26A1B'],
+    ['me', 'Profile', 'user', '#E8388A'],
+  ]
+  app.innerHTML = `<div class="shell"><div class="top"><h1 class="logo">ract</h1><p class="sub">${tagline}</p></div><main id="main"></main></div>
+    <nav class="tabs">${tabs.map(([k, l, ic, c]) =>
+      `<button class="tab" data-tab="${k}" style="--c:${c}">${icon(ic, 20)}<span>${l}</span></button>`).join('')}</nav>`
   document.querySelectorAll('.tab').forEach((b) => (b.onclick = () => go(b.dataset.tab)))
   go(tab)
 }
 function go(t) {
   tab = t
+  document.body.dataset.tab = t
   if (chan) { db.removeChannel(chan); chan = null }
   document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === t))
   const views = { feed: viewFeed, discover: viewDiscover, groups: viewGroups, me: viewMe }
@@ -252,8 +264,8 @@ function postHtml(p) {
     ${p.content ? `<p style="white-space:pre-wrap">${esc(p.content)}</p>` : ''}
     ${p.image_url ? `<img class="post-img" src="${esc(p.image_url)}" alt="">` : ''}
     <div class="actions">
-      <button class="act ${liked ? 'on' : ''}" data-act="like" data-n="${n}">${liked ? 'Liked' : 'Like'} ${n}</button>
-      <button class="act" data-act="comments">Comments ${p.comments[0]?.count ?? 0}</button>
+      <button class="act ${liked ? 'on' : ''}" data-act="like" data-n="${n}" aria-label="Like">${icon('heart', 20)}<span>${n}</span></button>
+      <button class="act" data-act="comments" aria-label="Comments">${icon('chat', 20)}<span>${p.comments[0]?.count ?? 0}</span></button>
     </div><div class="cbox"></div></article>`
 }
 
@@ -271,7 +283,7 @@ async function onPostClick(e) {
     const n = +btn.dataset.n + (liked ? -1 : 1)
     btn.dataset.n = n
     btn.classList.toggle('on')
-    btn.textContent = `${liked ? 'Like' : 'Liked'} ${n}`
+    btn.querySelector('span').textContent = n
   } else {
     const box = $('.cbox', card)
     if (box.innerHTML) return (box.innerHTML = '')
@@ -285,11 +297,11 @@ async function renderComments(card, id) {
   const { data } = await db.from('comments')
     .select('*, profiles(full_name, avatar_url, verified)').eq('post_id', id).order('created_at')
   const list = data || []
-  $('[data-act=comments]', card).textContent = `Comments ${list.length}`
-  box.innerHTML = list.map((c) => `<div class="row" style="align-items:flex-start;margin-top:10px">
-      ${avatar(c.profiles, 28)}<div class="grow"><div>${nameHtml(c.profiles)} <span class="muted">${ago(c.created_at)}</span></div>
+  $('[data-act=comments] span', card).textContent = list.length
+  box.innerHTML = list.map((c) => `<div class="row" style="align-items:flex-start;margin-top:12px">
+      ${avatar(c.profiles, 30)}<div class="grow"><div>${nameHtml(c.profiles)} <span class="muted">${ago(c.created_at)}</span></div>
       <div>${esc(c.content)}</div></div></div>`).join('') +
-    `<form class="row" style="margin-top:10px"><input class="field grow" name="c" placeholder="Add a comment" style="margin:0" required>
+    `<form class="row" style="margin-top:12px"><input class="field grow" name="c" placeholder="Add a comment" style="margin:0" required>
      <button class="btn small">Reply</button></form>`
   $('form', box).onsubmit = async (e) => {
     e.preventDefault()
@@ -313,7 +325,7 @@ async function viewDiscover() {
   const draw = () => {
     const q = $('#q').value.toLowerCase()
     const rows = (people || []).filter((p) => (p.full_name + ' ' + (p.startup_name || '')).toLowerCase().includes(q))
-    list.innerHTML = rows.length ? rows.map((p) => `<div class="card row">${avatar(p, 48)}
+    list.innerHTML = rows.length ? rows.map((p) => `<div class="card row">${avatar(p, 50)}
       <div class="grow">${nameHtml(p)}<div class="muted">${esc(p.startup_name || '')}</div><div>${esc(p.headline || '')}</div></div>
       <button class="btn small ${following.has(p.id) ? 'ghost' : ''}" data-id="${p.id}">${following.has(p.id) ? 'Following' : 'Follow'}</button></div>`).join('')
       : '<p class="empty">No founders found yet. Invite someone to join Ract.</p>'
@@ -404,9 +416,10 @@ async function viewMe() {
   const { data } = await db.from('profiles').select('*').eq('id', me.id).single()
   profile = data
   const pct = Math.min(100, Math.round((profile.score / THRESHOLD) * 100))
-  $('#main').innerHTML = `<div class="card"><div class="row">${avatar(profile, 64)}
-      <div class="grow">${nameHtml(profile)}<div class="muted">${esc(profile.startup_name || '')}</div></div></div>
-      <p>${esc(profile.headline || '')}</p><p>${esc(profile.bio || '')}</p></div>
+  $('#main').innerHTML = `<div class="card"><div class="cover"></div>
+      <div class="who">${avatar(profile, 72)}
+        <div class="grow" style="padding-bottom:4px">${nameHtml(profile)}<div class="muted">${esc(profile.startup_name || '')}</div></div></div>
+      <p><strong>${esc(profile.headline || '')}</strong></p><p>${esc(profile.bio || '')}</p></div>
     <div class="card"><strong>${profile.verified ? 'You are a verified founder' : 'Path to verification'}</strong>
       <div class="meter"><i style="width:${pct}%"></i></div>
       <p class="muted">Score ${profile.score} of ${THRESHOLD}. A profile photo gives 3, a bio of 20+ characters gives 2,
