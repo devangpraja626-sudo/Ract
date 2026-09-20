@@ -863,14 +863,25 @@ async function openFounder(id){
           ${esc(p.bio||"This founder hasn't written a bio yet.")}
         </p>
 
-        <div class="profileButtons">
-          <button class="primary" onclick="startMessage('${p.id}')">
-            Message ✦
-          </button>
+      <div class="profileButtons">
+  <button
+    type="button"
+    class="primary"
+    onclick="startMessage('${p.id}')">
+    <span>Message</span>
+    <span>✦</span>
+  </button>
 
-          ${p.website_url?
-            `<a class="ghost" href="${esc(p.website_url)}" target="_blank">Website ↗</a>`:""}
-        </div>
+  ${p.website_url ? `
+    <a
+      class="ghost"
+      href="${esc(p.website_url)}"
+      target="_blank"
+      rel="noopener">
+      Website ↗
+    </a>
+  ` : ""}
+</div>
 
       </section>
 
