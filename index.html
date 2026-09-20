@@ -748,6 +748,7 @@ async function loadDiscover(){
 }
 
 async function renderFounders(list){
+
   const {data:follows}=await db
     .from("follows")
     .select("following_id")
@@ -761,11 +762,49 @@ async function renderFounders(list){
 
         <div class="founderTop">
           ${avatar(p,"medium")}
-          <button class="connectBtn ${following.has(p.id)?"following":""}"
+
+          <button
+            class="connectBtn ${following.has(p.id)?"following":""}"
             onclick="toggleFollow('${p.id}',${following.has(p.id)})">
             ${following.has(p.id)?"Following":"Connect"}
           </button>
         </div>
+
+        <h3>${esc(p.full_name)}</h3>
+
+        <div class="founderStartup">
+          ${esc(p.startup_name||"Independent founder")}
+        </div>
+
+        <p>
+          ${esc(p.headline||p.bio||"Building the next thing.")}
+        </p>
+
+        <div class="tags">
+          ${p.industry?`<span>${esc(p.industry)}</span>`:""}
+          ${p.stage?`<span>${esc(p.stage)}</span>`:""}
+        </div>
+
+        <div class="founderCardActions">
+
+          <button
+            class="textLink"
+            onclick="openFounder('${p.id}')">
+            View profile →
+          </button>
+
+          <button
+            class="chatCardBtn"
+            onclick="startMessage('${p.id}')">
+            💬 Message
+          </button>
+
+        </div>
+
+      </article>
+    `).join("")
+    : `<div class="empty card">No founders found.</div>`;
+}>
 
         <h3>${esc(p.full_name)}</h3>
 
