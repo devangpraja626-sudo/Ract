@@ -1571,3 +1571,105 @@ a{
     width:100%;
   }
 }
+/* =========================================================
+   CHAT COMPOSER — MOBILE FIX
+   Keeps the message box above the bottom navigation
+   ========================================================= */
+
+.chatPage{
+  position:relative;
+  min-height:calc(100vh - 90px);
+  padding-bottom:120px;
+}
+
+.chatMessages{
+  padding-bottom:100px !important;
+}
+
+.chatComposer{
+  position:fixed !important;
+  left:50% !important;
+  bottom:88px !important;
+  transform:translateX(-50%) !important;
+
+  width:calc(100% - 28px) !important;
+  max-width:612px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+
+  padding:10px !important;
+
+  z-index:99999 !important;
+
+  background:rgba(15,12,35,.92) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  border-radius:22px !important;
+
+  backdrop-filter:blur(24px) !important;
+  -webkit-backdrop-filter:blur(24px) !important;
+
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.45),
+    0 0 30px rgba(124,92,255,.12) !important;
+}
+
+.chatComposer input{
+  flex:1 !important;
+  min-width:0 !important;
+  height:48px !important;
+
+  border:0 !important;
+  outline:none !important;
+
+  background:rgba(255,255,255,.07) !important;
+  color:inherit !important;
+
+  border-radius:16px !important;
+  padding:0 16px !important;
+}
+
+.chatComposer button{
+  flex:0 0 48px !important;
+  width:48px !important;
+  height:48px !important;
+
+  border:0 !important;
+  border-radius:16px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  cursor:pointer !important;
+
+  font-size:20px !important;
+
+  background:linear-gradient(
+    135deg,
+    #7C5CFF,
+    #F0457F
+  ) !important;
+
+  color:white !important;
+
+  z-index:100000 !important;
+}
+
+@media(max-width:640px){
+  .chatComposer{
+    bottom:82px !important;
+    width:calc(100% - 20px) !important;
+  }
+}
+
+@media(max-width:380px){
+  .chatComposer{
+    bottom:80px !important;
+  }
+
+  .chatComposer input{
+    font-size:14px !important;
+  }
+}
