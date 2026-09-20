@@ -1509,3 +1509,65 @@ a{
     scroll-behavior:auto!important;
   }
 }
+
+/* =========================================================
+   FIX — PROFILE MESSAGE BUTTON / FLOATING ICON OVERLAP
+   ========================================================= */
+
+.float{
+  pointer-events:none !important;
+  z-index:1 !important;
+}
+
+.shell{
+  position:relative;
+  z-index:10;
+}
+
+.page{
+  position:relative;
+  z-index:11;
+}
+
+.publicProfile{
+  position:relative;
+  z-index:20;
+  overflow:visible;
+}
+
+.profileButtons{
+  position:relative;
+  z-index:50;
+  display:flex;
+  gap:12px;
+  width:100%;
+  margin-top:24px;
+  pointer-events:auto;
+}
+
+.profileButtons button,
+.profileButtons a{
+  position:relative;
+  z-index:51;
+  pointer-events:auto;
+}
+
+.profileButtons .primary,
+.profileButtons .ghost{
+  flex:1;
+  min-height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+@media(max-width:520px){
+  .profileButtons{
+    flex-direction:column;
+  }
+
+  .profileButtons .primary,
+  .profileButtons .ghost{
+    width:100%;
+  }
+}
