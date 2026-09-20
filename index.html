@@ -410,4 +410,14 @@ async function viewMe() {
     <div class="card"><strong>${profile.verified ? 'You are a verified founder' : 'Path to verification'}</strong>
       <div class="meter"><i style="width:${pct}%"></i></div>
       <p class="muted">Score ${profile.score} of ${THRESHOLD}. A profile photo gives 3, a bio of 20+ characters gives 2,
-      each post gives 2, each like receive
+      each post gives 2, each like received gives 1, and each follower gives 2.</p></div>
+    <div class="row"><button class="btn" id="edit">Edit profile</button>
+    <button class="btn ghost" id="out">Sign out</button></div>`
+  $('#edit').onclick = () => showProfileForm(true)
+  $('#out').onclick = () => db.auth.signOut()
+}
+
+boot()
+</script>
+</body>
+</html>
