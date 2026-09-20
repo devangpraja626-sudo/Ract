@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ract – From connect to create</title>
+<script>document.documentElement.dataset.theme = localStorage.getItem('ract-theme') || 'dark'</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body data-tab="auth">
 <div class="aurora"><i></i><i></i><i></i></div>
 <div class="float" id="float"></div>
+<button class="iconbtn" id="themebtn" aria-label="Toggle light and dark theme"></button>
 <div id="app"><div class="splash">ract</div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -19,11 +21,13 @@
 const SUPABASE_URL = 'https://inhxlwsjlddhnpalbocl.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B'
 const THRESHOLD = 15 // keep in sync with the SQL
+const INDUSTRIES = ['AI', 'SaaS', 'Fintech', 'Health', 'EdTech', 'E-commerce', 'Climate', 'Consumer', 'Other']
+const STAGES = ['Idea', 'Building MVP', 'Launched', 'Growing', 'Scaling']
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 const app = document.getElementById('app')
 const $ = (s, r = document) => r.querySelector(s)
-let me = null, profile = null, tab = 'feed', chan = null
+let me = null, profile = null, tab = 'feed', chan = null, authMode = 'signin'
 
 /* ---------- icons ---------- */
 const ICONS = {
@@ -38,22 +42,40 @@ const ICONS = {
   home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
   compass: '<circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/>',
   user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  send: '<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
 }
 const icon = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`
+const CHECK = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 
 const FLOATERS = [
-  { i: 'bulb',   c: '#F59E0B', x: 4,  y: 8,  s: 58, t: 7,   d: 0, r: -10 },
-  { i: 'rocket', c: '#6C4CF5', x: 82, y: 10, s: 66, t: 8,   d: 2, r: 8 },
-  { i: 'heart',  c: '#E8388A', x: 9,  y: 36, s: 46, t: 6,   d: 1, r: 12 },
-  { i: 'chat',   c: '#0B9488', x: 84, y: 38, s: 54, t: 9,   d: 3, r: -8 },
-  { i: 'star',   c: '#F26A1B', x: 4,  y: 62, s: 44, t: 7.5, d: 4, r: 14 },
-  { i: 'users',  c: '#2563EB', x: 80, y: 66, s: 60, t: 8.5, d: 1, r: -12 },
-  { i: 'image',  c: '#A23DD6', x: 12, y: 86, s: 50, t: 6.5, d: 2, r: 6 },
-  { i: 'link',   c: '#0B9488', x: 76, y: 88, s: 46, t: 7,   d: 5, r: -6 },
+  { i: 'bulb',   c: '#FFB84D', x: 4,  y: 8,  s: 58, t: 7,   d: 0, r: -10 },
+  { i: 'rocket', c: '#8B6CFF', x: 82, y: 10, s: 66, t: 8,   d: 2, r: 8 },
+  { i: 'heart',  c: '#FF5DA8', x: 9,  y: 36, s: 46, t: 6,   d: 1, r: 12 },
+  { i: 'chat',   c: '#2DE2C8', x: 84, y: 38, s: 54, t: 9,   d: 3, r: -8 },
+  { i: 'star',   c: '#FF8A4C', x: 4,  y: 62, s: 44, t: 7.5, d: 4, r: 14 },
+  { i: 'users',  c: '#4C8DFF', x: 80, y: 66, s: 60, t: 8.5, d: 1, r: -12 },
+  { i: 'image',  c: '#C56BFF', x: 12, y: 86, s: 50, t: 6.5, d: 2, r: 6 },
+  { i: 'link',   c: '#2DE2C8', x: 76, y: 88, s: 46, t: 7,   d: 5, r: -6 },
 ]
 $('#float').innerHTML = FLOATERS.map((f) =>
   `<div class="fi" style="left:${f.x}%;top:${f.y}%;width:${f.s}px;height:${f.s}px;--c:${f.c};--t:${f.t}s;--d:-${f.d}s;--r:${f.r}deg">${icon(f.i, 24)}</div>`
 ).join('')
+
+/* ---------- theme ---------- */
+const themeBtn = $('#themebtn')
+const paintTheme = () => { themeBtn.innerHTML = icon(document.documentElement.dataset.theme === 'dark' ? 'sun' : 'moon', 20) }
+themeBtn.onclick = () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
+  document.documentElement.dataset.theme = next
+  localStorage.setItem('ract-theme', next)
+  paintTheme()
+}
+paintTheme()
 
 /* ---------- helpers ---------- */
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
@@ -67,9 +89,19 @@ const ago = (d) => {
 const avatar = (p, size = 40) => p?.avatar_url
   ? `<img class="avatar" src="${esc(p.avatar_url)}" width="${size}" height="${size}" alt="">`
   : `<div class="avatar ph" style="width:${size}px;height:${size}px">${esc((p?.full_name || '?')[0].toUpperCase())}</div>`
-const nameHtml = (p) => `<span class="name">${esc(p?.full_name)}${p?.verified ? '<span class="badge" title="Verified founder">✓</span>' : ''}</span>`
-const tagline = '<span class="c1">From connect</span> <span class="to">to</span> <span class="c2">create</span>'
+const nameHtml = (p) => `<span class="name">${esc(p?.full_name)}${p?.verified ? `<span class="badge" title="Verified founder">${CHECK}</span>` : ''}</span>`
+const tagsHtml = (p) => (p?.industry || p?.stage)
+  ? `<div class="tags">${p.industry ? `<span class="tag">${esc(p.industry)}</span>` : ''}${p.stage ? `<span class="tag alt">${esc(p.stage)}</span>` : ''}</div>` : ''
+const tagline = 'From <span class="c1">connect</span> <span class="to">to</span> <span class="c2">create</span>'
+const skeleton = '<div class="card skel"><i></i><i></i><i></i></div>'
 
+function toast(msg) {
+  const t = document.createElement('div')
+  t.className = 'toast'
+  t.textContent = msg
+  document.body.appendChild(t)
+  setTimeout(() => t.remove(), 3400)
+}
 async function upload(bucket, file) {
   const ext = file.name.split('.').pop()
   const path = `${me.id}/${Date.now()}.${ext}`
@@ -95,7 +127,7 @@ async function onSession(s) {
   profile ? showShell() : showProfileForm()
 }
 
-/* ---------- landing + phone OTP ---------- */
+/* ---------- landing + email auth ---------- */
 function showAuth() {
   document.body.dataset.tab = 'auth'
   app.innerHTML = `<div class="auth"><div class="hero">
@@ -104,38 +136,51 @@ function showAuth() {
     <p class="lede">The home for founders to share ideas, earn a verified badge and build together.</p>
     <div class="glass" id="authbox"></div>
     <div class="chips">
-      <span class="chip" style="--c:#F59E0B">${icon('bulb', 16)}Share ideas</span>
-      <span class="chip" style="--c:#E8388A">${icon('star', 16)}Get verified</span>
-      <span class="chip" style="--c:#2563EB">${icon('users', 16)}Group chats</span>
+      <span class="chip" style="--c:#FFB84D">${icon('bulb', 16)}Share ideas</span>
+      <span class="chip" style="--c:#FF5DA8">${icon('star', 16)}Get verified</span>
+      <span class="chip" style="--c:#4C8DFF">${icon('users', 16)}Group chats</span>
     </div></div></div>`
-  phoneStep()
+  authForm()
 }
-function phoneStep(msg = '') {
-  $('#authbox').innerHTML = `<form id="f">
-    <label class="lbl" for="ph">Your phone number</label>
-    <input class="field" id="ph" type="tel" name="phone" placeholder="+91 98765 43210" required>
-    <p class="err">${esc(msg)}</p><button class="btn" style="width:100%">Send code</button></form>`
-  $('#f').onsubmit = async (e) => {
+function authForm(msg = '', kind = 'err', email = '') {
+  const signin = authMode === 'signin'
+  $('#authbox').innerHTML = `
+    <div class="seg">
+      <button type="button" data-m="signin" class="${signin ? 'on' : ''}">Sign in</button>
+      <button type="button" data-m="signup" class="${signin ? '' : 'on'}">Create account</button>
+    </div>
+    <form id="af">
+      <label class="lbl" for="em">Email</label>
+      <div class="inp">${icon('mail', 18)}<input id="em" type="email" name="email" autocomplete="email" placeholder="you@startup.com" value="${esc(email)}" required></div>
+      <label class="lbl" for="pw">Password</label>
+      <div class="inp">${icon('lock', 18)}<input id="pw" type="password" name="password" minlength="6"
+        autocomplete="${signin ? 'current-password' : 'new-password'}" placeholder="At least 6 characters" required>
+        <button type="button" class="eye" id="eye" aria-label="Show or hide password">${icon('eye', 18)}</button></div>
+      <p class="note ${kind}">${esc(msg)}</p>
+      <button class="btn block">${signin ? 'Sign in' : 'Create account'}</button>
+    </form>`
+  document.querySelectorAll('.seg button').forEach((b) => (b.onclick = () => {
+    authMode = b.dataset.m
+    authForm('', 'err', $('#em').value)
+  }))
+  $('#eye').onclick = () => { const i = $('#pw'); i.type = i.type === 'password' ? 'text' : 'password' }
+  $('#af').onsubmit = async (e) => {
     e.preventDefault()
-    const phone = e.target.phone.value.replace(/\s/g, '')
-    e.target.querySelector('button').disabled = true
-    const { error } = await db.auth.signInWithOtp({ phone })
-    error ? phoneStep(error.message) : codeStep(phone)
-  }
-}
-function codeStep(phone, msg = '') {
-  $('#authbox').innerHTML = `<form id="f">
-    <label class="lbl" for="cd">Enter the 6-digit code sent to ${esc(phone)}</label>
-    <input class="field" id="cd" name="code" inputmode="numeric" maxlength="6" placeholder="123456" required>
-    <p class="err">${esc(msg)}</p>
-    <div class="row"><button class="btn grow">Verify and continue</button>
-    <button type="button" class="btn ghost" id="chg">Change number</button></div></form>`
-  $('#chg').onclick = () => phoneStep()
-  $('#f').onsubmit = async (e) => {
-    e.preventDefault()
-    e.target.querySelector('.btn').disabled = true
-    const { error } = await db.auth.verifyOtp({ phone, token: e.target.code.value.trim(), type: 'sms' })
-    if (error) codeStep(phone, error.message) // on success the session listener takes over
+    const email = e.target.email.value.trim()
+    const password = e.target.password.value
+    const btn = e.target.querySelector('.btn')
+    btn.disabled = true; btn.textContent = 'Please wait…'
+    if (signin) {
+      const { error } = await db.auth.signInWithPassword({ email, password })
+      if (error) authForm(error.message, 'err', email)
+    } else {
+      const { data, error } = await db.auth.signUp({ email, password })
+      if (error) return authForm(error.message, 'err', email)
+      if (!data.session) {
+        authMode = 'signin'
+        authForm('Account created. Confirm your email from the message we sent, then sign in.', 'ok', email)
+      }
+    }
   }
 }
 
@@ -143,18 +188,24 @@ function codeStep(phone, msg = '') {
 function showProfileForm(editing = false) {
   document.body.dataset.tab = 'me'
   const p = profile || {}
+  const opts = (list, cur, ph) => `<option value="">${ph}</option>` +
+    list.map((o) => `<option ${o === cur ? 'selected' : ''}>${esc(o)}</option>`).join('')
   app.innerHTML = `<div class="shell"><div class="top"><h1 class="logo">ract</h1><p class="sub">${tagline}</p></div>
-    <h2>${editing ? 'Edit profile' : 'Create your founder profile'}</h2>
+    <h2 class="sect">${editing ? 'Edit profile' : 'Create your founder profile'}</h2>
     <form id="pf" class="card">
       <div class="row" style="margin-bottom:14px"><div id="pv">${avatar(p, 64)}</div>
         <input type="file" name="photo" accept="image/*"></div>
       <input class="field" name="full_name" placeholder="Your name" value="${esc(p.full_name)}" required>
       <input class="field" name="startup_name" placeholder="Startup name" value="${esc(p.startup_name)}">
       <input class="field" name="headline" placeholder="One-line headline" value="${esc(p.headline)}">
+      <div class="row">
+        <select class="field grow" name="industry">${opts(INDUSTRIES, p.industry, 'Industry')}</select>
+        <select class="field grow" name="stage">${opts(STAGES, p.stage, 'Stage')}</select>
+      </div>
       <textarea class="field" name="bio" placeholder="What are you building? (20+ characters counts toward verification)">${esc(p.bio)}</textarea>
       <p class="err" id="perr"></p>
       <div class="row"><button class="btn">Save profile</button>
-        ${editing ? '<button type="button" class="btn ghost" id="cancel">Cancel</button>' : ''}</div>
+        ${editing ? '<button type="button" class="btn ghost" id="cancel">Cancel</button>' : '<button type="button" class="btn ghost" id="out">Sign out</button>'}</div>
     </form></div>`
   const form = $('#pf')
   form.photo.onchange = () => {
@@ -162,6 +213,7 @@ function showProfileForm(editing = false) {
     if (f) $('#pv').innerHTML = `<img class="avatar" width="64" height="64" src="${URL.createObjectURL(f)}" alt="">`
   }
   if (editing) $('#cancel').onclick = showShell
+  else $('#out').onclick = () => db.auth.signOut()
   form.onsubmit = async (e) => {
     e.preventDefault()
     const btn = form.querySelector('.btn'); btn.disabled = true
@@ -174,6 +226,8 @@ function showProfileForm(editing = false) {
         full_name: form.full_name.value.trim(),
         startup_name: form.startup_name.value.trim(),
         headline: form.headline.value.trim(),
+        industry: form.industry.value || null,
+        stage: form.stage.value || null,
         bio: form.bio.value.trim(),
         avatar_url,
       }
@@ -191,10 +245,10 @@ function showProfileForm(editing = false) {
 /* ---------- shell + tabs ---------- */
 function showShell() {
   const tabs = [
-    ['feed', 'Feed', 'home', '#6C4CF5'],
-    ['discover', 'Discover', 'compass', '#0B9488'],
-    ['groups', 'Groups', 'users', '#F26A1B'],
-    ['me', 'Profile', 'user', '#E8388A'],
+    ['feed', 'Feed', 'home', '#7C5CFF'],
+    ['discover', 'Discover', 'compass', '#0E9F92'],
+    ['groups', 'Groups', 'users', '#F2691D'],
+    ['me', 'Profile', 'user', '#F0457F'],
   ]
   app.innerHTML = `<div class="shell"><div class="top"><h1 class="logo">ract</h1><p class="sub">${tagline}</p></div><main id="main"></main></div>
     <nav class="tabs">${tabs.map(([k, l, ic, c]) =>
@@ -214,10 +268,10 @@ function go(t) {
 /* ---------- feed ---------- */
 async function viewFeed() {
   $('#main').innerHTML = `<form id="cf" class="card">
-    <textarea class="field" name="content" placeholder="Share an idea, a milestone, or a question…"></textarea>
+    <textarea class="field" name="content" placeholder="What are you building today?"></textarea>
     <div id="cprev"></div><p class="err" id="cerr"></p>
     <div class="row"><input type="file" name="image" accept="image/*" class="grow"><button class="btn">Post</button></div>
-    </form><div id="posts"><p class="empty">Loading…</p></div>`
+    </form><div id="posts">${skeleton}${skeleton}</div>`
   const cf = $('#cf')
   cf.image.onchange = () => {
     const f = cf.image.files[0]
@@ -233,6 +287,7 @@ async function viewFeed() {
       const image_url = file ? await upload('posts', file) : null
       const { error } = await db.from('posts').insert({ user_id: me.id, content, image_url })
       if (error) throw error
+      toast('Posted')
       viewFeed()
     } catch (err) {
       $('#cerr').textContent = err.message
@@ -245,7 +300,7 @@ async function viewFeed() {
 
 async function loadPosts() {
   const { data, error } = await db.from('posts')
-    .select('*, profiles(id, full_name, startup_name, avatar_url, verified), likes(user_id), comments(count)')
+    .select('*, profiles(id, full_name, startup_name, avatar_url, verified, stage), likes(user_id), comments(count)')
     .order('created_at', { ascending: false }).limit(50)
   const box = $('#posts')
   if (!box) return
@@ -260,7 +315,8 @@ function postHtml(p) {
   return `<article class="card post" data-id="${p.id}">
     <div class="row">${avatar(p.profiles)}
       <div class="grow">${nameHtml(p.profiles)}
-        <div class="muted">${esc(p.profiles?.startup_name || 'Founder')} &nbsp; ${ago(p.created_at)}</div></div></div>
+        <div class="muted">${esc(p.profiles?.startup_name || 'Founder')} &nbsp;·&nbsp; ${ago(p.created_at)}</div></div>
+      ${p.profiles?.stage ? `<span class="tag alt">${esc(p.profiles.stage)}</span>` : ''}</div>
     ${p.content ? `<p style="white-space:pre-wrap">${esc(p.content)}</p>` : ''}
     ${p.image_url ? `<img class="post-img" src="${esc(p.image_url)}" alt="">` : ''}
     <div class="actions">
@@ -279,7 +335,7 @@ async function onPostClick(e) {
     const { error } = liked
       ? await db.from('likes').delete().match({ post_id: id, user_id: me.id })
       : await db.from('likes').insert({ post_id: id, user_id: me.id })
-    if (error) return
+    if (error) return toast(error.message)
     const n = +btn.dataset.n + (liked ? -1 : 1)
     btn.dataset.n = n
     btn.classList.toggle('on')
@@ -301,20 +357,21 @@ async function renderComments(card, id) {
   box.innerHTML = list.map((c) => `<div class="row" style="align-items:flex-start;margin-top:12px">
       ${avatar(c.profiles, 30)}<div class="grow"><div>${nameHtml(c.profiles)} <span class="muted">${ago(c.created_at)}</span></div>
       <div>${esc(c.content)}</div></div></div>`).join('') +
-    `<form class="row" style="margin-top:12px"><input class="field grow" name="c" placeholder="Add a comment" style="margin:0" required>
+    `<form class="row" style="margin-top:14px"><input class="field grow" name="c" placeholder="Add a comment" style="margin:0" required>
      <button class="btn small">Reply</button></form>`
   $('form', box).onsubmit = async (e) => {
     e.preventDefault()
     const content = e.target.c.value.trim()
     if (!content) return
-    await db.from('comments').insert({ post_id: id, user_id: me.id, content })
+    const { error } = await db.from('comments').insert({ post_id: id, user_id: me.id, content })
+    if (error) return toast(error.message)
     renderComments(card, id)
   }
 }
 
 /* ---------- discover founders ---------- */
 async function viewDiscover() {
-  $('#main').innerHTML = `<input class="field" id="q" placeholder="Search founders or startups"><div id="list"><p class="empty">Loading…</p></div>`
+  $('#main').innerHTML = `<input class="field" id="q" placeholder="Search founders, startups or industries"><div id="list">${skeleton}</div>`
   const [{ data: people }, { data: fl }] = await Promise.all([
     db.from('profiles').select('*').neq('id', me.id).order('score', { ascending: false }),
     db.from('follows').select('following_id').eq('follower_id', me.id),
@@ -324,9 +381,11 @@ async function viewDiscover() {
   if (!list) return
   const draw = () => {
     const q = $('#q').value.toLowerCase()
-    const rows = (people || []).filter((p) => (p.full_name + ' ' + (p.startup_name || '')).toLowerCase().includes(q))
-    list.innerHTML = rows.length ? rows.map((p) => `<div class="card row">${avatar(p, 50)}
-      <div class="grow">${nameHtml(p)}<div class="muted">${esc(p.startup_name || '')}</div><div>${esc(p.headline || '')}</div></div>
+    const rows = (people || []).filter((p) =>
+      [p.full_name, p.startup_name, p.industry, p.stage].join(' ').toLowerCase().includes(q))
+    list.innerHTML = rows.length ? rows.map((p) => `<div class="card row">${avatar(p, 52)}
+      <div class="grow">${nameHtml(p)}<div class="muted">${esc(p.startup_name || '')}</div>
+        <div>${esc(p.headline || '')}</div>${tagsHtml(p)}</div>
       <button class="btn small ${following.has(p.id) ? 'ghost' : ''}" data-id="${p.id}">${following.has(p.id) ? 'Following' : 'Follow'}</button></div>`).join('')
       : '<p class="empty">No founders found yet. Invite someone to join Ract.</p>'
   }
@@ -351,13 +410,13 @@ async function viewDiscover() {
 async function viewGroups() {
   $('#main').innerHTML = `<form id="gf" class="card row">
     <input class="field grow" name="gname" placeholder="New group, e.g. Fintech founders" style="margin:0" required>
-    <button class="btn">Create</button></form><div id="glist"><p class="empty">Loading…</p></div>`
+    <button class="btn">Create</button></form><div id="glist">${skeleton}</div>`
   $('#gf').onsubmit = async (e) => {
     e.preventDefault()
     const name = e.target.gname.value.trim()
     if (!name) return
     const { data, error } = await db.from('groups').insert({ name, created_by: me.id }).select().single()
-    if (error) return alert(error.message)
+    if (error) return toast(error.message)
     await db.from('group_members').insert({ group_id: data.id, user_id: me.id })
     viewGroups()
   }
@@ -376,7 +435,8 @@ async function viewGroups() {
     const b = e.target.closest('button')
     if (!b) return
     if (b.dataset.join) {
-      await db.from('group_members').insert({ group_id: b.dataset.join, user_id: me.id })
+      const { error } = await db.from('group_members').insert({ group_id: b.dataset.join, user_id: me.id })
+      if (error) return toast(error.message)
       viewGroups()
     }
     if (b.dataset.open) openChat(data.find((g) => g.id === b.dataset.open))
@@ -385,9 +445,9 @@ async function viewGroups() {
 
 async function openChat(g) {
   $('#main').innerHTML = `<div class="row"><button class="btn ghost small" id="back">Back</button>
-    <h2 style="margin:0">${esc(g.name)}</h2></div><div class="chat" id="chat"></div>
+    <h2 style="font-size:1.4rem">${esc(g.name)}</h2></div><div class="chat" id="chat"></div>
     <form class="chatbar" id="cbar"><input class="field grow" name="text" placeholder="Message the group" autocomplete="off" required>
-    <button class="btn">Send</button></form>`
+    <button class="btn" aria-label="Send">${icon('send', 18)}</button></form>`
   $('#back').onclick = () => go('groups')
   const load = async () => {
     const { data } = await db.from('messages').select('*, profiles(full_name)')
@@ -395,7 +455,8 @@ async function openChat(g) {
     const box = $('#chat')
     if (!box) return
     box.innerHTML = (data || []).map((x) => `<div class="msg ${x.user_id === me.id ? 'me' : ''}">
-      <small>${esc(x.profiles?.full_name)}</small>${esc(x.content)}</div>`).join('') || '<p class="empty">No messages yet. Say hello.</p>'
+      ${x.user_id === me.id ? '' : `<small>${esc(x.profiles?.full_name)}</small>`}${esc(x.content)}</div>`).join('')
+      || '<p class="empty">No messages yet. Say hello.</p>'
     window.scrollTo(0, document.body.scrollHeight)
   }
   await load()
@@ -407,22 +468,34 @@ async function openChat(g) {
     const text = e.target.text.value.trim()
     if (!text) return
     e.target.text.value = ''
-    await db.from('messages').insert({ group_id: g.id, user_id: me.id, content: text })
+    const { error } = await db.from('messages').insert({ group_id: g.id, user_id: me.id, content: text })
+    if (error) toast(error.message)
   }
 }
 
 /* ---------- my profile ---------- */
 async function viewMe() {
-  const { data } = await db.from('profiles').select('*').eq('id', me.id).single()
+  const count = (t, col) => db.from(t).select('*', { count: 'exact', head: true }).eq(col, me.id)
+  const [{ data }, po, fo, fi] = await Promise.all([
+    db.from('profiles').select('*').eq('id', me.id).single(),
+    count('posts', 'user_id'), count('follows', 'following_id'), count('follows', 'follower_id'),
+  ])
   profile = data
   const pct = Math.min(100, Math.round((profile.score / THRESHOLD) * 100))
   $('#main').innerHTML = `<div class="card"><div class="cover"></div>
-      <div class="who">${avatar(profile, 72)}
+      <div class="who">${avatar(profile, 76)}
         <div class="grow" style="padding-bottom:4px">${nameHtml(profile)}<div class="muted">${esc(profile.startup_name || '')}</div></div></div>
-      <p><strong>${esc(profile.headline || '')}</strong></p><p>${esc(profile.bio || '')}</p></div>
+      ${profile.headline ? `<p style="margin:6px 0"><strong>${esc(profile.headline)}</strong></p>` : ''}
+      ${profile.bio ? `<p style="margin:6px 0">${esc(profile.bio)}</p>` : ''}
+      ${tagsHtml(profile)}
+      <div class="stats">
+        <div class="stat"><b>${po.count ?? 0}</b><span class="muted">Posts</span></div>
+        <div class="stat"><b>${fo.count ?? 0}</b><span class="muted">Followers</span></div>
+        <div class="stat"><b>${fi.count ?? 0}</b><span class="muted">Following</span></div>
+      </div></div>
     <div class="card"><strong>${profile.verified ? 'You are a verified founder' : 'Path to verification'}</strong>
       <div class="meter"><i style="width:${pct}%"></i></div>
-      <p class="muted">Score ${profile.score} of ${THRESHOLD}. A profile photo gives 3, a bio of 20+ characters gives 2,
+      <p class="muted" style="margin:0">Score ${profile.score} of ${THRESHOLD}. A profile photo gives 3, a bio of 20+ characters gives 2,
       each post gives 2, each like received gives 1, and each follower gives 2.</p></div>
     <div class="row"><button class="btn" id="edit">Edit profile</button>
     <button class="btn ghost" id="out">Sign out</button></div>`
