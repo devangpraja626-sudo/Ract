@@ -1,2662 +1,1327 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Ract — From Connect to Create</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Ract — Founder Network</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  >
-
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="ambient ambient-one"></div>
-<div class="ambient ambient-two"></div>
-<div class="ambient ambient-three"></div>
+<div class="aurora">
+  <i></i><i></i><i></i>
+</div>
 
-<header class="navbar">
+<div class="float">
+  <span class="fi" style="--fc:#A78BFA;--t:6s;--d:-1s;--r:-8deg;width:58px;height:58px;top:12%;left:7%">
+    💡
+  </span>
+  <span class="fi" style="--fc:#F472B6;--t:7s;--d:-3s;--r:8deg;width:52px;height:52px;top:28%;right:6%">
+    🚀
+  </span>
+  <span class="fi" style="--fc:#2DD4BF;--t:8s;--d:-5s;--r:-7deg;width:48px;height:48px;bottom:25%;left:5%">
+    ✦
+  </span>
+  <span class="fi" style="--fc:#F5C15C;--t:9s;--d:-2s;--r:7deg;width:50px;height:50px;bottom:12%;right:8%">
+    ◇
+  </span>
+</div>
 
-  <div class="brand">
-    <span class="brand-dot"></span>
-    <span>ract</span>
-  </div>
+<button class="iconbtn" id="themeBtn" onclick="toggleTheme()">☾</button>
 
-  <nav>
-    <button class="nav-btn active" data-view="feed">Feed</button>
-    <button class="nav-btn" data-view="discover">Discover</button>
-    <button class="nav-btn" data-view="messages">Messages</button>
-    <button class="nav-btn" data-view="profile">Profile</button>
-  </nav>
+<div id="app"></div>
 
-  <button class="create-btn" id="createTop">
-    + Create
-  </button>
+<script>
+/* =========================================================
+   RACT — FOUNDER NETWORK
+   Everything is inside this single HTML file.
+   Supabase = database/storage/realtime.
+   ========================================================= */
 
-</header>
+const SUPABASE_URL = "https://inhxlwsjlddhnpalbocl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
 
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<main class="app">
+const industries = [
+  "AI","SaaS","Fintech","Health","EdTech",
+  "E-commerce","Climate","Consumer","Other"
+];
 
-  <!-- ================= FEED ================= -->
+const stages = [
+  "Idea","Building MVP","Launched","Growing","Scaling"
+];
 
-  <section id="feedView" class="view active">
+let me = localStorage.getItem("ract_founder_id");
+let profile = null;
+let tab = "feed";
+let activeFounder = null;
+let activeConversation = null;
+let realtimeChannel = null;
 
-    <div class="hero">
+/* -------------------- HELPERS -------------------- */
 
-      <div>
-        <span class="eyebrow">FOUNDERS NETWORK</span>
+const $ = id => document.getElementById(id);
 
-        <h1>
-          From <span>connect</span><br>
-          to create.
-        </h1>
+function esc(value=""){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
-        <p>
-          A place for founders to share ideas, discover people,
-          build relationships and create together.
+function ago(date){
+  const sec = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if(sec < 60) return "now";
+  if(sec < 3600) return Math.floor(sec/60)+"m";
+  if(sec < 86400) return Math.floor(sec/3600)+"h";
+  if(sec < 604800) return Math.floor(sec/86400)+"d";
+  return new Date(date).toLocaleDateString();
+}
+
+function initials(name="Founder"){
+  return name.split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
+}
+
+function avatar(p, size=""){
+  if(p?.avatar_url){
+    return `<img class="avatar ${size}" src="${esc(p.avatar_url)}" alt="">`;
+  }
+  return `<div class="avatar ${size} avatarText">${esc(initials(p?.full_name))}</div>`;
+}
+
+function toast(message,type=""){
+  const old=document.querySelector(".toast");
+  if(old) old.remove();
+
+  const t=document.createElement("div");
+  t.className="toast "+type;
+  t.textContent=message;
+  document.body.appendChild(t);
+
+  setTimeout(()=>t.remove(),2600);
+}
+
+function themeInit(){
+  const saved=localStorage.getItem("ract-theme") || "dark";
+  document.documentElement.dataset.theme=saved;
+  $("themeBtn").textContent=saved==="dark"?"☀":"☾";
+}
+
+function toggleTheme(){
+  const next=document.documentElement.dataset.theme==="dark"?"light":"dark";
+  document.documentElement.dataset.theme=next;
+  localStorage.setItem("ract-theme",next);
+  $("themeBtn").textContent=next==="dark"?"☀":"☾";
+}
+
+function industryOptions(selected=""){
+  return industries.map(x =>
+    `<option ${x===selected?"selected":""}>${x}</option>`
+  ).join("");
+}
+
+function stageOptions(selected=""){
+  return stages.map(x =>
+    `<option ${x===selected?"selected":""}>${x}</option>`
+  ).join("");
+}
+
+/* -------------------- START -------------------- */
+
+async function boot(){
+  themeInit();
+
+  if(!me){
+    showWelcome();
+    return;
+  }
+
+  const {data,error}=await db
+    .from("profiles")
+    .select("*")
+    .eq("id",me)
+    .maybeSingle();
+
+  if(error){
+    console.error(error);
+    showWelcome();
+    return;
+  }
+
+  if(!data){
+    showProfile();
+  }else{
+    profile=data;
+    renderShell();
+  }
+}
+
+function showWelcome(){
+  $("app").innerHTML=`
+    <main class="authPage">
+      <section class="authCard">
+
+        <div class="authBrand">
+          <div class="brand">ract</div>
+          <div class="eyebrow">FOUNDER NETWORK</div>
+        </div>
+
+        <h1>From <em>connect</em><br>to create.</h1>
+
+        <p class="authIntro">
+          A private-feeling space for founders to share ideas,
+          meet builders and turn conversations into companies.
         </p>
-      </div>
 
-      <button class="hero-create" id="heroCreate">
-        Share an idea
-        <span>→</span>
-      </button>
-
-    </div>
-
-
-    <!-- CREATE POST -->
-
-    <div class="glass-card composer" id="composer">
-
-      <div class="composer-top">
-
-        <div class="mini-avatar" id="composerAvatar">
-          ?
+        <div class="featurePills">
+          <span>✦ Share ideas</span>
+          <span>◎ Meet founders</span>
+          <span>↗ Build together</span>
         </div>
 
-        <div>
-          <strong id="composerName">
-            Founder
-          </strong>
-
-          <small>
-            Share something with the network
-          </small>
-        </div>
-
-      </div>
-
-      <textarea
-        id="postContent"
-        placeholder="What are you building, thinking about or looking for?"
-      ></textarea>
-
-
-      <div
-        class="image-preview"
-        id="imagePreview"
-      ></div>
-
-
-      <div class="composer-actions">
-
-        <label class="upload-btn">
-
-          <span>＋</span>
-          Image
-
-          <input
-            type="file"
-            id="postImage"
-            accept="image/*"
-            hidden
-          >
-
-        </label>
-
-        <button
-          class="primary-btn"
-          id="publishPost"
-        >
-          Publish
+        <button class="primary full" onclick="createFounder()">
+          Enter Ract <span>→</span>
         </button>
 
-      </div>
+        <p class="tiny">
+          No complicated signup for this MVP.
+          Your founder profile is created directly in this browser.
+        </p>
 
-    </div>
+      </section>
+    </main>
+  `;
+}
 
+async function createFounder(){
+  const id=crypto.randomUUID();
 
-    <!-- FEED -->
+  const {error}=await db.from("profiles").insert({
+    id,
+    full_name:""
+  });
 
-    <div class="section-head">
+  if(error){
+    toast(error.message,"error");
+    return;
+  }
 
-      <div>
-        <span class="eyebrow">COMMUNITY</span>
-        <h2>Latest ideas</h2>
-      </div>
+  me=id;
+  localStorage.setItem("ract_founder_id",id);
+  showProfile(true);
+}
 
-      <button
-        class="filter-btn"
-        id="refreshFeed"
-      >
-        Refresh
-      </button>
+/* -------------------- PROFILE -------------------- */
 
-    </div>
+function showProfile(first=false){
+  $("app").innerHTML=`
+    <main class="profileSetup">
+      <section class="setupCard">
 
-
-    <div id="feedList" class="feed-list">
-
-      <div class="loading">
-        Loading founders...
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- ================= DISCOVER ================= -->
-
-  <section id="discoverView" class="view">
-
-    <div class="page-heading">
-
-      <span class="eyebrow">
-        DISCOVER
-      </span>
-
-      <h1>
-        Find founders<br>
-        worth knowing.
-      </h1>
-
-      <p>
-        Explore people building across different industries
-        and stages.
-      </p>
-
-    </div>
-
-
-    <div class="search-box">
-
-      <span>⌕</span>
-
-      <input
-        id="founderSearch"
-        placeholder="Search founders, startups or industries..."
-      >
-
-    </div>
-
-
-    <div
-      id="founderGrid"
-      class="founder-grid"
-    ></div>
-
-  </section>
-
-
-
-  <!-- ================= MESSAGES ================= -->
-
-  <section id="messagesView" class="view">
-
-    <div class="page-heading">
-
-      <span class="eyebrow">
-        CONNECTIONS
-      </span>
-
-      <h1>
-        Talk directly.
-      </h1>
-
-      <p>
-        Connect with founders and continue the conversation.
-      </p>
-
-    </div>
-
-
-    <div class="messages-layout">
-
-      <aside class="conversation-list">
-
-        <div class="conversation-title">
-          Conversations
-        </div>
-
-        <div id="conversationList">
-
-          <div class="empty-state">
-            Start a conversation from a founder's profile.
-          </div>
-
-        </div>
-
-      </aside>
-
-
-      <div class="chat-panel">
-
-        <div
-          class="chat-empty"
-          id="chatEmpty"
-        >
-
-          <div class="chat-icon">
-            ✦
-          </div>
-
-          <h3>
-            Your conversations
-          </h3>
-
+        <div class="setupTop">
+          <span class="eyebrow">${first?"WELCOME TO RACT":"YOUR PROFILE"}</span>
+          <h1>${first?"Build your founder identity.":"Edit your profile."}</h1>
           <p>
-            Select a founder to start messaging.
+            Tell other founders who you are, what you're building
+            and what kind of people you want to meet.
           </p>
-
         </div>
 
+        <form onsubmit="saveProfile(event)">
 
-        <div
-          id="chatActive"
-          class="chat-active hidden"
-        >
-
-          <div class="chat-header">
-
-            <div
-              class="chat-person"
-              id="chatPerson"
-            ></div>
-
+          <div class="avatarUpload" onclick="$('avatarInput').click()">
+            <div id="avatarPreview">
+              <div class="avatar huge avatarText">+</div>
+            </div>
+            <div>
+              <b>Add profile photo</b>
+              <span>PNG, JPG or WEBP</span>
+            </div>
           </div>
 
+          <input id="avatarInput" type="file" accept="image/*" hidden onchange="previewAvatar(event)">
 
-          <div
-            id="chatMessages"
-            class="chat-messages"
-          ></div>
+          <label>Full name</label>
+          <input id="fullName" required placeholder="Your name">
 
+          <label>Startup / project</label>
+          <input id="startup" placeholder="What are you building?">
 
-          <form
-            id="messageForm"
-            class="message-form"
-          >
+          <label>Headline</label>
+          <input id="headline" placeholder="Founder · AI · Product · etc.">
 
-            <input
-              id="messageInput"
-              placeholder="Write a message..."
-              autocomplete="off"
-            >
-
-            <button>
-              →
-            </button>
-
-          </form>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- ================= PROFILE ================= -->
-
-  <section id="profileView" class="view">
-
-    <div class="profile-header">
-
-      <div
-        class="profile-cover"
-      ></div>
-
-
-      <div class="profile-main">
-
-        <label class="profile-photo-wrap">
-
-          <div
-            class="profile-photo"
-            id="profilePhoto"
-          >
-            ?
-          </div>
-
-          <input
-            type="file"
-            id="profileImage"
-            accept="image/*"
-            hidden
-          >
-
-          <span class="photo-edit">
-            +
-          </span>
-
-        </label>
-
-
-        <div class="profile-info">
-
-          <span class="eyebrow">
-            FOUNDER PROFILE
-          </span>
-
-          <h1 id="profileName">
-            Your Name
-          </h1>
-
-          <p id="profileStartup">
-            Your startup
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="profile-grid">
-
-      <div class="glass-card">
-
-        <div class="card-title">
-          <span>About you</span>
-        </div>
-
-        <form id="profileForm">
-
-          <div class="input-group">
-
-            <label>Name</label>
-
-            <input
-              id="nameInput"
-              required
-              placeholder="Your name"
-            >
-
-          </div>
-
-
-          <div class="input-group">
-
-            <label>Startup</label>
-
-            <input
-              id="startupInput"
-              placeholder="Startup / project name"
-            >
-
-          </div>
-
-
-          <div class="input-row">
-
-            <div class="input-group">
-
+          <div class="two">
+            <div>
               <label>Industry</label>
-
-              <select id="industryInput">
-
-                <option value="">Select</option>
-                <option>AI</option>
-                <option>SaaS</option>
-                <option>Fintech</option>
-                <option>Health</option>
-                <option>EdTech</option>
-                <option>E-commerce</option>
-                <option>Climate</option>
-                <option>Consumer</option>
-                <option>Other</option>
-
+              <select id="industry">
+                <option value="">Select industry</option>
+                ${industryOptions()}
               </select>
-
             </div>
 
-
-            <div class="input-group">
-
+            <div>
               <label>Stage</label>
-
-              <select id="stageInput">
-
-                <option value="">Select</option>
-                <option>Idea</option>
-                <option>Building MVP</option>
-                <option>Launched</option>
-                <option>Growing</option>
-                <option>Scaling</option>
-
+              <select id="stage">
+                <option value="">Select stage</option>
+                ${stageOptions()}
               </select>
-
             </div>
-
           </div>
 
+          <label>About you</label>
+          <textarea id="bio" rows="5"
+            placeholder="What are you building? What are you looking for?"></textarea>
 
-          <div class="input-group">
+          <label>Website</label>
+          <input id="website" placeholder="https://yourstartup.com">
 
-            <label>Headline</label>
-
-            <input
-              id="headlineInput"
-              placeholder="What are you building?"
-            >
-
-          </div>
-
-
-          <div class="input-group">
-
-            <label>Bio</label>
-
-            <textarea
-              id="bioInput"
-              placeholder="Tell other founders about yourself..."
-            ></textarea>
-
-          </div>
-
-
-          <button
-            class="primary-btn"
-            type="submit"
-          >
-            Save profile
+          <button class="primary full" type="submit">
+            Save profile <span>→</span>
           </button>
 
         </form>
-
-      </div>
-
-
-      <div class="glass-card profile-stats">
-
-        <span class="eyebrow">
-          YOUR NETWORK
-        </span>
-
-        <div class="stat">
-
-          <strong id="postCount">
-            0
-          </strong>
-
-          <span>
-            Posts
-          </span>
-
-        </div>
-
-        <div class="stat">
-
-          <strong id="followerCount">
-            0
-          </strong>
-
-          <span>
-            Followers
-          </span>
-
-        </div>
-
-        <div class="stat">
-
-          <strong id="followingCount">
-            0
-          </strong>
-
-          <span>
-            Following
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-</main>
-
-
-
-<!-- ================= FOUNDER MODAL ================= -->
-
-<div
-  id="founderModal"
-  class="modal"
->
-
-  <div class="modal-backdrop"></div>
-
-  <div class="modal-card">
-
-    <button
-      class="modal-close"
-      id="closeFounder"
-    >
-      ×
-    </button>
-
-    <div id="founderModalContent"></div>
-
-  </div>
-
-</div>
-
-
-
-<!-- ================= COMMENT MODAL ================= -->
-
-<div
-  id="commentModal"
-  class="modal"
->
-
-  <div class="modal-backdrop"></div>
-
-  <div class="modal-card comments-modal">
-
-    <button
-      class="modal-close"
-      id="closeComments"
-    >
-      ×
-    </button>
-
-    <span class="eyebrow">
-      DISCUSSION
-    </span>
-
-    <h2>
-      Comments
-    </h2>
-
-    <div
-      id="commentsList"
-      class="comments-list"
-    ></div>
-
-
-    <form
-      id="commentForm"
-      class="comment-form"
-    >
-
-      <input
-        id="commentInput"
-        placeholder="Add a comment..."
-        required
-      >
-
-      <button>
-        →
-      </button>
-
-    </form>
-
-  </div>
-
-</div>
-
-
-
-<div
-  id="toast"
-  class="toast"
-></div>
-
-
-
-<script>
-
-/* =========================================================
-   SUPABASE
-========================================================= */
-
-const SUPABASE_URL =
-  "https://inhxlwsjlddhnpalbocl.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
-
-const db = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-
-/* =========================================================
-   LOCAL FOUNDER ID
-========================================================= */
-
-function createUUID(){
-
-  if(window.crypto && crypto.randomUUID){
-    return crypto.randomUUID();
-  }
-
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-    /[xy]/g,
-    function(c){
-
-      const r =
-        Math.random() * 16 | 0;
-
-      const v =
-        c === "x"
-          ? r
-          : (r & 0x3 | 0x8);
-
-      return v.toString(16);
-
-    }
-  );
-}
-
-
-let meId =
-  localStorage.getItem("ract-founder-id");
-
-
-if(!meId){
-
-  meId = createUUID();
-
-  localStorage.setItem(
-    "ract-founder-id",
-    meId
-  );
-
-}
-
-
-let me = null;
-let selectedChatUser = null;
-let selectedPost = null;
-
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-const $ = selector =>
-  document.querySelector(selector);
-
-
-const $$ = selector =>
-  document.querySelectorAll(selector);
-
-
-function esc(value){
-
-  return String(value || "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-function timeAgo(date){
-
-  const seconds =
-    Math.floor(
-      (Date.now() - new Date(date).getTime()) / 1000
-    );
-
-  if(seconds < 60)
-    return "just now";
-
-  if(seconds < 3600)
-    return Math.floor(seconds / 60) + "m";
-
-  if(seconds < 86400)
-    return Math.floor(seconds / 3600) + "h";
-
-  if(seconds < 604800)
-    return Math.floor(seconds / 86400) + "d";
-
-  return new Date(date).toLocaleDateString();
-
-}
-
-
-function toast(message){
-
-  const el = $("#toast");
-
-  el.textContent = message;
-
-  el.classList.add("show");
-
-  setTimeout(() => {
-
-    el.classList.remove("show");
-
-  },3000);
-
-}
-
-
-function avatar(profile, large=false){
-
-  const size =
-    large ? "profile-avatar-large" : "";
-
-  if(profile?.avatar_url){
-
-    return `
-      <img
-        class="avatar ${size}"
-        src="${esc(profile.avatar_url)}"
-        alt=""
-      >
-    `;
-
-  }
-
-  const letter =
-    (profile?.full_name || "?")
-      .charAt(0)
-      .toUpperCase();
-
-  return `
-    <div class="avatar ${size}">
-      ${esc(letter)}
-    </div>
+      </section>
+    </main>
   `;
-
 }
 
+function previewAvatar(e){
+  const file=e.target.files[0];
+  if(!file)return;
 
-/* =========================================================
-   NAVIGATION
-========================================================= */
+  const url=URL.createObjectURL(file);
 
-$$(".nav-btn").forEach(button => {
-
-  button.addEventListener("click",() => {
-
-    showView(
-      button.dataset.view
-    );
-
-  });
-
-});
-
-
-function showView(view){
-
-  $$(".view").forEach(v =>
-    v.classList.remove("active")
-  );
-
-  $(`#${view}View`)
-    .classList.add("active");
-
-
-  $$(".nav-btn").forEach(btn =>
-    btn.classList.toggle(
-      "active",
-      btn.dataset.view === view
-    )
-  );
-
-
-  if(view === "feed")
-    loadFeed();
-
-  if(view === "discover")
-    loadFounders();
-
-  if(view === "messages")
-    loadConversations();
-
-  if(view === "profile")
-    loadProfile();
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
+  $("avatarPreview").innerHTML=
+    `<img class="avatar huge" src="${url}" alt="">`;
 }
 
+async function upload(file,bucket){
+  if(!file)return null;
 
-/* =========================================================
-   CURRENT PROFILE
-========================================================= */
+  const ext=file.name.split(".").pop();
+  const path=`${me}/${crypto.randomUUID()}.${ext}`;
 
-async function loadMe(){
+  const {error}=await db.storage
+    .from(bucket)
+    .upload(path,file,{upsert:false});
 
-  const { data, error } =
-    await db
+  if(error) throw error;
+
+  const {data}=db.storage
+    .from(bucket)
+    .getPublicUrl(path);
+
+  return data.publicUrl;
+}
+
+async function saveProfile(e){
+  e.preventDefault();
+
+  try{
+    const file=$("avatarInput").files[0];
+    let avatarUrl=profile?.avatar_url || null;
+
+    if(file){
+      avatarUrl=await upload(file,"avatars");
+    }
+
+    const payload={
+      full_name:$("fullName").value.trim(),
+      startup_name:$("startup").value.trim(),
+      headline:$("headline").value.trim(),
+      industry:$("industry").value,
+      stage:$("stage").value,
+      bio:$("bio").value.trim(),
+      website_url:$("website").value.trim(),
+      avatar_url:avatarUrl
+    };
+
+    const {data,error}=await db
       .from("profiles")
-      .select("*")
-      .eq("id",meId)
-      .maybeSingle();
-
-
-  if(error){
-
-    console.error(error);
-
-    return;
-
-  }
-
-
-  me = data;
-
-
-  if(!me){
-
-    await createEmptyProfile();
-
-  }
-
-
-  updateProfileUI();
-
-}
-
-
-async function createEmptyProfile(){
-
-  const row = {
-
-    id:meId,
-
-    full_name:"Founder",
-
-    startup_name:"",
-
-    headline:"",
-
-    industry:null,
-
-    stage:null,
-
-    bio:"",
-
-    avatar_url:null
-
-  };
-
-
-  const { data, error } =
-    await db
-      .from("profiles")
-      .insert(row)
+      .update(payload)
+      .eq("id",me)
       .select()
       .single();
 
+    if(error)throw error;
 
-  if(!error)
-    me = data;
+    profile=data;
+    renderShell();
+    toast("Profile saved ✦","success");
 
-}
-
-
-function updateProfileUI(){
-
-  if(!me)
-    return;
-
-
-  $("#composerName").textContent =
-    me.full_name || "Founder";
-
-
-  if(me.avatar_url){
-
-    $("#composerAvatar").innerHTML = `
-      <img
-        src="${esc(me.avatar_url)}"
-        alt=""
-      >
-    `;
-
-  }else{
-
-    $("#composerAvatar").textContent =
-      (me.full_name || "?")
-        .charAt(0)
-        .toUpperCase();
-
+  }catch(err){
+    console.error(err);
+    toast(err.message,"error");
   }
-
 }
 
+/* -------------------- SHELL -------------------- */
 
-/* =========================================================
-   FEED
-========================================================= */
+function renderShell(){
+  $("app").innerHTML=`
+    <div class="shell">
 
-async function loadFeed(){
+      <header class="topbar">
+        <div>
+          <div class="logo">ract</div>
+          <div class="topSub">founder network</div>
+        </div>
 
-  const container =
-    $("#feedList");
+        <button class="miniProfile" onclick="openMyProfile()">
+          ${avatar(profile,"small")}
+        </button>
+      </header>
 
-  container.innerHTML = `
-    <div class="loading">
-      Loading ideas...
+      <main id="view"></main>
+
+      <nav class="bottomNav">
+        <button class="${tab==="feed"?"active feed":""}" onclick="switchTab('feed')">
+          <span>⌂</span><small>Feed</small>
+        </button>
+
+        <button class="${tab==="discover"?"active discover":""}" onclick="switchTab('discover')">
+          <span>⌕</span><small>Discover</small>
+        </button>
+
+        <button class="${tab==="messages"?"active messages":""}" onclick="switchTab('messages')">
+          <span>◌</span><small>Messages</small>
+        </button>
+
+        <button class="${tab==="groups"?"active groups":""}" onclick="switchTab('groups')">
+          <span>◇</span><small>Groups</small>
+        </button>
+
+        <button class="${tab==="me"?"active me":""}" onclick="switchTab('me')">
+          <span>◎</span><small>Profile</small>
+        </button>
+      </nav>
+
     </div>
   `;
 
-
-  const { data, error } =
-    await db
-      .from("posts")
-      .select(`
-        *,
-        profiles (
-          id,
-          full_name,
-          startup_name,
-          headline,
-          avatar_url,
-          industry,
-          stage
-        ),
-        likes (
-          user_id
-        )
-      `)
-      .order("created_at",{
-        ascending:false
-      })
-      .limit(50);
-
-
-  if(error){
-
-    console.error(error);
-
-    container.innerHTML = `
-      <div class="error-card">
-        ${esc(error.message)}
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  if(!data || !data.length){
-
-    container.innerHTML = `
-      <div class="empty-state large">
-        <div class="empty-symbol">✦</div>
-
-        <h3>
-          The network is waiting.
-        </h3>
-
-        <p>
-          Be the first founder to share an idea.
-        </p>
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    data.map(renderPost).join("");
-
+  switchTab(tab);
 }
 
+function switchTab(t){
+  tab=t;
 
-function renderPost(post){
+  document.querySelectorAll(".bottomNav button")
+    .forEach(x=>x.classList.remove("active"));
 
-  const likes =
-    post.likes || [];
+  const buttons=document.querySelectorAll(".bottomNav button");
+  const index={feed:0,discover:1,messages:2,groups:3,me:4}[t];
 
-  const liked =
-    likes.some(
-      like => like.user_id === meId
-    );
+  if(buttons[index]){
+    buttons[index].classList.add("active");
+    buttons[index].classList.add(t);
+  }
 
+  if(t==="feed") loadFeed();
+  if(t==="discover") loadDiscover();
+  if(t==="messages") loadMessages();
+  if(t==="groups") loadGroups();
+  if(t==="me") loadMyProfile();
+}
 
-  return `
+/* -------------------- FEED -------------------- */
 
-    <article
-      class="post-card"
-      data-post="${post.id}"
-    >
+async function loadFeed(){
+  $("view").innerHTML=`
+    <section class="page">
+      <div class="pageHead">
+        <div>
+          <span class="eyebrow">THE NETWORK</span>
+          <h2>Founder feed</h2>
+          <p>Ideas, progress and conversations.</p>
+        </div>
+      </div>
 
-      <div class="post-author">
-
-        ${avatar(post.profiles)}
-
-        <div class="author-details">
-
-          <button
-            class="author-name"
-            onclick="openFounder('${post.profiles?.id}')"
-          >
-            ${esc(
-              post.profiles?.full_name ||
-              "Founder"
-            )}
-          </button>
-
-          <span>
-            ${esc(
-              post.profiles?.startup_name ||
-              "Independent founder"
-            )}
-          </span>
-
+      <section class="composer card">
+        <div class="composerHead">
+          ${avatar(profile,"small")}
+          <div>
+            <b>${esc(profile.full_name)}</b>
+            <span>Share something with founders</span>
+          </div>
         </div>
 
-        <time>
-          ${timeAgo(post.created_at)}
-        </time>
+        <textarea id="postText" placeholder="What are you building or thinking about?"></textarea>
+
+        <div id="postImagePreview"></div>
+
+        <div class="composerActions">
+          <label class="attach">
+            ＋ Image
+            <input id="postImage" type="file" accept="image/*" hidden onchange="previewPostImage(event)">
+          </label>
+
+          <button class="primary" onclick="createPost()">Post ✦</button>
+        </div>
+      </section>
+
+      <div id="feedList" class="feedList">
+        <div class="loading">Loading founders...</div>
+      </div>
+    </section>
+  `;
+
+  const {data,error}=await db
+    .from("posts")
+    .select(`
+      *,
+      profiles!posts_user_id_fkey(*),
+      likes(user_id),
+      comments(id)
+    `)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    $("feedList").innerHTML=`<div class="empty card">${esc(error.message)}</div>`;
+    return;
+  }
+
+  if(!data?.length){
+    $("feedList").innerHTML=`
+      <div class="empty card">
+        <div class="emptyIcon">✦</div>
+        <h3>Your network starts here.</h3>
+        <p>Share the first idea and let other founders join the conversation.</p>
+      </div>
+    `;
+    return;
+  }
+
+  $("feedList").innerHTML=data.map(postHtml).join("");
+}
+
+function previewPostImage(e){
+  const file=e.target.files[0];
+  if(!file)return;
+
+  const url=URL.createObjectURL(file);
+
+  $("postImagePreview").innerHTML=
+    `<img class="postPreview" src="${url}" alt="">`;
+}
+
+function postHtml(post){
+  const p=post.profiles || {};
+  const liked=(post.likes||[]).some(x=>x.user_id===me);
+
+  return `
+    <article class="post card" id="post-${post.id}">
+
+      <div class="postAuthor">
+        ${avatar(p,"small")}
+
+        <div class="authorInfo">
+          <b>${esc(p.full_name || "Founder")}
+            ${p.verified?`<span class="verified">✓</span>`:""}
+          </b>
+          <span>
+            ${esc(p.startup_name || p.headline || "Founder")}
+            · ${ago(post.created_at)}
+          </span>
+        </div>
+
+        ${p.id!==me?`
+          <button class="dots" onclick="openFounder('${p.id}')">•••</button>
+        `:""}
+      </div>
+
+      ${post.content?`
+        <div class="postText">${esc(post.content).replace(/\n/g,"<br>")}</div>
+      `:""}
+
+      ${post.image_url?`
+        <img class="postImage" src="${esc(post.image_url)}" alt="">
+      `:""}
+
+      <div class="postActions">
+
+        <button class="${liked?"liked":""}"
+          onclick="toggleLike('${post.id}',${liked})">
+          ${liked?"♥":"♡"}
+          <span>${post.likes?.length||0}</span>
+        </button>
+
+        <button onclick="toggleComments('${post.id}')">
+          ◌ <span>${post.comments?.length||0}</span>
+        </button>
+
+        <button onclick="openFounder('${p.id}')">
+          ◎
+        </button>
 
       </div>
 
+      <div id="comments-${post.id}" class="comments hidden">
+        <div class="commentsList" id="commentList-${post.id}"></div>
 
-      ${
-        post.content
-          ? `
-            <div class="post-content">
-              ${esc(post.content)}
-            </div>
-          `
-          : ""
-      }
-
-
-      ${
-        post.image_url
-          ? `
-            <div class="post-image-wrap">
-
-              <img
-                src="${esc(post.image_url)}"
-                class="post-image"
-                alt=""
-              >
-
-            </div>
-          `
-          : ""
-      }
-
-
-      <div class="post-actions">
-
-        <button
-          class="action ${liked ? "liked" : ""}"
-          onclick="toggleLike('${post.id}',${liked})"
-        >
-          ♡
-          <span>
-            ${likes.length}
-          </span>
-        </button>
-
-
-        <button
-          class="action"
-          onclick="openComments('${post.id}')"
-        >
-          ◌
-          <span>
-            Comment
-          </span>
-        </button>
-
-
-        <button
-          class="action"
-          onclick="openFounder('${post.profiles?.id}')"
-        >
-          →
-          <span>
-            Connect
-          </span>
-        </button>
-
+        <div class="commentComposer">
+          <input id="commentInput-${post.id}" placeholder="Write a comment...">
+          <button onclick="addComment('${post.id}')">→</button>
+        </div>
       </div>
 
     </article>
-
   `;
-
 }
 
+async function createPost(){
+  const content=$("postText")?.value.trim();
+  const file=$("postImage")?.files[0];
 
-/* =========================================================
-   CREATE POST
-========================================================= */
-
-$("#heroCreate").onclick =
-$("#createTop").onclick = () => {
-
-  showView("feed");
-
-  setTimeout(() => {
-
-    $("#postContent").focus();
-
-    $("#composer").scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
-
-  },100);
-
-};
-
-
-let selectedPostImage = null;
-
-
-$("#postImage").addEventListener(
-  "change",
-  event => {
-
-    selectedPostImage =
-      event.target.files[0];
-
-
-    if(!selectedPostImage){
-
-      $("#imagePreview").innerHTML =
-        "";
-
-      return;
-
-    }
-
-
-    const url =
-      URL.createObjectURL(
-        selectedPostImage
-      );
-
-
-    $("#imagePreview").innerHTML = `
-
-      <div class="preview-image">
-
-        <img src="${url}" alt="">
-
-        <button
-          type="button"
-          onclick="removePostImage()"
-        >
-          ×
-        </button>
-
-      </div>
-
-    `;
-
-  }
-);
-
-
-function removePostImage(){
-
-  selectedPostImage = null;
-
-  $("#postImage").value = "";
-
-  $("#imagePreview").innerHTML = "";
-
-}
-
-
-async function uploadFile(
-  bucket,
-  file
-){
-
-  const extension =
-    file.name
-      .split(".")
-      .pop()
-      .toLowerCase();
-
-
-  const path =
-    `${meId}/${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2)}.${extension}`;
-
-
-  const { error } =
-    await db.storage
-      .from(bucket)
-      .upload(
-        path,
-        file,
-        {
-          upsert:true
-        }
-      );
-
-
-  if(error)
-    throw error;
-
-
-  return db.storage
-    .from(bucket)
-    .getPublicUrl(path)
-    .data
-    .publicUrl;
-
-}
-
-
-$("#publishPost").onclick =
-async () => {
-
-  const content =
-    $("#postContent")
-      .value
-      .trim();
-
-
-  if(!content && !selectedPostImage){
-
-    toast("Write something or add an image.");
-
+  if(!content && !file){
+    toast("Write something or add an image.","error");
     return;
-
   }
-
-
-  const button =
-    $("#publishPost");
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Publishing...";
-
 
   try{
+    let imageUrl=null;
 
-    let imageUrl = null;
-
-
-    if(selectedPostImage){
-
-      imageUrl =
-        await uploadFile(
-          "posts",
-          selectedPostImage
-        );
-
+    if(file){
+      imageUrl=await upload(file,"posts");
     }
 
-
-    const { error } =
-      await db
-        .from("posts")
-        .insert({
-
-          user_id:meId,
-
-          content:content,
-
-          image_url:imageUrl
-
-        });
-
-
-    if(error)
-      throw error;
-
-
-    $("#postContent").value = "";
-
-    removePostImage();
-
-    toast("Your idea is live.");
-
-    loadFeed();
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(error.message);
-
-  }finally{
-
-    button.disabled = false;
-
-    button.textContent =
-      "Publish";
-
-  }
-
-};
-
-
-/* =========================================================
-   LIKES
-========================================================= */
-
-async function toggleLike(
-  postId,
-  currentlyLiked
-){
-
-  if(currentlyLiked){
-
-    await db
-      .from("likes")
-      .delete()
-      .match({
-
-        post_id:postId,
-
-        user_id:meId
-
-      });
-
-  }else{
-
-    await db
-      .from("likes")
-      .insert({
-
-        post_id:postId,
-
-        user_id:meId
-
-      });
-
-  }
-
-
-  loadFeed();
-
-}
-
-
-/* =========================================================
-   COMMENTS
-========================================================= */
-
-async function openComments(
-  postId
-){
-
-  selectedPost = postId;
-
-  $("#commentModal")
-    .classList.add("show");
-
-
-  $("#commentsList").innerHTML =
-    `<div class="loading">
-      Loading comments...
-    </div>`;
-
-
-  const { data, error } =
-    await db
-      .from("comments")
-      .select(`
-        *,
-        profiles (
-          full_name,
-          avatar_url,
-          startup_name
-        )
-      `)
-      .eq("post_id",postId)
-      .order("created_at",{
-        ascending:true
-      });
-
-
-  if(error){
-
-    $("#commentsList").innerHTML =
-      `<div class="error-card">
-        ${esc(error.message)}
-      </div>`;
-
-    return;
-
-  }
-
-
-  if(!data?.length){
-
-    $("#commentsList").innerHTML = `
-      <div class="empty-state">
-        No comments yet.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  $("#commentsList").innerHTML =
-    data.map(comment => `
-
-      <div class="comment">
-
-        ${avatar(
-          comment.profiles
-        )}
-
-        <div>
-
-          <strong>
-            ${esc(
-              comment.profiles?.full_name ||
-              "Founder"
-            )}
-          </strong>
-
-          <span class="comment-time">
-            ${timeAgo(comment.created_at)}
-          </span>
-
-          <p>
-            ${esc(comment.content)}
-          </p>
-
-        </div>
-
-      </div>
-
-    `).join("");
-
-}
-
-
-$("#commentForm").onsubmit =
-async event => {
-
-  event.preventDefault();
-
-
-  const input =
-    $("#commentInput");
-
-
-  const content =
-    input.value.trim();
-
-
-  if(!content || !selectedPost)
-    return;
-
-
-  const { error } =
-    await db
-      .from("comments")
-      .insert({
-
-        post_id:selectedPost,
-
-        user_id:meId,
-
-        content
-
-      });
-
-
-  if(error){
-
-    toast(error.message);
-
-    return;
-
-  }
-
-
-  input.value = "";
-
-  openComments(selectedPost);
-
-};
-
-
-$("#closeComments").onclick =
-() => {
-
-  $("#commentModal")
-    .classList.remove("show");
-
-};
-
-
-$("#commentModal .modal-backdrop")
-  .onclick = () => {
-
-    $("#commentModal")
-      .classList.remove("show");
-
-  };
-
-
-/* =========================================================
-   DISCOVER
-========================================================= */
-
-let allFounders = [];
-
-
-async function loadFounders(){
-
-  const { data, error } =
-    await db
-      .from("profiles")
-      .select("*")
-      .neq("id",meId)
-      .order("created_at",{
-        ascending:false
-      });
-
-
-  if(error){
-
-    console.error(error);
-
-    return;
-
-  }
-
-
-  allFounders = data || [];
-
-  renderFounders();
-
-}
-
-
-function renderFounders(){
-
-  const query =
-    $("#founderSearch")
-      .value
-      .toLowerCase()
-      .trim();
-
-
-  const founders =
-    allFounders.filter(person => {
-
-      return [
-
-        person.full_name,
-
-        person.startup_name,
-
-        person.industry,
-
-        person.stage,
-
-        person.headline
-
-      ]
-      .join(" ")
-      .toLowerCase()
-      .includes(query);
-
+    const {error}=await db.from("posts").insert({
+      user_id:me,
+      content:content||null,
+      image_url:imageUrl
     });
 
+    if(error)throw error;
 
-  if(!founders.length){
+    toast("Posted ✦","success");
+    loadFeed();
 
-    $("#founderGrid").innerHTML = `
-      <div class="empty-state large">
-        No founders found.
-      </div>
-    `;
+  }catch(err){
+    toast(err.message,"error");
+  }
+}
 
-    return;
-
+async function toggleLike(postId,liked){
+  if(liked){
+    await db.from("likes")
+      .delete()
+      .eq("post_id",postId)
+      .eq("user_id",me);
+  }else{
+    await db.from("likes").insert({
+      post_id:postId,
+      user_id:me
+    });
   }
 
+  loadFeed();
+}
 
-  $("#founderGrid").innerHTML =
-    founders.map(person => `
+async function toggleComments(postId){
+  const box=$("comments-"+postId);
 
-      <article
-        class="founder-card"
-        onclick="openFounder('${person.id}')"
-      >
+  if(!box)return;
 
-        <div class="founder-card-top">
+  box.classList.toggle("hidden");
 
-          ${avatar(
-            person,
-            true
-          )}
+  if(!box.classList.contains("hidden")){
+    const {data}=await db
+      .from("comments")
+      .select(`*,profiles!comments_user_id_fkey(*)`)
+      .eq("post_id",postId)
+      .order("created_at",{ascending:true});
 
-          <span class="connect-dot">
-            ●
-          </span>
+    $("commentList-"+postId).innerHTML=
+      (data||[]).map(c=>`
+        <div class="comment">
+          ${avatar(c.profiles,"xs")}
+          <div>
+            <b>${esc(c.profiles?.full_name||"Founder")}</b>
+            <p>${esc(c.content)}</p>
+            <small>${ago(c.created_at)}</small>
+          </div>
+        </div>
+      `).join("") ||
+      `<div class="noComments">Start the conversation.</div>`;
+  }
+}
 
+async function addComment(postId){
+  const input=$("commentInput-"+postId);
+  const content=input.value.trim();
+
+  if(!content)return;
+
+  const {error}=await db.from("comments").insert({
+    post_id:postId,
+    user_id:me,
+    content
+  });
+
+  if(error){
+    toast(error.message,"error");
+    return;
+  }
+
+  input.value="";
+  toggleComments(postId);
+  setTimeout(()=>toggleComments(postId),50);
+}
+
+/* -------------------- DISCOVER -------------------- */
+
+async function loadDiscover(){
+  $("view").innerHTML=`
+    <section class="page">
+      <div class="pageHead">
+        <span class="eyebrow">EXPLORE</span>
+        <h2>Meet founders.</h2>
+        <p>Find people building something interesting.</p>
+      </div>
+
+      <div class="searchBox">
+        <span>⌕</span>
+        <input id="founderSearch"
+          placeholder="Search founders, startups or industries..."
+          oninput="filterFounders()">
+      </div>
+
+      <div id="founderList" class="founderGrid">
+        <div class="loading">Discovering founders...</div>
+      </div>
+    </section>
+  `;
+
+  const {data,error}=await db
+    .from("profiles")
+    .select("*")
+    .neq("id",me)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    $("founderList").innerHTML=`<div class="empty card">${esc(error.message)}</div>`;
+    return;
+  }
+
+  window.ractFounders=data||[];
+  renderFounders(window.ractFounders);
+}
+
+async function renderFounders(list){
+  const {data:follows}=await db
+    .from("follows")
+    .select("following_id")
+    .eq("follower_id",me);
+
+  const following=new Set((follows||[]).map(x=>x.following_id));
+
+  $("founderList").innerHTML=list.length
+    ? list.map(p=>`
+      <article class="founderCard card">
+
+        <div class="founderTop">
+          ${avatar(p,"medium")}
+          <button class="connectBtn ${following.has(p.id)?"following":""}"
+            onclick="toggleFollow('${p.id}',${following.has(p.id)})">
+            ${following.has(p.id)?"Following":"Connect"}
+          </button>
         </div>
 
+        <h3>${esc(p.full_name)}</h3>
 
-        <h3>
-          ${esc(
-            person.full_name ||
-            "Founder"
-          )}
-        </h3>
-
-
-        <p class="founder-startup">
-
-          ${esc(
-            person.startup_name ||
-            "Independent founder"
-          )}
-
-        </p>
-
-
-        ${
-          person.headline
-            ? `
-              <p class="founder-headline">
-                ${esc(person.headline)}
-              </p>
-            `
-            : ""
-        }
-
-
-        <div class="founder-tags">
-
-          ${
-            person.industry
-              ? `<span>${esc(person.industry)}</span>`
-              : ""
-          }
-
-          ${
-            person.stage
-              ? `<span>${esc(person.stage)}</span>`
-              : ""
-          }
-
+        <div class="founderStartup">
+          ${esc(p.startup_name||"Independent founder")}
         </div>
 
+        <p>${esc(p.headline||p.bio||"Building the next thing.")}</p>
 
-        <button
-          class="connect-button"
-          onclick="event.stopPropagation(); openFounder('${person.id}')"
-        >
-          View founder →
+        <div class="tags">
+          ${p.industry?`<span>${esc(p.industry)}</span>`:""}
+          ${p.stage?`<span>${esc(p.stage)}</span>`:""}
+        </div>
+
+        <button class="textLink" onclick="openFounder('${p.id}')">
+          View profile →
         </button>
 
       </article>
-
-    `).join("");
-
+    `).join("")
+    : `<div class="empty card">No founders found.</div>`;
 }
 
+function filterFounders(){
+  const q=$("founderSearch").value.toLowerCase().trim();
 
-$("#founderSearch")
-  .addEventListener(
-    "input",
-    renderFounders
+  const list=(window.ractFounders||[]).filter(p =>
+    [
+      p.full_name,p.startup_name,p.headline,
+      p.bio,p.industry,p.stage
+    ].join(" ").toLowerCase().includes(q)
   );
 
-
-/* =========================================================
-   FOUNDER PROFILE MODAL
-========================================================= */
-
-async function openFounder(
-  userId
-){
-
-  if(!userId)
-    return;
-
-
-  const { data:person } =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq("id",userId)
-      .single();
-
-
-  if(!person)
-    return;
-
-
-  $("#founderModalContent").innerHTML = `
-
-    <div class="modal-founder">
-
-      ${avatar(person,true)}
-
-
-      <span class="eyebrow">
-        FOUNDER
-      </span>
-
-
-      <h2>
-        ${esc(
-          person.full_name ||
-          "Founder"
-        )}
-      </h2>
-
-
-      <p class="modal-startup">
-        ${esc(
-          person.startup_name ||
-          "Independent founder"
-        )}
-      </p>
-
-
-      ${
-        person.headline
-          ? `
-            <p class="modal-headline">
-              ${esc(person.headline)}
-            </p>
-          `
-          : ""
-      }
-
-
-      <div class="founder-tags">
-
-        ${
-          person.industry
-            ? `<span>${esc(person.industry)}</span>`
-            : ""
-        }
-
-        ${
-          person.stage
-            ? `<span>${esc(person.stage)}</span>`
-            : ""
-        }
-
-      </div>
-
-
-      ${
-        person.bio
-          ? `
-            <div class="modal-bio">
-              ${esc(person.bio)}
-            </div>
-          `
-          : ""
-      }
-
-
-      <div class="modal-actions">
-
-        <button
-          class="primary-btn"
-          onclick="followFounder('${person.id}')"
-        >
-          Connect
-        </button>
-
-
-        <button
-          class="secondary-btn"
-          onclick="startChat('${person.id}')"
-        >
-          Message
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-
-
-  $("#founderModal")
-    .classList.add("show");
-
+  renderFounders(list);
 }
 
-
-$("#closeFounder").onclick =
-() => {
-
-  $("#founderModal")
-    .classList.remove("show");
-
-};
-
-
-$("#founderModal .modal-backdrop")
-  .onclick = () => {
-
-    $("#founderModal")
-      .classList.remove("show");
-
-  };
-
-
-/* =========================================================
-   FOLLOW
-========================================================= */
-
-async function followFounder(
-  userId
-){
-
-  if(userId === meId)
-    return;
-
-
-  const { data:existing } =
-    await db
-      .from("follows")
-      .select("*")
-      .match({
-
-        follower_id:meId,
-
-        following_id:userId
-
-      })
-      .maybeSingle();
-
-
-  if(existing){
-
-    await db
-      .from("follows")
+async function toggleFollow(id,isFollowing){
+  if(isFollowing){
+    await db.from("follows")
       .delete()
-      .match({
-
-        follower_id:meId,
-
-        following_id:userId
-
-      });
-
-    toast("Connection removed.");
-
+      .eq("follower_id",me)
+      .eq("following_id",id);
   }else{
-
-    const { error } =
-      await db
-        .from("follows")
-        .insert({
-
-          follower_id:meId,
-
-          following_id:userId
-
-        });
-
-
-    if(error){
-
-      toast(error.message);
-
-      return;
-
-    }
-
-    toast("Connected.");
-
+    await db.from("follows").insert({
+      follower_id:me,
+      following_id:id
+    });
   }
 
+  loadDiscover();
 }
 
-
-/* =========================================================
-   MESSAGES
-========================================================= */
-
-async function startChat(
-  userId
-){
-
-  $("#founderModal")
-    .classList.remove("show");
-
-
-  selectedChatUser =
-    userId;
-
-
-  showView("messages");
-
-
-  setTimeout(() => {
-
-    openChat(userId);
-
-  },150);
-
-}
-
-
-async function loadConversations(){
-
-  const container =
-    $("#conversationList");
-
-
-  container.innerHTML =
-    `<div class="loading">
-      Loading...
-    </div>`;
-
-
-  const { data:sent } =
-    await db
-      .from("messages")
-      .select(`
-        receiver_id,
-        profiles:receiver_id (
-          id,
-          full_name,
-          startup_name,
-          avatar_url
-        )
-      `)
-      .eq("sender_id",meId);
-
-
-  const { data:received } =
-    await db
-      .from("messages")
-      .select(`
-        sender_id,
-        profiles:sender_id (
-          id,
-          full_name,
-          startup_name,
-          avatar_url
-        )
-      `)
-      .eq("receiver_id",meId);
-
-
-  const people = new Map();
-
-
-  (sent || []).forEach(row => {
-
-    if(row.profiles)
-      people.set(
-        row.profiles.id,
-        row.profiles
-      );
-
-  });
-
-
-  (received || []).forEach(row => {
-
-    if(row.profiles)
-      people.set(
-        row.profiles.id,
-        row.profiles
-      );
-
-  });
-
-
-  if(!people.size){
-
-    container.innerHTML = `
-      <div class="empty-state">
-        No conversations yet.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    [...people.values()]
-      .map(person => `
-
-        <button
-          class="conversation"
-          onclick="openChat('${person.id}')"
-        >
-
-          ${avatar(person)}
-
-          <div>
-
-            <strong>
-              ${esc(
-                person.full_name ||
-                "Founder"
-              )}
-            </strong>
-
-            <span>
-              ${esc(
-                person.startup_name ||
-                ""
-              )}
-            </span>
-
-          </div>
-
-        </button>
-
-      `)
-      .join("");
-
-}
-
-
-async function openChat(
-  userId
-){
-
-  selectedChatUser =
-    userId;
-
-
-  const { data:person } =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq("id",userId)
-      .single();
-
-
-  if(!person)
-    return;
-
-
-  $("#chatEmpty")
-    .classList.add("hidden");
-
-
-  $("#chatActive")
-    .classList.remove("hidden");
-
-
-  $("#chatPerson").innerHTML = `
-
-    ${avatar(person)}
-
-    <div>
-
-      <strong>
-        ${esc(
-          person.full_name ||
-          "Founder"
-        )}
-      </strong>
-
-      <span>
-        ${esc(
-          person.startup_name ||
-          "Founder"
-        )}
-      </span>
-
-    </div>
-
-  `;
-
-
-  await loadMessages();
-
-}
-
-
-async function loadMessages(){
-
-  if(!selectedChatUser)
-    return;
-
-
-  const { data, error } =
-    await db
-      .from("messages")
-      .select("*")
-      .or(
-        `and(sender_id.eq.${meId},receiver_id.eq.${selectedChatUser}),and(sender_id.eq.${selectedChatUser},receiver_id.eq.${meId})`
-      )
-      .order("created_at",{
-        ascending:true
-      });
-
+/* -------------------- FOUNDER PROFILE -------------------- */
+
+async function openFounder(id){
+  const {data:p,error}=await db
+    .from("profiles")
+    .select("*")
+    .eq("id",id)
+    .single();
 
   if(error){
-
-    console.error(error);
-
+    toast(error.message,"error");
     return;
-
   }
 
+  activeFounder=p;
 
-  const box =
-    $("#chatMessages");
+  $("view").innerHTML=`
+    <section class="page">
 
+      <button class="back" onclick="switchTab('${tab==="feed"?"feed":"discover"}')">
+        ← Back
+      </button>
 
-  if(!data?.length){
+      <section class="publicProfile card">
 
-    box.innerHTML = `
-      <div class="chat-no-messages">
-        Start the conversation.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  box.innerHTML =
-    data.map(message => `
-
-      <div
-        class="bubble-row ${
-          message.sender_id === meId
-            ? "mine"
-            : ""
-        }"
-      >
-
-        <div class="message-bubble">
-
-          ${esc(message.content)}
-
-          <small>
-            ${timeAgo(
-              message.created_at
-            )}
-          </small>
-
+        <div class="profileHero">
+          ${avatar(p,"profileAvatar")}
+          <div>
+            <span class="eyebrow">FOUNDER</span>
+            <h1>${esc(p.full_name)}
+              ${p.verified?`<span class="verified big">✓</span>`:""}
+            </h1>
+            <p>${esc(p.headline||"Founder")}</p>
+          </div>
         </div>
 
+        <div class="profileIdentity">
+          <strong>${esc(p.startup_name||"Independent project")}</strong>
+          <span>${esc(p.industry||"Founder")} · ${esc(p.stage||"Building")}</span>
+        </div>
+
+        <p class="profileBio">
+          ${esc(p.bio||"This founder hasn't written a bio yet.")}
+        </p>
+
+        <div class="profileButtons">
+          <button class="primary" onclick="startMessage('${p.id}')">
+            Message ✦
+          </button>
+
+          ${p.website_url?
+            `<a class="ghost" href="${esc(p.website_url)}" target="_blank">Website ↗</a>`:""}
+        </div>
+
+      </section>
+
+      <h3 class="sectionTitle">Their posts</h3>
+      <div id="founderPosts"></div>
+
+    </section>
+  `;
+
+  const {data:posts}=await db
+    .from("posts")
+    .select(`
+      *,
+      profiles!posts_user_id_fkey(*),
+      likes(user_id),
+      comments(id)
+    `)
+    .eq("user_id",id)
+    .order("created_at",{ascending:false});
+
+  $("founderPosts").innerHTML=(posts||[]).map(postHtml).join("") ||
+    `<div class="empty card">No posts yet.</div>`;
+}
+
+/* -------------------- MESSAGES -------------------- */
+
+async function loadMessages(){
+  $("view").innerHTML=`
+    <section class="page">
+      <div class="pageHead">
+        <span class="eyebrow">PRIVATE SPACE</span>
+        <h2>Messages</h2>
+        <p>Talk directly with other founders.</p>
       </div>
 
-    `).join("");
+      <div id="messagePeople" class="messagePeople">
+        <div class="loading">Loading conversations...</div>
+      </div>
+    </section>
+  `;
 
-
-  box.scrollTop =
-    box.scrollHeight;
-
-}
-
-
-$("#messageForm").onsubmit =
-async event => {
-
-  event.preventDefault();
-
-
-  if(!selectedChatUser)
-    return;
-
-
-  const input =
-    $("#messageInput");
-
-
-  const content =
-    input.value.trim();
-
-
-  if(!content)
-    return;
-
-
-  input.disabled = true;
-
-
-  const { error } =
-    await db
-      .from("messages")
-      .insert({
-
-        sender_id:meId,
-
-        receiver_id:selectedChatUser,
-
-        content
-
-      });
-
-
-  input.disabled = false;
-
+  const {data,error}=await db
+    .from("messages")
+    .select(`
+      *,
+      sender:profiles!messages_sender_id_fkey(*),
+      receiver:profiles!messages_receiver_id_fkey(*)
+    `)
+    .or(`sender_id.eq.${me},receiver_id.eq.${me}`)
+    .order("created_at",{ascending:false});
 
   if(error){
-
-    toast(error.message);
-
+    $("messagePeople").innerHTML=
+      `<div class="empty card">${esc(error.message)}</div>`;
     return;
-
   }
 
+  const people=new Map();
 
-  input.value = "";
+  (data||[]).forEach(m=>{
+    const other=m.sender_id===me?m.receiver:m.sender;
 
-  await loadMessages();
+    if(other && !people.has(other.id)){
+      people.set(other.id,{profile:other,last:m});
+    }
+  });
 
-};
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-async function loadProfile(){
-
-  await loadMe();
-
-
-  if(!me)
-    return;
-
-
-  $("#profileName").textContent =
-    me.full_name || "Your Name";
-
-
-  $("#profileStartup").textContent =
-    me.startup_name ||
-    "Your startup";
-
-
-  $("#nameInput").value =
-    me.full_name || "";
-
-
-  $("#startupInput").value =
-    me.startup_name || "";
-
-
-  $("#industryInput").value =
-    me.industry || "";
-
-
-  $("#stageInput").value =
-    me.stage || "";
-
-
-  $("#headlineInput").value =
-    me.headline || "";
-
-
-  $("#bioInput").value =
-    me.bio || "";
-
-
-  if(me.avatar_url){
-
-    $("#profilePhoto").innerHTML = `
-      <img
-        src="${esc(me.avatar_url)}"
-        alt=""
-      >
+  $("messagePeople").innerHTML=people.size
+    ? [...people.values()].map(x=>`
+      <button class="messagePerson card" onclick="startMessage('${x.profile.id}')">
+        ${avatar(x.profile,"medium")}
+        <div>
+          <b>${esc(x.profile.full_name)}</b>
+          <span>${esc(x.profile.startup_name||"Founder")}</span>
+          <small>${esc(x.last.content)} · ${ago(x.last.created_at)}</small>
+        </div>
+        <strong>→</strong>
+      </button>
+    `).join("")
+    : `
+      <div class="empty card">
+        <div class="emptyIcon">◌</div>
+        <h3>No conversations yet.</h3>
+        <p>Discover a founder and start the first conversation.</p>
+        <button class="primary" onclick="switchTab('discover')">
+          Discover founders →
+        </button>
+      </div>
     `;
-
-  }else{
-
-    $("#profilePhoto").textContent =
-      (me.full_name || "?")
-        .charAt(0)
-        .toUpperCase();
-
-  }
-
-
-  const { count:posts } =
-    await db
-      .from("posts")
-      .select("*",{
-        count:"exact",
-        head:true
-      })
-      .eq("user_id",meId);
-
-
-  const { count:followers } =
-    await db
-      .from("follows")
-      .select("*",{
-        count:"exact",
-        head:true
-      })
-      .eq("following_id",meId);
-
-
-  const { count:following } =
-    await db
-      .from("follows")
-      .select("*",{
-        count:"exact",
-        head:true
-      })
-      .eq("follower_id",meId);
-
-
-  $("#postCount").textContent =
-    posts || 0;
-
-
-  $("#followerCount").textContent =
-    followers || 0;
-
-
-  $("#followingCount").textContent =
-    following || 0;
-
 }
 
+async function startMessage(id){
+  const {data:p,error}=await db
+    .from("profiles")
+    .select("*")
+    .eq("id",id)
+    .single();
 
-$("#profileForm").onsubmit =
-async event => {
-
-  event.preventDefault();
-
-
-  const button =
-    event.target.querySelector(
-      ".primary-btn"
-    );
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Saving...";
-
-
-  try{
-
-    let avatarUrl =
-      me?.avatar_url || null;
-
-
-    const file =
-      $("#profileImage")
-        .files[0];
-
-
-    if(file){
-
-      avatarUrl =
-        await uploadFile(
-          "avatars",
-          file
-        );
-
-    }
-
-
-    const row = {
-
-      id:meId,
-
-      full_name:
-        $("#nameInput")
-          .value
-          .trim(),
-
-      startup_name:
-        $("#startupInput")
-          .value
-          .trim(),
-
-      industry:
-        $("#industryInput")
-          .value || null,
-
-      stage:
-        $("#stageInput")
-          .value || null,
-
-      headline:
-        $("#headlineInput")
-          .value
-          .trim(),
-
-      bio:
-        $("#bioInput")
-          .value
-          .trim(),
-
-      avatar_url:
-        avatarUrl
-
-    };
-
-
-    const { data, error } =
-      await db
-        .from("profiles")
-        .upsert(row)
-        .select()
-        .single();
-
-
-    if(error)
-      throw error;
-
-
-    me = data;
-
-    updateProfileUI();
-
-    loadProfile();
-
-    toast("Profile saved.");
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(error.message);
-
-  }finally{
-
-    button.disabled = false;
-
-    button.textContent =
-      "Save profile";
-
+  if(error){
+    toast(error.message,"error");
+    return;
   }
 
-};
+  activeFounder=p;
+  activeConversation=id;
 
-
-/* =========================================================
-   PROFILE IMAGE PREVIEW
-========================================================= */
-
-$("#profileImage")
-  .addEventListener(
-    "change",
-    event => {
-
-      const file =
-        event.target.files[0];
-
-
-      if(!file)
-        return;
-
-
-      const url =
-        URL.createObjectURL(file);
-
-
-      $("#profilePhoto").innerHTML = `
-        <img
-          src="${url}"
-          alt=""
-        >
-      `;
-
-    }
-  );
-
-
-/* =========================================================
-   REFRESH
-========================================================= */
-
-$("#refreshFeed").onclick =
-() => loadFeed();
-
-
-/* =========================================================
-   START
-========================================================= */
-
-async function init(){
-
-  await loadMe();
-
-  updateProfileUI();
-
-  loadFeed();
-
+  renderChat(p);
+  loadChatMessages(id);
 }
 
+function renderChat(p){
+  $("view").innerHTML=`
+    <section class="chatPage">
 
-init();
+      <header class="chatHeader">
+        <button class="back" onclick="switchTab('messages')">←</button>
+        ${avatar(p,"small")}
+        <div>
+          <b>${esc(p.full_name)}</b>
+          <span>${esc(p.startup_name||"Founder")}</span>
+        </div>
+      </header>
 
+      <div id="chatMessages" class="chatMessages">
+        <div class="loading">Loading messages...</div>
+      </div>
 
-/* =========================================================
-   REALTIME FEED UPDATES
-========================================================= */
+      <div class="chatComposer">
+        <input id="messageInput"
+          placeholder="Write a message..."
+          onkeydown="if(event.key==='Enter')sendMessage()">
+        <button onclick="sendMessage()">↑</button>
+      </div>
 
-db.channel("ract-feed")
-  .on(
-    "postgres_changes",
-    {
-      event:"*",
-      schema:"public",
-      table:"posts"
-    },
-    () => {
+    </section>
+  `;
 
-      if(
-        $("#feedView")
-          .classList
-          .contains("active")
-      ){
+  subscribeMessages();
+}
 
-        loadFeed();
+async function loadChatMessages(otherId){
+  const {data,error}=await db
+    .from("messages")
+    .select(`
+      *,
+      sender:profiles!messages_sender_id_fkey(*)
+    `)
+    .or(
+      `and(sender_id.eq.${me},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${me})`
+    )
+    .order("created_at",{ascending:true});
 
-      }
+  if(error){
+    $("chatMessages").innerHTML=
+      `<div class="empty">${esc(error.message)}</div>`;
+    return;
+  }
 
-    }
-  )
-  .subscribe();
+  $("chatMessages").innerHTML=(data||[]).map(m=>`
+    <div class="bubbleRow ${m.sender_id===me?"mine":""}">
+      <div class="bubble">
+        ${esc(m.content)}
+        <small>${ago(m.created_at)}</small>
+      </div>
+    </div>
+  `).join("") || `
+    <div class="chatEmpty">
+      <div>✦</div>
+      <p>Start the conversation.</p>
+    </div>
+  `;
 
+  const box=$("chatMessages");
+  box.scrollTop=box.scrollHeight;
+}
 
-/* =========================================================
-   REALTIME MESSAGES
-========================================================= */
+async function sendMessage(){
+  const input=$("messageInput");
+  const content=input.value.trim();
 
-db.channel("ract-messages")
-  .on(
-    "postgres_changes",
-    {
-      event:"INSERT",
-      schema:"public",
-      table:"messages"
-    },
-    payload => {
+  if(!content || !activeConversation)return;
 
-      const message =
-        payload.new;
+  const {error}=await db.from("messages").insert({
+    sender_id:me,
+    receiver_id:activeConversation,
+    content
+  });
 
+  if(error){
+    toast(error.message,"error");
+    return;
+  }
 
-      if(
-        selectedChatUser &&
-        (
+  input.value="";
+  loadChatMessages(activeConversation);
+}
+
+function subscribeMessages(){
+  if(realtimeChannel){
+    db.removeChannel(realtimeChannel);
+  }
+
+  realtimeChannel=db.channel("ract-direct-messages-"+me)
+    .on(
+      "postgres_changes",
+      {
+        event:"INSERT",
+        schema:"public",
+        table:"messages"
+      },
+      payload=>{
+        if(
+          activeConversation &&
           (
-            message.sender_id ===
-            selectedChatUser &&
-            message.receiver_id ===
-            meId
+            (payload.new.sender_id===me &&
+             payload.new.receiver_id===activeConversation) ||
+            (payload.new.sender_id===activeConversation &&
+             payload.new.receiver_id===me)
           )
-          ||
-          (
-            message.sender_id ===
-            meId &&
-            message.receiver_id ===
-            selectedChatUser
-          )
-        )
-      ){
-
-        loadMessages();
-
+        ){
+          loadChatMessages(activeConversation);
+        }
       }
+    )
+    .subscribe();
+}
 
+/* -------------------- GROUPS -------------------- */
+
+async function loadGroups(){
+  $("view").innerHTML=`
+    <section class="page">
+      <div class="pageHead groupHead">
+        <div>
+          <span class="eyebrow">COMMUNITIES</span>
+          <h2>Founder rooms.</h2>
+          <p>Build conversations around industries and ideas.</p>
+        </div>
+        <button class="roundAdd" onclick="createGroup()">+</button>
+      </div>
+
+      <div class="groupGrid" id="groupList">
+        <div class="loading">Loading groups...</div>
+      </div>
+    </section>
+  `;
+
+  /*
+    Groups use local browser storage in this two-file MVP so the core
+    database remains focused on founders/posts/direct messages.
+  */
+  const groups=JSON.parse(localStorage.getItem("ract-groups")||"[]");
+
+  if(!groups.length){
+    $("groupList").innerHTML=`
+      <div class="empty card">
+        <div class="emptyIcon">◇</div>
+        <h3>Create your first founder room.</h3>
+        <p>Start a community around an industry, idea or problem.</p>
+        <button class="primary" onclick="createGroup()">Create room →</button>
+      </div>
+    `;
+    return;
+  }
+
+  $("groupList").innerHTML=groups.map(g=>`
+    <button class="groupCard card" onclick="openGroup('${g.id}')">
+      <div class="groupIcon">${g.icon||"◇"}</div>
+      <div>
+        <h3>${esc(g.name)}</h3>
+        <p>${esc(g.description||"Founder community")}</p>
+      </div>
+      <span>→</span>
+    </button>
+  `).join("");
+}
+
+function createGroup(){
+  const name=prompt("Room name");
+  if(!name?.trim())return;
+
+  const description=prompt("What is this room about?")||"Founder community";
+
+  const groups=JSON.parse(localStorage.getItem("ract-groups")||"[]");
+
+  groups.push({
+    id:crypto.randomUUID(),
+    name:name.trim(),
+    description,
+    icon:"✦"
+  });
+
+  localStorage.setItem("ract-groups",JSON.stringify(groups));
+  loadGroups();
+}
+
+function openGroup(id){
+  const groups=JSON.parse(localStorage.getItem("ract-groups")||"[]");
+  const group=groups.find(x=>x.id===id);
+
+  if(!group)return;
+
+  const key="ract-group-chat-"+id;
+  const messages=JSON.parse(localStorage.getItem(key)||"[]");
+
+  $("view").innerHTML=`
+    <section class="chatPage">
+
+      <header class="chatHeader">
+        <button class="back" onclick="switchTab('groups')">←</button>
+        <div class="groupIcon smallIcon">${group.icon}</div>
+        <div>
+          <b>${esc(group.name)}</b>
+          <span>${esc(group.description)}</span>
+        </div>
+      </header>
+
+      <div id="groupChat" class="chatMessages">
+        ${messages.map(m=>`
+          <div class="bubbleRow ${m.user===me?"mine":""}">
+            <div class="bubble">
+              ${esc(m.text)}
+              <small>${ago(m.time)}</small>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="chatComposer">
+        <input id="groupInput"
+          placeholder="Message the room..."
+          onkeydown="if(event.key==='Enter')sendGroupMessage('${id}')">
+        <button onclick="sendGroupMessage('${id}')">↑</button>
+      </div>
+
+    </section>
+  `;
+
+  setTimeout(()=>{
+    const c=$("groupChat");
+    c.scrollTop=c.scrollHeight;
+  },50);
+}
+
+function sendGroupMessage(id){
+  const input=$("groupInput");
+  const text=input.value.trim();
+
+  if(!text)return;
+
+  const key="ract-group-chat-"+id;
+  const messages=JSON.parse(localStorage.getItem(key)||"[]");
+
+  messages.push({
+    user:me,
+    text,
+    time:new Date().toISOString()
+  });
+
+  localStorage.setItem(key,JSON.stringify(messages));
+  openGroup(id);
+}
+
+/* -------------------- MY PROFILE -------------------- */
+
+async function loadMyProfile(){
+  const {data:posts}=await db
+    .from("posts")
+    .select("id")
+    .eq("user_id",me);
+
+  const {data:followers}=await db
+    .from("follows")
+    .select("follower_id")
+    .eq("following_id",me);
+
+  const {data:following}=await db
+    .from("follows")
+    .select("following_id")
+    .eq("follower_id",me);
+
+  $("view").innerHTML=`
+    <section class="page">
+
+      <div class="profileCover"></div>
+
+      <section class="myProfile card">
+
+        <div class="myProfileTop">
+          ${avatar(profile,"profileAvatar")}
+
+          <button class="ghost" onclick="showEditProfile()">
+            Edit
+          </button>
+        </div>
+
+        <span class="eyebrow">FOUNDER</span>
+
+        <h1>${esc(profile.full_name)}</h1>
+
+        <p class="headline">
+          ${esc(profile.headline||"Building something new.")}
+        </p>
+
+        <div class="startupLine">
+          ${esc(profile.startup_name||"Independent founder")}
+          ${profile.verified?`<span class="verified">✓</span>`:""}
+        </div>
+
+        <p class="profileBio">
+          ${esc(profile.bio||"Add a bio to tell your story.")}
+        </p>
+
+        <div class="tags">
+          ${profile.industry?`<span>${esc(profile.industry)}</span>`:""}
+          ${profile.stage?`<span>${esc(profile.stage)}</span>`:""}
+        </div>
+
+        <div class="stats">
+          <div><b>${posts?.length||0}</b><span>Posts</span></div>
+          <div><b>${followers?.length||0}</b><span>Followers</span></div>
+          <div><b>${following?.length||0}</b><span>Following</span></div>
+        </div>
+
+        ${profile.website_url?
+          `<a class="website" href="${esc(profile.website_url)}" target="_blank">
+            ↗ ${esc(profile.website_url)}
+          </a>`:""}
+
+      </section>
+
+      <div class="profileActions">
+        <button class="ghost full" onclick="signOut()">
+          Leave Ract
+        </button>
+      </div>
+
+    </section>
+  `;
+}
+
+function openMyProfile(){
+  switchTab("me");
+}
+
+function showEditProfile(){
+  showProfile(false);
+
+  setTimeout(()=>{
+    $("fullName").value=profile.full_name||"";
+    $("startup").value=profile.startup_name||"";
+    $("headline").value=profile.headline||"";
+    $("industry").value=profile.industry||"";
+    $("stage").value=profile.stage||"";
+    $("bio").value=profile.bio||"";
+    $("website").value=profile.website_url||"";
+
+    if(profile.avatar_url){
+      $("avatarPreview").innerHTML=
+        `<img class="avatar huge" src="${esc(profile.avatar_url)}">`;
     }
-  )
-  .subscribe();
+  },0);
+}
+
+async function signOut(){
+  localStorage.removeItem("ract_founder_id");
+
+  if(realtimeChannel){
+    db.removeChannel(realtimeChannel);
+    realtimeChannel=null;
+  }
+
+  me=null;
+  profile=null;
+  showWelcome();
+}
+
+/* -------------------- INIT -------------------- */
+
+boot();
 
 </script>
-
 </body>
 </html>
