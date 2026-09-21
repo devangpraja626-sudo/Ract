@@ -4,62 +4,42 @@
   --font-ui:'Manrope',system-ui,sans-serif;
 
   --bg:#05060A;
-
   --surface:rgba(255,255,255,.055);
-
   --raised:rgba(255,255,255,.09);
-
   --border:rgba(255,255,255,.12);
-
   --ink:#F7F8FF;
-
   --muted:#9DA3B8;
-
   --field:rgba(255,255,255,.055);
-
   --bar:rgba(8,9,16,.86);
 
   --blue:#3B82F6;
-
   --blue2:#60A5FA;
-
   --purple:#8B5CF6;
-
   --purple2:#A78BFA;
 
   --red:#EF4444;
-
   --red2:#FB7185;
 
   --silver:#CBD5E1;
 
   --shadow:
     0 30px 80px -35px rgba(0,0,0,.9);
-
 }
 
 
 html[data-theme="light"]{
 
   --bg:#F5F7FB;
-
   --surface:rgba(255,255,255,.86);
-
   --raised:#fff;
-
   --border:rgba(34,43,70,.12);
-
   --ink:#101421;
-
   --muted:#687087;
-
   --field:rgba(247,248,252,.95);
-
   --bar:rgba(255,255,255,.92);
 
   --shadow:
     0 30px 70px -35px rgba(25,36,72,.25);
-
 }
 
 
@@ -215,9 +195,11 @@ img{
 @keyframes drift{
 
   to{
+
     transform:
       translate(7vmax,-5vmax)
       scale(1.12);
+
   }
 
 }
@@ -286,21 +268,27 @@ img{
     var(--d)
     infinite;
 
+  pointer-events:none!important;
+
 }
 
 
 @keyframes bob{
 
   0%,100%{
+
     transform:
       translateY(0)
       rotate(var(--r));
+
   }
 
   50%{
+
     transform:
       translateY(-22px)
       rotate(calc(var(--r) * -1));
+
   }
 
 }
@@ -1071,6 +1059,24 @@ img{
 }
 
 
+/* IMPORTANT:
+   Keep actual application content above decorative layers.
+*/
+
+
+.shell,
+.page,
+.topbar,
+.publicProfile,
+.profileButtons,
+.messagePeople,
+.messagePerson{
+
+  isolation:isolate;
+
+}
+
+
 .topbar{
 
   position:sticky;
@@ -1801,15 +1807,25 @@ img{
 
   margin-top:18px;
 
+  position:relative;
+
+  z-index:60;
+
 }
 
 
 .founderCardActions .textLink{
+
   padding:0;
+
 }
 
 
 .chatCardBtn{
+
+  position:relative;
+
+  z-index:61;
 
   border:
     1px solid
@@ -1833,6 +1849,8 @@ img{
   font-size:12px;
 
   transition:.25s ease;
+
+  pointer-events:auto!important;
 
 }
 
@@ -1964,7 +1982,19 @@ img{
 }
 
 
+/* IMPORTANT FIX:
+   Profile action area is explicitly raised above
+   decorative floating elements.
+*/
+
+
 .profileButtons{
+
+  position:relative;
+
+  z-index:100;
+
+  isolation:isolate;
 
   display:flex;
 
@@ -1974,15 +2004,35 @@ img{
 
   margin-top:24px;
 
+  pointer-events:auto;
+
 }
 
 
 .profileButtons .primary,
 .profileButtons .ghost{
 
+  position:relative;
+
+  z-index:101;
+
   flex:1;
 
   min-height:50px;
+
+  pointer-events:auto!important;
+
+}
+
+
+.profileButtons button,
+.profileButtons a{
+
+  position:relative;
+
+  z-index:102;
+
+  pointer-events:auto!important;
 
 }
 
@@ -2004,6 +2054,10 @@ img{
 
 .messagePeople{
 
+  position:relative;
+
+  z-index:50;
+
   display:grid;
 
   gap:10px;
@@ -2012,6 +2066,10 @@ img{
 
 
 .messagePerson{
+
+  position:relative;
+
+  z-index:51;
 
   width:100%;
 
@@ -2026,6 +2084,8 @@ img{
   padding:13px;
 
   border-radius:20px;
+
+  pointer-events:auto;
 
 }
 
@@ -2090,6 +2150,8 @@ img{
 .chatPage{
 
   position:relative;
+
+  z-index:20;
 
   min-height:
     calc(100vh - 110px);
@@ -2354,45 +2416,6 @@ html[data-theme="light"] .chatComposer{
 }
 
 
-.chatEmpty{
-
-  min-height:50vh;
-
-  display:flex;
-
-  flex-direction:column;
-
-  justify-content:center;
-
-  align-items:center;
-
-  text-align:center;
-
-  opacity:.8;
-
-}
-
-
-.chatEmpty div{
-
-  font-size:38px;
-
-  color:var(--blue2);
-
-  margin-bottom:12px;
-
-}
-
-
-.chatEmpty p{
-
-  margin:0;
-
-  color:var(--muted);
-
-}
-
-
 /* =========================================================
    GROUPS
 ========================================================= */
@@ -2543,6 +2566,8 @@ html[data-theme="light"] .chatComposer{
 .myProfile{
 
   position:relative;
+
+  z-index:20;
 
   border-radius:28px;
 
@@ -2909,7 +2934,24 @@ html[data-theme="light"] .chatComposer{
   }
 
   .profileButtons{
+
+    position:relative;
+
+    z-index:100;
+
     flex-direction:column;
+
+  }
+
+  .profileButtons .primary,
+  .profileButtons .ghost{
+
+    position:relative;
+
+    z-index:101;
+
+    width:100%;
+
   }
 
   .two{
