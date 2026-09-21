@@ -1,236 +1,712 @@
-:root{
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  --bg:#050308;
-  --bg2:#09050f;
+  <title>Delta — Founder Network</title>
 
-  --surface:rgba(255,255,255,.055);
-  --surface-2:rgba(255,255,255,.075);
+  <meta name="theme-color" content="#07050c">
 
-  --border:rgba(255,255,255,.11);
-  --border-bright:rgba(255,255,255,.18);
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  --text:#f7f5fb;
-  --muted:#98919f;
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
 
-  --purple:#8b5cf6;
-  --purple-2:#a855f7;
+  <link rel="stylesheet" href="style.css">
 
-  --red:#ff3158;
-  --red-2:#ff1744;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  --green:#43e7a4;
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
 
-  --radius:24px;
+<body>
 
-  --shadow:
-    0 25px 80px rgba(0,0,0,.45);
+<div class="aurora aurora-one"></div>
+<div class="aurora aurora-two"></div>
+<div class="noise"></div>
 
-  --font-display:
-    "Space Grotesk",
-    sans-serif;
+<!-- =====================================================
+     AUTH SCREEN
+===================================================== -->
 
-  --font-ui:
-    "DM Sans",
-    sans-serif;
+<section id="authScreen" class="auth-screen">
 
-}
+  <div class="auth-orbit orbit-a"></div>
+  <div class="auth-orbit orbit-b"></div>
+
+  <div class="auth-card">
+
+    <div class="brand-lockup">
+      <div class="delta-mark">
+        Δ
+      </div>
+
+      <div>
+        <div class="brand-name">DELTA</div>
+        <div class="brand-sub">FOUNDER NETWORK</div>
+      </div>
+    </div>
+
+    <div class="auth-heading">
+      <span class="eyebrow">BUILD TOGETHER</span>
+      <h1>Where founders<br><span>meet founders.</span></h1>
+      <p>
+        Share ideas, build relationships and find the people
+        who understand the journey.
+      </p>
+    </div>
+
+    <!-- LOGIN -->
+
+    <form id="loginForm" class="auth-form">
+
+      <label>Founder name</label>
+
+      <input
+        id="loginName"
+        type="text"
+        autocomplete="username"
+        placeholder="Your founder name"
+        required
+      >
+
+      <label>Password</label>
+
+      <input
+        id="loginPassword"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Your password"
+        required
+      >
+
+      <button class="primary-btn" type="submit">
+        <span>Enter Delta</span>
+        <i data-lucide="arrow-up-right"></i>
+      </button>
+
+      <button
+        type="button"
+        class="text-btn"
+        id="showSignup">
+        Create founder profile
+      </button>
+
+      <button
+        type="button"
+        class="forgot-btn"
+        id="showForgot">
+        Forgot password?
+      </button>
+
+    </form>
+
+    <!-- SIGNUP -->
+
+    <form id="signupForm" class="auth-form hidden">
+
+      <div class="form-back" id="backLogin">
+        <i data-lucide="arrow-left"></i>
+        Back to login
+      </div>
+
+      <label>Your name</label>
+
+      <input
+        id="signupName"
+        type="text"
+        placeholder="e.g. Devang Prajapati"
+        required
+      >
+
+      <label>Password</label>
+
+      <input
+        id="signupPassword"
+        type="password"
+        minlength="6"
+        placeholder="At least 6 characters"
+        required
+      >
+
+      <label>Security question</label>
+
+      <input
+        id="securityQuestion"
+        type="text"
+        placeholder="Your first startup?"
+        required
+      >
+
+      <label>Security answer</label>
+
+      <input
+        id="securityAnswer"
+        type="text"
+        placeholder="Your answer"
+        required
+      >
+
+      <button class="primary-btn" type="submit">
+        <span>Create profile</span>
+        <i data-lucide="sparkles"></i>
+      </button>
+
+    </form>
+
+    <!-- FORGOT -->
+
+    <form id="forgotForm" class="auth-form hidden">
+
+      <div class="form-back" id="backForgot">
+        <i data-lucide="arrow-left"></i>
+        Back
+      </div>
+
+      <div class="recovery-icon">
+        <i data-lucide="shield-check"></i>
+      </div>
+
+      <h3>Account recovery</h3>
+
+      <p class="small-muted">
+        Enter your founder name to retrieve your security question.
+      </p>
+
+      <label>Founder name</label>
+
+      <input
+        id="forgotName"
+        type="text"
+        placeholder="Founder name"
+        required
+      >
+
+      <button class="primary-btn" type="submit">
+        Continue
+      </button>
+
+    </form>
+
+    <div id="authMessage" class="auth-message"></div>
+
+  </div>
+</section>
 
 
-*{
+<!-- =====================================================
+     APP
+===================================================== -->
 
-  box-sizing:border-box;
+<div id="app" class="app hidden">
 
-}
+  <!-- TOP BAR -->
 
+  <header class="topbar">
 
-html{
+    <div class="top-brand">
+      <div class="mini-mark">Δ</div>
+      <span>DELTA</span>
+    </div>
 
-  scroll-behavior:smooth;
+    <div class="top-search">
 
-}
+      <i data-lucide="search"></i>
 
+      <input
+        id="globalSearch"
+        type="text"
+        placeholder="Search founders..."
+      >
 
-body{
+    </div>
 
-  margin:0;
+    <div class="top-actions">
 
-  min-height:100vh;
+      <button id="newPostTop" class="icon-btn">
+        <i data-lucide="plus"></i>
+      </button>
 
-  background:
-    radial-gradient(
-      circle at 15% 10%,
-      rgba(139,92,246,.12),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 85% 80%,
-      rgba(255,49,88,.09),
-      transparent 30%
-    ),
-    var(--bg);
+      <button id="profileTop" class="avatar-btn">
+        <span id="topInitial">D</span>
+      </button>
 
-  color:var(--text);
+    </div>
 
-  font-family:var(--font-ui);
-
-  overflow-x:hidden;
-
-}
-
-
-button,
-input,
-textarea{
-
-  font:inherit;
-
-}
+  </header>
 
 
-button{
+  <!-- MAIN -->
 
-  cursor:pointer;
+  <main class="main-shell">
 
-}
+    <!-- LEFT NAV -->
 
+    <aside class="sidebar">
 
-input,
-textarea{
+      <div class="sidebar-profile" id="sidebarProfile">
 
-  width:100%;
+        <div class="avatar avatar-large">
+          <span id="sideInitial">D</span>
+        </div>
 
-  color:var(--text);
+        <div>
+          <strong id="sideName">Founder</strong>
+          <span>Founder</span>
+        </div>
 
-  background:
-    rgba(255,255,255,.045);
-
-  border:1px solid var(--border);
-
-  border-radius:15px;
-
-  padding:15px 16px;
-
-  outline:none;
-
-  transition:
-    border .2s,
-    box-shadow .2s,
-    background .2s;
-
-}
+      </div>
 
 
-input:focus,
-textarea:focus{
+      <nav class="main-nav">
 
-  border-color:
-    rgba(139,92,246,.65);
+        <button class="nav-item active" data-view="feed">
+          <i data-lucide="home"></i>
+          <span>Feed</span>
+        </button>
 
-  box-shadow:
-    0 0 0 4px
-    rgba(139,92,246,.09);
+        <button class="nav-item" data-view="discover">
+          <i data-lucide="compass"></i>
+          <span>Discover</span>
+        </button>
 
-  background:
-    rgba(255,255,255,.06);
+        <button class="nav-item" data-view="messages">
+          <i data-lucide="message-circle"></i>
+          <span>Messages</span>
+        </button>
 
-}
+        <button class="nav-item" data-view="groups">
+          <i data-lucide="users"></i>
+          <span>Groups</span>
+        </button>
+
+        <button class="nav-item" data-view="profile">
+          <i data-lucide="user-round"></i>
+          <span>My profile</span>
+        </button>
+
+      </nav>
 
 
-textarea{
+      <div class="sidebar-bottom">
 
-  min-height:120px;
+        <div class="network-status">
+          <span class="status-dot"></span>
+          <div>
+            <strong>Delta Network</strong>
+            <small>Founder community</small>
+          </div>
+        </div>
 
-  resize:vertical;
+        <button id="logoutBtn" class="logout-btn">
+          <i data-lucide="log-out"></i>
+          Sign out
+        </button>
 
-}
+      </div>
+
+    </aside>
 
 
-.hidden{
+    <!-- CONTENT -->
 
-  display:none !important;
+    <section class="content">
 
-}
+      <!-- FEED -->
+
+      <div id="feedView" class="view">
+
+        <div class="page-heading">
+
+          <div>
+            <span class="eyebrow">FOUNDER FEED</span>
+            <h2>What's being built?</h2>
+            <p>
+              Ideas, progress and conversations from founders.
+            </p>
+          </div>
+
+          <button class="create-btn" id="createPostBtn">
+            <i data-lucide="plus"></i>
+            Share idea
+          </button>
+
+        </div>
+
+
+        <div id="postComposer" class="composer hidden">
+
+          <div class="composer-top">
+
+            <div class="avatar">
+              <span id="composerInitial">D</span>
+            </div>
+
+            <textarea
+              id="postText"
+              placeholder="What are you building?"
+            ></textarea>
+
+          </div>
+
+          <div id="imagePreview" class="image-preview hidden">
+            <img id="previewImage">
+          </div>
+
+          <div class="composer-bottom">
+
+            <label class="upload-btn">
+              <i data-lucide="image"></i>
+              Add image
+              <input
+                id="postImage"
+                type="file"
+                accept="image/*"
+                hidden
+              >
+            </label>
+
+            <button id="publishPost" class="primary-small">
+              Publish
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div id="feed" class="feed-list">
+
+          <div class="loading-card">
+            <div class="spinner"></div>
+            Loading founder feed...
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- DISCOVER -->
+
+      <div id="discoverView" class="view hidden">
+
+        <div class="page-heading">
+
+          <div>
+            <span class="eyebrow">NETWORK</span>
+            <h2>Discover founders</h2>
+            <p>Find people building interesting things.</p>
+          </div>
+
+        </div>
+
+        <div class="discover-search">
+
+          <i data-lucide="search"></i>
+
+          <input
+            id="founderSearch"
+            placeholder="Search by founder name..."
+          >
+
+        </div>
+
+        <div id="foundersGrid" class="founders-grid"></div>
+
+      </div>
+
+
+      <!-- MESSAGES -->
+
+      <div id="messagesView" class="view hidden">
+
+        <div class="page-heading">
+
+          <div>
+            <span class="eyebrow">PRIVATE NETWORK</span>
+            <h2>Messages</h2>
+            <p>Talk directly with founders.</p>
+          </div>
+
+        </div>
+
+        <div class="messages-layout">
+
+          <div class="conversation-list" id="conversationList">
+
+            <div class="empty-state">
+              <i data-lucide="message-circle"></i>
+              <h3>No conversations yet</h3>
+              <p>Open a founder profile and start a conversation.</p>
+            </div>
+
+          </div>
+
+          <div class="chat-panel" id="chatPanel">
+
+            <div class="empty-state">
+              <i data-lucide="send"></i>
+              <h3>Select a conversation</h3>
+              <p>Your founder conversations will appear here.</p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- GROUPS -->
+
+      <div id="groupsView" class="view hidden">
+
+        <div class="page-heading">
+
+          <div>
+            <span class="eyebrow">FOUNDER ROOMS</span>
+            <h2>Groups</h2>
+            <p>Create focused communities around ideas and industries.</p>
+          </div>
+
+          <button id="createGroupBtn" class="create-btn">
+            <i data-lucide="plus"></i>
+            Create group
+          </button>
+
+        </div>
+
+        <div id="groupsGrid" class="groups-grid"></div>
+
+      </div>
+
+
+      <!-- PROFILE -->
+
+      <div id="profileView" class="view hidden">
+
+        <div id="profilePage"></div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- MOBILE NAV -->
+
+  <nav class="mobile-nav">
+
+    <button class="mobile-nav-item active" data-view="feed">
+      <i data-lucide="home"></i>
+      <span>Feed</span>
+    </button>
+
+    <button class="mobile-nav-item" data-view="discover">
+      <i data-lucide="compass"></i>
+      <span>Discover</span>
+    </button>
+
+    <button class="mobile-nav-item" data-view="messages">
+      <i data-lucide="message-circle"></i>
+      <span>Chat</span>
+    </button>
+
+    <button class="mobile-nav-item" data-view="groups">
+      <i data-lucide="users"></i>
+      <span>Groups</span>
+    </button>
+
+    <button class="mobile-nav-item" data-view="profile">
+      <i data-lucide="user"></i>
+      <span>Profile</span>
+    </button>
+
+  </nav>
+
+</div>
+
+
+<!-- =====================================================
+     GROUP MODAL
+===================================================== -->
+
+<div id="groupModal" class="modal hidden">
+
+  <div class="modal-card">
+
+    <button class="modal-close" data-close="groupModal">
+      <i data-lucide="x"></i>
+    </button>
+
+    <span class="eyebrow">NEW COMMUNITY</span>
+
+    <h2>Create a founder group</h2>
+
+    <p class="modal-muted">
+      Start a focused discussion around your idea, industry or
+      founder journey.
+    </p>
+
+    <form id="groupForm">
+
+      <label>Group name</label>
+
+      <input
+        id="groupName"
+        placeholder="AI Founders"
+        required
+      >
+
+      <label>Description</label>
+
+      <textarea
+        id="groupDescription"
+        placeholder="What is this group about?"
+      ></textarea>
+
+      <button class="primary-btn">
+        Create group
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     PROFILE EDIT MODAL
+===================================================== -->
+
+<div id="profileModal" class="modal hidden">
+
+  <div class="modal-card">
+
+    <button class="modal-close" data-close="profileModal">
+      <i data-lucide="x"></i>
+    </button>
+
+    <span class="eyebrow">YOUR PROFILE</span>
+
+    <h2>Edit profile</h2>
+
+    <form id="profileForm">
+
+      <label>Name</label>
+
+      <input id="editName" required>
+
+      <label>Username</label>
+
+      <input id="editUsername">
+
+      <label>Bio</label>
+
+      <textarea
+        id="editBio"
+        placeholder="Tell founders what you're building..."
+      ></textarea>
+
+      <button class="primary-btn">
+        Save changes
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     SCRIPT
+===================================================== -->
+
+<script>
+
+const SUPABASE_URL = "https://inhxlwsjlddhnpalbocl.supabase.co";
+
+/*
+  PUT YOUR SUPABASE PUBLISHABLE / ANON KEY HERE.
+
+  NEVER PUT THE SERVICE ROLE KEY HERE.
+*/
+
+const SUPABASE_KEY = "PASTE_YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY";
+
+const { createClient } = supabase;
+
+const db = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+let currentUser = null;
+let currentProfile = null;
+let currentConversation = null;
 
 
 /* =====================================================
-   BACKGROUND
+   HELPERS
 ===================================================== */
 
-.aurora{
+const $ = id => document.getElementById(id);
 
-  position:fixed;
+function escapeHTML(value = "") {
 
-  width:480px;
-
-  height:480px;
-
-  border-radius:50%;
-
-  filter:blur(110px);
-
-  pointer-events:none;
-
-  opacity:.2;
-
-  z-index:-2;
-
-  animation:
-    floatAurora 13s ease-in-out infinite;
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
 }
 
 
-.aurora-one{
+function initials(name = "Founder") {
 
-  background:#7c3aed;
-
-  left:-220px;
-
-  top:5%;
-
-}
-
-
-.aurora-two{
-
-  background:#e11d48;
-
-  right:-240px;
-
-  bottom:0;
-
-  animation-delay:-6s;
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0,2)
+    .map(x => x[0])
+    .join("")
+    .toUpperCase();
 
 }
 
 
-.noise{
+function showMessage(message, type = "error") {
 
-  position:fixed;
+  const box = $("authMessage");
 
-  inset:0;
+  box.textContent = message;
 
-  pointer-events:none;
-
-  opacity:.035;
-
-  z-index:-1;
-
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  box.className = "auth-message " + type;
 
 }
 
 
-@keyframes floatAurora{
+function openModal(id) {
 
-  0%,100%{
-    transform:translate3d(0,0,0) scale(1);
-  }
+  $(id).classList.remove("hidden");
 
-  50%{
-    transform:translate3d(40px,-35px,0) scale(1.12);
-  }
+}
+
+
+function closeModal(id) {
+
+  $(id).classList.add("hidden");
 
 }
 
@@ -239,1576 +715,1007 @@ textarea{
    AUTH
 ===================================================== */
 
-.auth-screen{
+function founderEmail(name) {
 
-  min-height:100vh;
+  /*
+    For this prototype the founder name is converted into
+    an internal Auth identity.
 
-  display:flex;
+    Example:
+    Devang Prajapati
+    ->
+    devang-prajapati@delta-founder.local
+  */
 
-  justify-content:center;
-
-  align-items:center;
-
-  padding:30px 20px;
-
-  position:relative;
+  return (
+    name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+    + "@delta-founder.local"
+  );
 
 }
 
 
-.auth-card{
+$("showSignup").onclick = () => {
 
-  width:min(460px,100%);
+  $("loginForm").classList.add("hidden");
+  $("signupForm").classList.remove("hidden");
+  $("forgotForm").classList.add("hidden");
 
-  position:relative;
+  $("authMessage").textContent = "";
 
-  padding:40px;
+};
 
-  border-radius:30px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.085),
-      rgba(255,255,255,.025)
+$("backLogin").onclick = () => {
+
+  $("signupForm").classList.add("hidden");
+  $("loginForm").classList.remove("hidden");
+
+};
+
+
+$("showForgot").onclick = () => {
+
+  $("loginForm").classList.add("hidden");
+  $("forgotForm").classList.remove("hidden");
+  $("signupForm").classList.add("hidden");
+
+};
+
+
+$("backForgot").onclick = () => {
+
+  $("forgotForm").classList.add("hidden");
+  $("loginForm").classList.remove("hidden");
+
+};
+
+
+$("signupForm").addEventListener("submit", async e => {
+
+  e.preventDefault();
+
+  const name = $("signupName").value.trim();
+  const password = $("signupPassword").value;
+  const question = $("securityQuestion").value.trim();
+  const answer = $("securityAnswer").value.trim();
+
+  if(password.length < 6){
+
+    showMessage("Password must be at least 6 characters.");
+
+    return;
+
+  }
+
+  try {
+
+    showMessage("Creating your founder identity...", "loading");
+
+    const email = founderEmail(name);
+
+    const { data, error } = await db.auth.signUp({
+
+      email,
+      password,
+
+      options: {
+        data: {
+          name
+        }
+      }
+
+    });
+
+    if(error) throw error;
+
+    if(!data.user){
+
+      throw new Error("Could not create founder.");
+
+    }
+
+    /*
+      Security answer is intentionally kept out of the
+      normal UI. For a production implementation this
+      should be hashed server-side / through an Edge Function.
+    */
+
+    const { error: profileError } = await db
+      .from("profiles")
+      .upsert({
+
+        id: data.user.id,
+        name,
+        security_question: question,
+        security_answer_hash: answer
+
+      });
+
+    if(profileError) throw profileError;
+
+    showMessage(
+      "Founder profile created. You can now enter Delta.",
+      "success"
     );
 
-  border:1px solid var(--border);
+    $("signupForm").reset();
 
-  box-shadow:
-    0 50px 120px rgba(0,0,0,.58);
+    $("signupForm").classList.add("hidden");
+    $("loginForm").classList.remove("hidden");
 
-  backdrop-filter:blur(28px);
+  } catch(error) {
 
-}
+    console.error(error);
+
+    showMessage(error.message || "Signup failed.");
+
+  }
+
+});
 
 
-.auth-card::before{
+$("loginForm").addEventListener("submit", async e => {
 
-  content:"";
+  e.preventDefault();
 
-  position:absolute;
+  const name = $("loginName").value.trim();
+  const password = $("loginPassword").value;
 
-  inset:-1px;
+  try {
 
-  border-radius:31px;
+    showMessage("Entering Delta...", "loading");
 
-  background:
-    linear-gradient(
-      120deg,
-      rgba(168,85,247,.28),
-      transparent 35%,
-      rgba(255,49,88,.2)
+    const email = founderEmail(name);
+
+    const { data, error } =
+      await db.auth.signInWithPassword({
+
+        email,
+        password
+
+      });
+
+    if(error) throw error;
+
+    currentUser = data.user;
+
+    await loadApplication();
+
+  } catch(error) {
+
+    console.error(error);
+
+    showMessage(
+      "Could not sign in. Check your founder name and password."
     );
 
-  pointer-events:none;
+  }
 
-  z-index:-1;
-
-}
+});
 
 
-.brand-lockup{
+$("logoutBtn").onclick = async () => {
 
-  display:flex;
+  await db.auth.signOut();
 
-  align-items:center;
+  currentUser = null;
+  currentProfile = null;
 
-  gap:13px;
+  $("app").classList.add("hidden");
+  $("authScreen").classList.remove("hidden");
 
-  margin-bottom:45px;
-
-}
+};
 
 
-.delta-mark{
+/* =====================================================
+   APPLICATION START
+===================================================== */
 
-  width:46px;
+async function loadApplication(){
 
-  height:46px;
+  $("authScreen").classList.add("hidden");
+  $("app").classList.remove("hidden");
 
-  display:grid;
+  await loadProfile();
 
-  place-items:center;
+  updateIdentity();
 
-  border-radius:15px;
+  await loadFeed();
 
-  font-family:var(--font-display);
+  await loadFounders();
 
-  font-size:25px;
+  await loadGroups();
 
-  font-weight:700;
+  renderProfile();
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--purple),
-      var(--red)
-    );
-
-  box-shadow:
-    0 12px 35px
-    rgba(139,92,246,.28);
+  lucide.createIcons();
 
 }
 
 
-.brand-name{
+async function loadProfile(){
 
-  font-family:var(--font-display);
+  if(!currentUser) return;
 
-  font-weight:700;
+  let { data, error } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id", currentUser.id)
+    .maybeSingle();
 
-  letter-spacing:.22em;
+  if(error){
 
-}
+    console.error(error);
 
+    return;
 
-.brand-sub{
+  }
 
-  color:var(--muted);
+  if(!data){
 
-  font-size:9px;
+    const name =
+      currentUser.user_metadata?.name ||
+      currentUser.email?.split("@")[0] ||
+      "Founder";
 
-  letter-spacing:.18em;
+    const result = await db
+      .from("profiles")
+      .insert({
+        id: currentUser.id,
+        name
+      })
+      .select()
+      .single();
 
-  margin-top:2px;
+    data = result.data;
 
-}
+  }
 
-
-.auth-heading .eyebrow{
-
-  display:inline-block;
-
-  color:#b99aff;
-
-  font-size:10px;
-
-  letter-spacing:.2em;
-
-  font-weight:700;
-
-}
-
-
-.auth-heading h1{
-
-  margin:13px 0 13px;
-
-  font-family:var(--font-display);
-
-  font-size:43px;
-
-  line-height:1.02;
-
-  letter-spacing:-.045em;
+  currentProfile = data;
 
 }
 
 
-.auth-heading h1 span{
+function updateIdentity(){
 
-  background:
-    linear-gradient(
-      90deg,
-      #b993ff,
-      #ff4d6d
-    );
+  if(!currentProfile) return;
 
-  -webkit-background-clip:text;
+  const name = currentProfile.name || "Founder";
 
-  background-clip:text;
+  $("sideName").textContent = name;
 
-  color:transparent;
+  $("sideInitial").textContent = initials(name);
 
-}
+  $("topInitial").textContent = initials(name);
 
-
-.auth-heading p{
-
-  color:var(--muted);
-
-  line-height:1.65;
-
-  margin-bottom:30px;
-
-}
-
-
-.auth-form{
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:10px;
-
-}
-
-
-.auth-form label{
-
-  color:#c8c1cf;
-
-  font-size:12px;
-
-  font-weight:600;
-
-  margin-top:7px;
-
-}
-
-
-.primary-btn{
-
-  margin-top:13px;
-
-  width:100%;
-
-  min-height:53px;
-
-  border:0;
-
-  border-radius:16px;
-
-  color:white;
-
-  font-weight:700;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  gap:10px;
-
-  background:
-    linear-gradient(
-      100deg,
-      #7c3aed,
-      #a855f7 45%,
-      #ef3154
-    );
-
-  box-shadow:
-    0 18px 45px
-    rgba(124,58,237,.22);
-
-  transition:
-    transform .2s,
-    box-shadow .2s;
-
-}
-
-
-.primary-btn:hover{
-
-  transform:translateY(-2px);
-
-  box-shadow:
-    0 22px 55px
-    rgba(168,85,247,.3);
-
-}
-
-
-.text-btn,
-.forgot-btn{
-
-  border:0;
-
-  background:none;
-
-  color:#bba6dd;
-
-  padding:8px;
-
-}
-
-
-.forgot-btn{
-
-  color:#807885;
-
-  font-size:12px;
-
-}
-
-
-.form-back{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:7px;
-
-  color:#a998b4;
-
-  font-size:13px;
-
-  cursor:pointer;
-
-  margin-bottom:10px;
-
-}
-
-
-.auth-message{
-
-  min-height:22px;
-
-  margin-top:15px;
-
-  text-align:center;
-
-  color:#ff7189;
-
-  font-size:13px;
-
-}
-
-
-.auth-message.success{
-
-  color:var(--green);
-
-}
-
-
-.auth-message.loading{
-
-  color:#bda7ff;
-
-}
-
-
-.small-muted,
-.modal-muted{
-
-  color:var(--muted);
-
-  line-height:1.6;
-
-  font-size:13px;
-
-}
-
-
-.recovery-icon{
-
-  width:50px;
-
-  height:50px;
-
-  display:grid;
-
-  place-items:center;
-
-  border-radius:16px;
-
-  color:#bd9bff;
-
-  background:
-    rgba(139,92,246,.13);
-
-  margin:15px 0;
+  $("composerInitial").textContent = initials(name);
 
 }
 
 
 /* =====================================================
-   APP
+   NAVIGATION
 ===================================================== */
 
-.app{
+document.querySelectorAll("[data-view]").forEach(button => {
 
-  min-height:100vh;
+  button.addEventListener("click", async () => {
 
-}
+    const view = button.dataset.view;
 
+    document.querySelectorAll(".view").forEach(v => {
 
-.topbar{
+      v.classList.add("hidden");
 
-  height:74px;
+    });
 
-  position:fixed;
+    const target = $(view + "View");
 
-  left:0;
+    if(target){
 
-  right:0;
+      target.classList.remove("hidden");
 
-  top:0;
+    }
 
-  z-index:50;
+    document
+      .querySelectorAll("[data-view]")
+      .forEach(x => x.classList.remove("active"));
 
-  display:flex;
+    document
+      .querySelectorAll(`[data-view="${view}"]`)
+      .forEach(x => x.classList.add("active"));
 
-  align-items:center;
+    if(view === "feed") await loadFeed();
 
-  gap:30px;
+    if(view === "discover") await loadFounders();
 
-  padding:0 30px;
+    if(view === "groups") await loadGroups();
 
-  background:
-    rgba(5,3,8,.72);
+    if(view === "profile") renderProfile();
 
-  border-bottom:
-    1px solid rgba(255,255,255,.07);
+  });
 
-  backdrop-filter:blur(25px);
-
-}
-
-
-.top-brand{
-
-  width:220px;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:11px;
-
-  font-family:var(--font-display);
-
-  font-weight:700;
-
-  letter-spacing:.18em;
-
-}
+});
 
 
-.mini-mark{
+/* =====================================================
+   POST COMPOSER
+===================================================== */
 
-  width:34px;
+$("createPostBtn").onclick = () => {
 
-  height:34px;
+  $("postComposer").classList.toggle("hidden");
 
-  display:grid;
+};
 
-  place-items:center;
 
-  border-radius:11px;
+$("newPostTop").onclick = () => {
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--purple),
-      var(--red)
+  $("postComposer").classList.remove("hidden");
+
+  $("feedView").scrollIntoView({
+    behavior:"smooth"
+  });
+
+};
+
+
+$("postImage").addEventListener("change", e => {
+
+  const file = e.target.files[0];
+
+  if(!file) return;
+
+  const url = URL.createObjectURL(file);
+
+  $("previewImage").src = url;
+
+  $("imagePreview").classList.remove("hidden");
+
+});
+
+
+$("publishPost").onclick = async () => {
+
+  const content = $("postText").value.trim();
+
+  const file = $("postImage").files[0];
+
+  if(!content && !file){
+
+    alert("Write something or attach an image.");
+
+    return;
+
+  }
+
+  try {
+
+    let imageUrl = null;
+
+    /*
+      Image upload requires a public Storage bucket named
+      "delta-images".
+    */
+
+    if(file){
+
+      const filename =
+        currentUser.id +
+        "/" +
+        Date.now() +
+        "-" +
+        file.name.replace(/[^a-zA-Z0-9._-]/g,"-");
+
+      const upload =
+        await db.storage
+          .from("delta-images")
+          .upload(filename, file);
+
+      if(upload.error) throw upload.error;
+
+      const publicUrl =
+        db.storage
+          .from("delta-images")
+          .getPublicUrl(filename);
+
+      imageUrl = publicUrl.data.publicUrl;
+
+    }
+
+    const { error } = await db
+      .from("posts")
+      .insert({
+
+        user_id: currentUser.id,
+        content,
+        image_url: imageUrl
+
+      });
+
+    if(error) throw error;
+
+    $("postText").value = "";
+    $("postImage").value = "";
+    $("imagePreview").classList.add("hidden");
+
+    $("postComposer").classList.add("hidden");
+
+    await loadFeed();
+
+  } catch(error) {
+
+    console.error(error);
+
+    alert(
+      "Could not publish post: " +
+      error.message
     );
 
+  }
+
+};
+
+
+/* =====================================================
+   FEED
+===================================================== */
+
+async function loadFeed(){
+
+  const feed = $("feed");
+
+  feed.innerHTML = `
+    <div class="loading-card">
+      <div class="spinner"></div>
+      Loading founder feed...
+    </div>
+  `;
+
+  const { data, error } = await db
+    .from("posts")
+    .select(`
+      *,
+      profiles (
+        id,
+        name,
+        username,
+        avatar_url
+      )
+    `)
+    .order("created_at", {
+      ascending:false
+    });
+
+  if(error){
+
+    feed.innerHTML = `
+      <div class="empty-state">
+        <h3>Feed unavailable</h3>
+        <p>${escapeHTML(error.message)}</p>
+      </div>
+    `;
+
+    return;
+
+  }
+
+  if(!data?.length){
+
+    feed.innerHTML = `
+      <div class="empty-state feed-empty">
+        <div class="empty-orb">
+          <i data-lucide="sparkles"></i>
+        </div>
+
+        <h3>The network is quiet.</h3>
+
+        <p>
+          Be the first founder to share what you're building.
+        </p>
+
+        <button
+          class="primary-small"
+          onclick="document.getElementById('postComposer').classList.remove('hidden')">
+          Share your idea
+        </button>
+      </div>
+    `;
+
+    lucide.createIcons();
+
+    return;
+
+  }
+
+  const postIds = data.map(p => p.id);
+
+  let likes = [];
+
+  if(postIds.length){
+
+    const result = await db
+      .from("likes")
+      .select("post_id,user_id")
+      .in("post_id",postIds);
+
+    likes = result.data || [];
+
+  }
+
+  feed.innerHTML = data.map(post => {
+
+    const author = post.profiles || {};
+
+    const postLikes =
+      likes.filter(x => x.post_id === post.id);
+
+    const liked =
+      postLikes.some(x => x.user_id === currentUser.id);
+
+    return `
+
+      <article class="post-card">
+
+        <div class="post-header">
+
+          <div class="avatar">
+
+            ${
+              author.avatar_url
+              ? `<img src="${escapeHTML(author.avatar_url)}">`
+              : initials(author.name)
+            }
+
+          </div>
+
+          <div class="post-author">
+
+            <strong>
+              ${escapeHTML(author.name || "Founder")}
+            </strong>
+
+            <span>
+              ${formatDate(post.created_at)}
+            </span>
+
+          </div>
+
+          <button class="more-btn">
+            <i data-lucide="more-horizontal"></i>
+          </button>
+
+        </div>
+
+        ${
+          post.content
+          ? `
+            <div class="post-content">
+              ${escapeHTML(post.content)}
+            </div>
+          `
+          : ""
+        }
+
+        ${
+          post.image_url
+          ? `
+            <div class="post-image">
+              <img
+                src="${escapeHTML(post.image_url)}"
+                loading="lazy"
+              >
+            </div>
+          `
+          : ""
+        }
+
+        <div class="post-actions">
+
+          <button
+            class="post-action ${liked ? "liked" : ""}"
+            onclick="toggleLike(${post.id}, this)">
+
+            <i data-lucide="heart"></i>
+
+            <span>
+              ${postLikes.length}
+            </span>
+
+          </button>
+
+          <button
+            class="post-action"
+            onclick="openComments(${post.id})">
+
+            <i data-lucide="message-circle"></i>
+
+            <span>Comment</span>
+
+          </button>
+
+          <button class="post-action share-action">
+
+            <i data-lucide="send"></i>
+
+            <span>Share</span>
+
+          </button>
+
+        </div>
+
+        <div
+          class="comments-area hidden"
+          id="comments-${post.id}">
+
+          <div
+            class="comments-list"
+            id="comment-list-${post.id}">
+          </div>
+
+          <div class="comment-input">
+
+            <input
+              id="comment-input-${post.id}"
+              placeholder="Write a comment..."
+            >
+
+            <button
+              onclick="addComment(${post.id})">
+              <i data-lucide="arrow-up"></i>
+            </button>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    `;
+
+  }).join("");
+
+  lucide.createIcons();
+
 }
 
 
-.top-search{
+function formatDate(date){
 
-  max-width:530px;
+  const d = new Date(date);
 
-  flex:1;
-
-  height:42px;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:10px;
-
-  padding:0 14px;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  border-radius:13px;
-
-  background:
-    rgba(255,255,255,.04);
-
-}
-
-
-.top-search svg{
-
-  color:#77707e;
-
-}
-
-
-.top-search input{
-
-  padding:0;
-
-  border:0;
-
-  background:none;
-
-  box-shadow:none;
-
-}
-
-
-.top-actions{
-
-  margin-left:auto;
-
-  display:flex;
-
-  gap:10px;
-
-}
-
-
-.icon-btn,
-.avatar-btn{
-
-  width:42px;
-
-  height:42px;
-
-  border-radius:13px;
-
-  border:
-    1px solid var(--border);
-
-  background:
-    rgba(255,255,255,.045);
-
-  color:white;
-
-}
-
-
-.avatar-btn{
-
-  border-color:
-    rgba(168,85,247,.35);
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(139,92,246,.25),
-      rgba(255,49,88,.18)
+  const diff =
+    Math.floor(
+      (Date.now() - d.getTime()) / 1000
     );
 
-}
+  if(diff < 60)
+    return "just now";
 
+  if(diff < 3600)
+    return Math.floor(diff/60) + "m ago";
 
-.main-shell{
+  if(diff < 86400)
+    return Math.floor(diff/3600) + "h ago";
 
-  display:grid;
+  if(diff < 604800)
+    return Math.floor(diff/86400) + "d ago";
 
-  grid-template-columns:240px minmax(0,1fr);
-
-  padding-top:74px;
-
-  min-height:100vh;
-
-}
-
-
-.sidebar{
-
-  position:fixed;
-
-  top:74px;
-
-  bottom:0;
-
-  width:240px;
-
-  padding:25px 18px;
-
-  border-right:
-    1px solid rgba(255,255,255,.065);
-
-  background:
-    rgba(5,3,8,.32);
-
-  display:flex;
-
-  flex-direction:column;
+  return d.toLocaleDateString();
 
 }
 
 
-.sidebar-profile{
+async function toggleLike(postId, button){
 
-  display:flex;
+  const { data } = await db
+    .from("likes")
+    .select("id")
+    .eq("post_id",postId)
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
 
-  align-items:center;
+  if(data){
 
-  gap:12px;
+    await db
+      .from("likes")
+      .delete()
+      .eq("id",data.id);
 
-  padding:10px;
+  }else{
 
-  border-radius:17px;
+    await db
+      .from("likes")
+      .insert({
 
-  background:
-    rgba(255,255,255,.035);
+        post_id:postId,
+        user_id:currentUser.id
 
-  margin-bottom:25px;
+      });
 
-}
+  }
 
-
-.sidebar-profile strong{
-
-  display:block;
-
-  font-size:13px;
-
-}
-
-
-.sidebar-profile span{
-
-  color:#716b77;
-
-  font-size:11px;
+  await loadFeed();
 
 }
 
 
-.avatar{
+async function openComments(postId){
 
-  width:40px;
+  const box = $(`comments-${postId}`);
 
-  height:40px;
+  box.classList.toggle("hidden");
 
-  flex:none;
+  if(!box.classList.contains("hidden")){
 
-  display:grid;
+    await loadComments(postId);
 
-  place-items:center;
-
-  border-radius:14px;
-
-  overflow:hidden;
-
-  color:white;
-
-  font-family:var(--font-display);
-
-  font-weight:700;
-
-  background:
-    linear-gradient(
-      135deg,
-      #6d28d9,
-      #be123c
-    );
+  }
 
 }
 
 
-.avatar img{
+async function loadComments(postId){
 
-  width:100%;
+  const list = $(`comment-list-${postId}`);
 
-  height:100%;
+  const { data } = await db
+    .from("comments")
+    .select(`
+      *,
+      profiles(name)
+    `)
+    .eq("post_id",postId)
+    .order("created_at",{ascending:true});
 
-  object-fit:cover;
+  if(!data?.length){
 
-}
+    list.innerHTML = `
+      <div class="no-comments">
+        No comments yet.
+      </div>
+    `;
 
+    return;
 
-.avatar-large{
+  }
 
-  width:40px;
+  list.innerHTML = data.map(comment => `
 
-  height:40px;
+    <div class="comment">
 
-}
+      <div class="comment-avatar">
+        ${initials(comment.profiles?.name)}
+      </div>
 
+      <div>
 
-.main-nav{
+        <strong>
+          ${escapeHTML(comment.profiles?.name || "Founder")}
+        </strong>
 
-  display:flex;
+        <p>
+          ${escapeHTML(comment.content)}
+        </p>
 
-  flex-direction:column;
+      </div>
 
-  gap:6px;
+    </div>
 
-}
-
-
-.nav-item{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:13px;
-
-  height:48px;
-
-  padding:0 14px;
-
-  color:#88818e;
-
-  background:none;
-
-  border:0;
-
-  border-radius:14px;
-
-  text-align:left;
-
-  transition:.2s;
+  `).join("");
 
 }
 
 
-.nav-item svg{
+async function addComment(postId){
 
-  width:18px;
+  const input =
+    $(`comment-input-${postId}`);
 
-}
+  const content =
+    input.value.trim();
 
+  if(!content) return;
 
-.nav-item:hover{
+  await db
+    .from("comments")
+    .insert({
 
-  background:
-    rgba(255,255,255,.045);
+      post_id:postId,
+      user_id:currentUser.id,
+      content
 
-  color:white;
+    });
 
-}
+  input.value = "";
 
-
-.nav-item.active{
-
-  color:white;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(139,92,246,.15),
-      rgba(255,49,88,.07)
-    );
-
-  border:
-    1px solid rgba(139,92,246,.12);
-
-}
-
-
-.sidebar-bottom{
-
-  margin-top:auto;
-
-}
-
-
-.network-status{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:10px;
-
-  padding:13px;
-
-  margin-bottom:13px;
-
-  border-radius:16px;
-
-  background:
-    rgba(255,255,255,.025);
-
-}
-
-
-.status-dot{
-
-  width:8px;
-
-  height:8px;
-
-  border-radius:50%;
-
-  background:#43e7a4;
-
-  box-shadow:
-    0 0 14px #43e7a4;
-
-}
-
-
-.network-status strong{
-
-  display:block;
-
-  font-size:11px;
-
-}
-
-
-.network-status small{
-
-  display:block;
-
-  color:#6d6673;
-
-  font-size:9px;
-
-  margin-top:3px;
-
-}
-
-
-.logout-btn{
-
-  width:100%;
-
-  display:flex;
-
-  gap:10px;
-
-  align-items:center;
-
-  padding:12px;
-
-  border:0;
-
-  border-radius:13px;
-
-  background:none;
-
-  color:#817984;
-
-}
-
-
-.logout-btn:hover{
-
-  color:#ff6a80;
-
-  background:
-    rgba(255,49,88,.06);
+  await loadComments(postId);
 
 }
 
 
 /* =====================================================
-   CONTENT
+   DISCOVER FOUNDERS
 ===================================================== */
 
-.content{
+async function loadFounders(search = ""){
 
-  grid-column:2;
+  const grid = $("foundersGrid");
 
-  width:min(1100px,100%);
+  let query =
+    db
+      .from("profiles")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(50);
 
-  padding:45px 42px 100px;
+  if(search){
 
-  margin:auto;
-
-}
-
-
-.page-heading{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:flex-end;
-
-  gap:25px;
-
-  margin-bottom:30px;
-
-}
-
-
-.eyebrow{
-
-  font-size:10px;
-
-  color:#a990d7;
-
-  letter-spacing:.19em;
-
-  font-weight:700;
-
-}
-
-
-.page-heading h2{
-
-  margin:8px 0 5px;
-
-  font-family:var(--font-display);
-
-  font-size:34px;
-
-  letter-spacing:-.035em;
-
-}
-
-
-.page-heading p{
-
-  color:var(--muted);
-
-  margin:0;
-
-}
-
-
-.create-btn{
-
-  height:45px;
-
-  padding:0 18px;
-
-  border:1px solid rgba(168,85,247,.25);
-
-  border-radius:13px;
-
-  color:white;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(139,92,246,.2),
-      rgba(255,49,88,.12)
+    query = query.ilike(
+      "name",
+      `%${search}%`
     );
 
-  display:flex;
+  }
 
-  align-items:center;
+  const { data, error } = await query;
 
-  gap:8px;
+  if(error){
 
-}
+    grid.innerHTML = `
+      <div class="empty-state">
+        ${escapeHTML(error.message)}
+      </div>
+    `;
 
+    return;
 
-/* =====================================================
-   COMPOSER
-===================================================== */
+  }
 
-.composer{
+  const founders =
+    (data || [])
+      .filter(x => x.id !== currentUser.id);
 
-  margin-bottom:24px;
+  if(!founders.length){
 
-  padding:20px;
+    grid.innerHTML = `
+      <div class="empty-state">
+        <i data-lucide="users"></i>
+        <h3>No founders found</h3>
+        <p>Try another search.</p>
+      </div>
+    `;
 
-  border:
-    1px solid rgba(168,85,247,.18);
+    lucide.createIcons();
 
-  border-radius:22px;
+    return;
 
-  background:
-    rgba(255,255,255,.045);
+  }
 
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.22);
+  grid.innerHTML = founders.map(founder => `
 
-}
+    <article class="founder-card">
 
+      <div class="founder-card-top">
 
-.composer-top{
+        <div class="avatar avatar-xl">
 
-  display:flex;
+          ${
+            founder.avatar_url
+            ? `<img src="${escapeHTML(founder.avatar_url)}">`
+            : initials(founder.name)
+          }
 
-  gap:13px;
+        </div>
 
-}
+        <div class="online-ring"></div>
 
+      </div>
 
-.composer textarea{
+      <h3>
+        ${escapeHTML(founder.name)}
+      </h3>
 
-  min-height:85px;
+      ${
+        founder.username
+        ? `<span class="username">@${escapeHTML(founder.username)}</span>`
+        : ""
+      }
 
-  border:0;
+      <p>
+        ${escapeHTML(
+          founder.bio ||
+          "Founder building something interesting."
+        )}
+      </p>
 
-  background:transparent;
+      <div class="founder-card-actions">
 
-  padding-top:7px;
+        <button
+          class="secondary-btn"
+          onclick="viewFounder('${founder.id}')">
+          View
+        </button>
 
-}
+        <button
+          class="primary-small"
+          onclick="followFounder('${founder.id}', this)">
+          Follow
+        </button>
 
+      </div>
 
-.composer-bottom{
+    </article>
 
-  display:flex;
+  `).join("");
 
-  align-items:center;
-
-  justify-content:space-between;
-
-  padding-top:10px;
-
-  border-top:
-    1px solid rgba(255,255,255,.06);
-
-}
-
-
-.upload-btn{
-
-  color:#a998b1;
-
-  font-size:12px;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:7px;
-
-  cursor:pointer;
-
-}
-
-
-.primary-small{
-
-  border:0;
-
-  border-radius:12px;
-
-  padding:10px 16px;
-
-  color:white;
-
-  font-size:12px;
-
-  font-weight:700;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--purple),
-      var(--red)
-    );
+  lucide.createIcons();
 
 }
 
 
-.secondary-btn{
-
-  border:
-    1px solid rgba(255,255,255,.12);
-
-  background:
-    rgba(255,255,255,.045);
-
-  color:#e7e3eb;
-
-  border-radius:12px;
-
-  padding:9px 14px;
-
-  display:inline-flex;
-
-  align-items:center;
-
-  gap:7px;
-
-}
+$("founderSearch").addEventListener(
+  "input",
+  e => loadFounders(e.target.value.trim())
+);
 
 
-.image-preview{
+async function followFounder(id,button){
 
-  margin-top:12px;
+  const { data } = await db
+    .from("follows")
+    .select("id")
+    .eq("follower_id",currentUser.id)
+    .eq("following_id",id)
+    .maybeSingle();
 
-  max-height:320px;
+  if(data){
 
-  overflow:hidden;
+    await db
+      .from("follows")
+      .delete()
+      .eq("id",data.id);
 
-  border-radius:16px;
+    button.textContent = "Follow";
 
-}
+  }else{
 
+    await db
+      .from("follows")
+      .insert({
 
-.image-preview img{
+        follower_id:currentUser.id,
+        following_id:id
 
-  width:100%;
+      });
 
-  height:100%;
+    button.textContent = "Following";
 
-  max-height:320px;
-
-  object-fit:cover;
+  }
 
 }
 
 
-/* =====================================================
-   POSTS
-===================================================== */
-
-.feed-list{
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:18px;
-
-}
-
-
-.post-card{
-
-  padding:22px;
-
-  border-radius:23px;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.055),
-      rgba(255,255,255,.022)
-    );
-
-  box-shadow:
-    0 18px 60px rgba(0,0,0,.2);
-
-}
-
-
-.post-header{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:12px;
-
-}
-
-
-.post-author{
-
-  flex:1;
-
-}
-
-
-.post-author strong{
-
-  display:block;
-
-  font-size:13px;
-
-}
-
-
-.post-author span{
-
-  display:block;
-
-  color:#77707c;
-
-  font-size:11px;
-
-  margin-top:3px;
-
-}
-
-
-.more-btn{
-
-  border:0;
-
-  background:none;
-
-  color:#6f6874;
-
-}
-
-
-.post-content{
-
-  margin:
-    18px 0;
-
-  color:#e9e4ed;
-
-  line-height:1.65;
-
-  white-space:pre-wrap;
-
-}
-
-
-.post-image{
-
-  overflow:hidden;
-
-  border-radius:17px;
-
-  margin-top:15px;
-
-  border:
-    1px solid rgba(255,255,255,.07);
-
-}
-
-
-.post-image img{
-
-  width:100%;
-
-  max-height:550px;
-
-  display:block;
-
-  object-fit:cover;
-
-}
-
-
-.post-actions{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:8px;
-
-  padding-top:15px;
-
-  margin-top:15px;
-
-  border-top:
-    1px solid rgba(255,255,255,.06);
-
-}
-
-
-.post-action{
-
-  border:0;
-
-  background:none;
-
-  color:#817985;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:7px;
-
-  padding:7px 10px;
-
-  border-radius:10px;
-
-}
-
-
-.post-action:hover{
-
-  color:white;
-
-  background:
-    rgba(255,255,255,.04);
-
-}
-
-
-.post-action.liked{
-
-  color:#ff4665;
-
-}
-
-
-.post-action svg{
-
-  width:17px;
-
-}
-
-
-.comments-area{
-
-  padding-top:15px;
-
-}
-
-
-.comment{
-
-  display:flex;
-
-  gap:9px;
-
-  padding:10px 0;
-
-}
-
-
-.comment-avatar{
-
-  width:29px;
-
-  height:29px;
-
-  flex:none;
-
-  display:grid;
-
-  place-items:center;
-
-  border-radius:9px;
-
-  font-size:9px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #5b21b6,
-      #be123c
-    );
-
-}
-
-
-.comment strong{
-
-  font-size:11px;
-
-}
-
-
-.comment p{
-
-  margin:3px 0 0;
-
-  color:#aaa3ae;
-
-  font-size:12px;
-
-  line-height:1.5;
-
-}
-
-
-.comment-input{
-
-  display:flex;
-
-  gap:7px;
-
-  margin-top:8px;
-
-}
-
-
-.comment-input input{
-
-  padding:11px 13px;
-
-}
-
-
-.comment-input button{
-
-  width:42px;
-
-  border:0;
-
-  border-radius:12px;
-
-  color:white;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--purple),
-      var(--red)
-    );
-
-}
-
-
-/* =====================================================
-   DISCOVER
-===================================================== */
-
-.discover-search{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:10px;
-
-  padding:0 14px;
-
-  height:48px;
-
-  margin-bottom:24px;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  background:
-    rgba(255,255,255,.035);
-
-  border-radius:15px;
-
-}
-
-
-.discover-search input{
-
-  border:0;
-
-  background:none;
-
-  padding:0;
-
-}
-
-
-.founders-grid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(3,minmax(0,1fr));
-
-  gap:17px;
-
-}
-
-
-.founder-card{
-
-  padding:22px;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  border-radius:22px;
-
-  background:
-    linear-gradient(
-      150deg,
-      rgba(255,255,255,.06),
-      rgba(255,255,255,.022)
-    );
-
-  transition:
-    transform .2s,
-    border .2s;
-
-}
-
-
-.founder-card:hover{
-
-  transform:translateY(-3px);
-
-  border-color:
-    rgba(168,85,247,.3);
-
-}
-
-
-.founder-card-top{
-
-  position:relative;
-
-  margin-bottom:17px;
-
-}
-
-
-.avatar-xl{
-
-  width:58px;
-
-  height:58px;
-
-  border-radius:19px;
-
-  font-size:18px;
-
-}
-
-
-.online-ring{
-
-  position:absolute;
-
-  width:10px;
-
-  height:10px;
-
-  left:46px;
-
-  bottom:-1px;
-
-  border-radius:50%;
-
-  background:#43e7a4;
-
-  border:2px solid #0b080f;
-
-}
-
-
-.founder-card h3{
-
-  margin:0 0 4px;
-
-  font-family:var(--font-display);
-
-}
-
-
-.founder-card .username{
-
-  color:#967cb6;
-
-  font-size:11px;
-
-}
-
-
-.founder-card p{
-
-  min-height:43px;
-
-  color:#918a96;
-
-  font-size:12px;
-
-  line-height:1.6;
-
-}
-
-
-.founder-card-actions{
-
-  display:flex;
-
-  gap:7px;
-
-  margin-top:17px;
-
-}
-
-
-.founder-card-actions button{
-
-  flex:1;
+async function viewFounder(id){
+
+  const { data } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id",id)
+    .single();
+
+  if(!data) return;
+
+  alert(
+    data.name +
+    "\n\n" +
+    (data.bio || "Founder")
+  );
 
 }
 
@@ -1817,216 +1724,185 @@ textarea{
    GROUPS
 ===================================================== */
 
-.groups-grid{
+async function loadGroups(){
 
-  display:flex;
+  const grid = $("groupsGrid");
 
-  flex-direction:column;
+  const { data, error } = await db
+    .from("groups")
+    .select(`
+      *,
+      profiles:created_by(name)
+    `)
+    .order("created_at",{ascending:false});
 
-  gap:13px;
+  if(error){
 
-}
+    grid.innerHTML = `
+      <div class="empty-state">
+        ${escapeHTML(error.message)}
+      </div>
+    `;
 
+    return;
 
-.group-card{
+  }
 
-  display:grid;
+  if(!data?.length){
 
-  grid-template-columns:auto 1fr auto;
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-orb">
+          <i data-lucide="users"></i>
+        </div>
 
-  gap:16px;
+        <h3>No founder rooms yet.</h3>
 
-  align-items:center;
+        <p>
+          Create the first group around an idea.
+        </p>
 
-  padding:20px;
+        <button
+          class="primary-small"
+          onclick="openModal('groupModal')">
+          Create group
+        </button>
+      </div>
+    `;
 
-  border:
-    1px solid rgba(255,255,255,.08);
+    lucide.createIcons();
 
-  border-radius:21px;
+    return;
 
-  background:
-    rgba(255,255,255,.035);
+  }
 
-}
+  grid.innerHTML = data.map(group => `
 
+    <article class="group-card">
 
-.group-symbol{
+      <div class="group-symbol">
+        <i data-lucide="users"></i>
+      </div>
 
-  width:48px;
+      <div>
 
-  height:48px;
+        <h3>
+          ${escapeHTML(group.name)}
+        </h3>
 
-  display:grid;
+        <p>
+          ${escapeHTML(
+            group.description ||
+            "Founder discussion room."
+          )}
+        </p>
 
-  place-items:center;
+        <span>
+          Created by
+          ${escapeHTML(group.profiles?.name || "Founder")}
+        </span>
 
-  border-radius:15px;
+      </div>
 
-  color:#bf9bff;
+      <button
+        class="secondary-btn"
+        onclick="joinGroup(${group.id})">
+        Join
+      </button>
 
-  background:
-    rgba(139,92,246,.12);
+    </article>
 
-}
+  `).join("");
 
-
-.group-card h3{
-
-  margin:0 0 5px;
-
-  font-family:var(--font-display);
-
-}
-
-
-.group-card p{
-
-  margin:0 0 6px;
-
-  color:#918994;
-
-  font-size:12px;
-
-}
-
-
-.group-card span{
-
-  color:#655f6b;
-
-  font-size:10px;
-
-}
-
-
-/* =====================================================
-   MESSAGES
-===================================================== */
-
-.messages-layout{
-
-  height:650px;
-
-  display:grid;
-
-  grid-template-columns:300px 1fr;
-
-  overflow:hidden;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  border-radius:23px;
-
-  background:
-    rgba(255,255,255,.025);
+  lucide.createIcons();
 
 }
 
 
-.conversation-list{
+$("createGroupBtn").onclick = () => {
 
-  border-right:
-    1px solid rgba(255,255,255,.07);
+  openModal("groupModal");
 
-  overflow:auto;
-
-}
+};
 
 
-.chat-panel{
+$("groupForm").addEventListener("submit",async e => {
 
-  display:flex;
+  e.preventDefault();
 
-  flex-direction:column;
+  const name =
+    $("groupName").value.trim();
 
-  overflow:hidden;
+  const description =
+    $("groupDescription").value.trim();
 
-}
+  const { data, error } = await db
+    .from("groups")
+    .insert({
 
+      name,
+      description,
+      created_by:currentUser.id
 
-.empty-state{
+    })
+    .select()
+    .single();
 
-  min-height:300px;
+  if(error){
 
-  display:flex;
+    alert(error.message);
 
-  flex-direction:column;
+    return;
 
-  justify-content:center;
+  }
 
-  align-items:center;
+  await db
+    .from("group_members")
+    .insert({
 
-  text-align:center;
+      group_id:data.id,
+      user_id:currentUser.id,
+      role:"owner"
 
-  padding:35px;
+    });
 
-  color:#817985;
+  $("groupForm").reset();
 
-}
+  closeModal("groupModal");
 
+  await loadGroups();
 
-.empty-state svg{
-
-  width:28px;
-
-  height:28px;
-
-  color:#9b7bd1;
-
-  margin-bottom:15px;
-
-}
-
-
-.empty-state h3{
-
-  margin:0 0 7px;
-
-  color:#e4dfe8;
-
-  font-family:var(--font-display);
-
-}
+});
 
 
-.empty-state p{
+async function joinGroup(id){
 
-  max-width:370px;
+  const { error } = await db
+    .from("group_members")
+    .insert({
 
-  margin:0;
+      group_id:id,
+      user_id:currentUser.id
 
-  line-height:1.6;
+    });
 
-  font-size:12px;
+  if(error){
 
-}
+    if(error.code === "23505"){
 
+      alert("You are already in this group.");
 
-.empty-orb{
+    }else{
 
-  width:60px;
+      alert(error.message);
 
-  height:60px;
+    }
 
-  display:grid;
+    return;
 
-  place-items:center;
+  }
 
-  border-radius:20px;
-
-  margin-bottom:10px;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(168,85,247,.24),
-      rgba(255,49,88,.06)
-    );
-
-  border:
-    1px solid rgba(168,85,247,.16);
+  alert("Joined the group.");
 
 }
 
@@ -2035,630 +1911,348 @@ textarea{
    PROFILE
 ===================================================== */
 
-.profile-hero{
+function renderProfile(){
 
-  position:relative;
+  if(!currentProfile) return;
 
-  display:flex;
+  const profilePage = $("profilePage");
 
-  gap:28px;
+  profilePage.innerHTML = `
 
-  align-items:center;
+    <div class="profile-hero">
 
-  padding:35px;
+      <div class="profile-glow"></div>
 
-  overflow:hidden;
+      <div class="profile-avatar avatar avatar-profile">
+        ${
+          currentProfile.avatar_url
+          ? `<img src="${escapeHTML(currentProfile.avatar_url)}">`
+          : initials(currentProfile.name)
+        }
+      </div>
 
-  border:
-    1px solid rgba(255,255,255,.08);
+      <div class="profile-information">
 
-  border-radius:27px;
+        <span class="eyebrow">
+          FOUNDER
+        </span>
 
-  background:
-    linear-gradient(
-      135deg,
-      rgba(139,92,246,.1),
-      rgba(255,49,88,.045)
-    );
+        <h1>
+          ${escapeHTML(currentProfile.name)}
+        </h1>
 
-}
+        ${
+          currentProfile.username
+          ? `
+            <div class="profile-handle">
+              @${escapeHTML(currentProfile.username)}
+            </div>
+          `
+          : ""
+        }
 
+        <p>
+          ${escapeHTML(
+            currentProfile.bio ||
+            "Tell the Delta network what you're building."
+          )}
+        </p>
 
-.profile-glow{
+        <button
+          class="secondary-btn"
+          onclick="openProfileEditor()">
+          <i data-lucide="edit-3"></i>
+          Edit profile
+        </button>
 
-  position:absolute;
+      </div>
 
-  width:260px;
+    </div>
 
-  height:260px;
+    <div class="profile-stats">
 
-  border-radius:50%;
+      <div>
+        <strong id="profilePostsCount">—</strong>
+        <span>Posts</span>
+      </div>
 
-  background:#7c3aed;
+      <div>
+        <strong id="profileFollowersCount">—</strong>
+        <span>Followers</span>
+      </div>
 
-  opacity:.12;
+      <div>
+        <strong id="profileFollowingCount">—</strong>
+        <span>Following</span>
+      </div>
 
-  filter:blur(80px);
+    </div>
 
-  right:-80px;
+    <div class="profile-section">
 
-  top:-100px;
+      <div class="section-title">
+        <span>
+          Your ideas
+        </span>
+      </div>
 
-}
+      <div id="myPosts" class="feed-list">
+        Loading...
+      </div>
 
+    </div>
 
-.avatar-profile{
+  `;
 
-  width:120px;
+  lucide.createIcons();
 
-  height:120px;
-
-  border-radius:35px;
-
-  font-size:32px;
-
-}
-
-
-.profile-information{
-
-  position:relative;
-
-}
-
-
-.profile-information h1{
-
-  margin:6px 0;
-
-  font-family:var(--font-display);
-
-  font-size:37px;
-
-  letter-spacing:-.04em;
-
-}
-
-
-.profile-information p{
-
-  max-width:580px;
-
-  color:#9b949f;
-
-  line-height:1.6;
-
-  font-size:13px;
-
-}
-
-
-.profile-handle{
-
-  color:#9c80ca;
-
-  font-size:12px;
+  loadProfileStats();
 
 }
 
 
-.profile-stats{
+async function loadProfileStats(){
 
-  display:flex;
+  const posts =
+    await db
+      .from("posts")
+      .select("id",{count:"exact",head:true})
+      .eq("user_id",currentUser.id);
 
-  gap:1px;
+  const followers =
+    await db
+      .from("follows")
+      .select("id",{count:"exact",head:true})
+      .eq("following_id",currentUser.id);
 
-  margin:17px 0;
+  const following =
+    await db
+      .from("follows")
+      .select("id",{count:"exact",head:true})
+      .eq("follower_id",currentUser.id);
 
-  border:
-    1px solid rgba(255,255,255,.07);
+  $("profilePostsCount").textContent =
+    posts.count || 0;
 
-  border-radius:19px;
+  $("profileFollowersCount").textContent =
+    followers.count || 0;
 
-  overflow:hidden;
+  $("profileFollowingCount").textContent =
+    following.count || 0;
+
+  const { data } =
+    await db
+      .from("posts")
+      .select(`
+        *,
+        profiles(name)
+      `)
+      .eq("user_id",currentUser.id)
+      .order("created_at",{ascending:false});
+
+  const container = $("myPosts");
+
+  if(!data?.length){
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>No posts yet.</h3>
+        <p>Share your first idea with Delta.</p>
+      </div>
+    `;
+
+    return;
+
+  }
+
+  container.innerHTML = data.map(post => `
+
+    <article class="post-card">
+
+      <div class="post-header">
+
+        <div class="avatar">
+          ${initials(currentProfile.name)}
+        </div>
+
+        <div class="post-author">
+
+          <strong>
+            ${escapeHTML(currentProfile.name)}
+          </strong>
+
+          <span>
+            ${formatDate(post.created_at)}
+          </span>
+
+        </div>
+
+      </div>
+
+      ${
+        post.content
+        ? `<div class="post-content">
+            ${escapeHTML(post.content)}
+           </div>`
+        : ""
+      }
+
+      ${
+        post.image_url
+        ? `<div class="post-image">
+            <img src="${escapeHTML(post.image_url)}">
+           </div>`
+        : ""
+      }
+
+    </article>
+
+  `).join("");
 
 }
 
 
-.profile-stats div{
+function openProfileEditor(){
 
-  flex:1;
+  $("editName").value =
+    currentProfile.name || "";
 
-  padding:18px;
+  $("editUsername").value =
+    currentProfile.username || "";
 
-  text-align:center;
+  $("editBio").value =
+    currentProfile.bio || "";
 
-  background:
-    rgba(255,255,255,.03);
-
-}
-
-
-.profile-stats strong{
-
-  display:block;
-
-  font-family:var(--font-display);
-
-  font-size:21px;
+  openModal("profileModal");
 
 }
 
 
-.profile-stats span{
+$("profileForm").addEventListener("submit",async e => {
 
-  color:#79727e;
+  e.preventDefault();
 
-  font-size:10px;
+  const updates = {
 
-}
+    name:$("editName").value.trim(),
+
+    username:
+      $("editUsername").value.trim() || null,
+
+    bio:
+      $("editBio").value.trim()
+
+  };
+
+  const { data,error } =
+    await db
+      .from("profiles")
+      .update(updates)
+      .eq("id",currentUser.id)
+      .select()
+      .single();
+
+  if(error){
+
+    alert(error.message);
+
+    return;
+
+  }
+
+  currentProfile = data;
+
+  updateIdentity();
+
+  renderProfile();
+
+  closeModal("profileModal");
+
+});
 
 
-.profile-section{
+$("profileTop").onclick = () => {
 
-  margin-top:28px;
+  document
+    .querySelector('[data-view="profile"]')
+    .click();
 
-}
-
-
-.section-title{
-
-  margin-bottom:14px;
-
-  font-family:var(--font-display);
-
-  font-weight:600;
-
-}
+};
 
 
 /* =====================================================
-   MODAL
+   MODAL CLOSE
 ===================================================== */
 
-.modal{
+document
+  .querySelectorAll("[data-close]")
+  .forEach(button => {
 
-  position:fixed;
+    button.onclick = () => {
 
-  inset:0;
+      closeModal(
+        button.dataset.close
+      );
 
-  z-index:100;
+    };
 
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  padding:20px;
-
-  background:
-    rgba(0,0,0,.65);
-
-  backdrop-filter:blur(12px);
-
-}
+  });
 
 
-.modal-card{
+document.querySelectorAll(".modal").forEach(modal => {
 
-  width:min(480px,100%);
+  modal.addEventListener("click",e => {
 
-  position:relative;
+    if(e.target === modal){
 
-  padding:30px;
+      modal.classList.add("hidden");
 
-  border:
-    1px solid rgba(255,255,255,.12);
+    }
 
-  border-radius:26px;
+  });
 
-  background:
-    linear-gradient(
-      145deg,
-      #110d18,
-      #08060c
-    );
-
-  box-shadow:
-    0 40px 100px rgba(0,0,0,.65);
-
-}
-
-
-.modal-card h2{
-
-  font-family:var(--font-display);
-
-  margin:7px 0;
-
-}
-
-
-.modal-card form{
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:8px;
-
-  margin-top:22px;
-
-}
-
-
-.modal-card label{
-
-  color:#b8afb9;
-
-  font-size:12px;
-
-  margin-top:5px;
-
-}
-
-
-.modal-close{
-
-  position:absolute;
-
-  right:18px;
-
-  top:18px;
-
-  width:36px;
-
-  height:36px;
-
-  border:0;
-
-  border-radius:11px;
-
-  background:
-    rgba(255,255,255,.06);
-
-  color:#aaa2ad;
-
-}
+});
 
 
 /* =====================================================
-   LOADING
+   SESSION
 ===================================================== */
 
-.loading-card{
+async function boot(){
 
-  padding:45px;
+  const {
+    data
+  } = await db.auth.getSession();
 
-  display:flex;
+  if(data.session){
 
-  justify-content:center;
+    currentUser = data.session.user;
 
-  align-items:center;
-
-  gap:12px;
-
-  color:#817985;
-
-  border:
-    1px solid rgba(255,255,255,.07);
-
-  border-radius:22px;
-
-  background:
-    rgba(255,255,255,.025);
-
-}
-
-
-.spinner{
-
-  width:18px;
-
-  height:18px;
-
-  border:
-    2px solid rgba(255,255,255,.1);
-
-  border-top-color:#a855f7;
-
-  border-radius:50%;
-
-  animation:
-    spin .8s linear infinite;
-
-}
-
-
-@keyframes spin{
-
-  to{
-    transform:rotate(360deg);
-  }
-
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-.mobile-nav{
-
-  display:none;
-
-}
-
-
-@media(max-width:900px){
-
-  .top-brand{
-
-    width:auto;
-
-  }
-
-  .top-search{
-
-    max-width:none;
-
-  }
-
-  .sidebar{
-
-    width:210px;
-
-  }
-
-  .main-shell{
-
-    grid-template-columns:210px minmax(0,1fr);
-
-  }
-
-  .founders-grid{
-
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
+    await loadApplication();
 
   }
 
 }
 
 
-@media(max-width:720px){
+db.auth.onAuthStateChange(
+  async (event,session) => {
 
-  .topbar{
+    if(session){
 
-    height:65px;
+      currentUser = session.user;
 
-    padding:0 14px;
-
-    gap:10px;
-
-  }
-
-  .top-brand{
-
-    font-size:12px;
+    }
 
   }
+);
 
-  .top-search{
 
-    display:none;
+lucide.createIcons();
 
-  }
+boot();
 
-  .main-shell{
+</script>
 
-    display:block;
-
-    padding-top:65px;
-
-    padding-bottom:74px;
-
-  }
-
-  .sidebar{
-
-    display:none;
-
-  }
-
-  .content{
-
-    width:100%;
-
-    padding:25px 15px 40px;
-
-  }
-
-  .page-heading{
-
-    align-items:flex-start;
-
-    flex-direction:column;
-
-    margin-bottom:22px;
-
-  }
-
-  .page-heading h2{
-
-    font-size:29px;
-
-  }
-
-  .create-btn{
-
-    width:100%;
-
-    justify-content:center;
-
-  }
-
-  .founders-grid{
-
-    grid-template-columns:1fr;
-
-  }
-
-  .messages-layout{
-
-    height:560px;
-
-    grid-template-columns:1fr;
-
-  }
-
-  .conversation-list{
-
-    display:none;
-
-  }
-
-  .profile-hero{
-
-    flex-direction:column;
-
-    align-items:flex-start;
-
-    padding:25px;
-
-  }
-
-  .avatar-profile{
-
-    width:85px;
-
-    height:85px;
-
-    font-size:25px;
-
-  }
-
-  .profile-information h1{
-
-    font-size:29px;
-
-  }
-
-  .profile-stats div{
-
-    padding:14px 7px;
-
-  }
-
-  .mobile-nav{
-
-    position:fixed;
-
-    display:flex;
-
-    left:10px;
-
-    right:10px;
-
-    bottom:10px;
-
-    z-index:80;
-
-    height:62px;
-
-    border:
-      1px solid rgba(255,255,255,.1);
-
-    border-radius:20px;
-
-    background:
-      rgba(12,8,16,.82);
-
-    backdrop-filter:blur(25px);
-
-    box-shadow:
-      0 20px 60px rgba(0,0,0,.55);
-
-  }
-
-  .mobile-nav-item{
-
-    flex:1;
-
-    border:0;
-
-    background:none;
-
-    color:#6e6875;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:4px;
-
-    font-size:8px;
-
-  }
-
-  .mobile-nav-item svg{
-
-    width:18px;
-
-  }
-
-  .mobile-nav-item.active{
-
-    color:#bd9aff;
-
-  }
-
-  .auth-card{
-
-    padding:27px 22px;
-
-  }
-
-  .auth-heading h1{
-
-    font-size:36px;
-
-  }
-
-  .group-card{
-
-    grid-template-columns:auto 1fr;
-
-  }
-
-  .group-card > button{
-
-    grid-column:2;
-
-    justify-self:start;
-
-  }
-
-}
-
-
-@media(max-width:400px){
-
-  .auth-heading h1{
-
-    font-size:32px;
-
-  }
-
-  .post-card{
-
-    padding:17px;
-
-  }
-
-}
+</body>
+</html>
