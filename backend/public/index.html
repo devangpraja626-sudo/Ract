@@ -30,9 +30,10 @@
    ========================================================= */
 const industries=["AI","SaaS","Fintech","Health","EdTech","E-commerce","Climate","Consumer","Other"];
 const stages=["Idea","Building MVP","Launched","Growing","Scaling"];
+const questions=["What was the name of your first pet?","What city were you born in?","What was your childhood nickname?","What is your mother's maiden name?","What was the name of your first school?","What was the first startup idea you ever had?"];
 const tabs=[["feed","⌂","Feed"],["discover","⌕","Discover"],["messages","◌","Messages"],["groups","◇","Rooms"],["me","◎","Profile"]];
 
-let token=localStorage.getItem("delta_token"), me=null, tab="feed", poll=null;
+let token=localStorage.getItem("delta_token"), me=null, tab="feed", poll=null, resetEmail="";
 
 /* ---------- helpers ---------- */
 const $=id=>document.getElementById(id);
@@ -102,6 +103,11 @@ async function boot(){
 function showAuth(mode="signup"){
   stopPoll();document.body.classList.remove("chat");
   const su=mode==="signup";
+  const secHtml=su?`
+      <label class="fieldLabel">Security question (used to recover your account)</label>
+      <select id="secQ">${questions.map(q=>`<option value="${esc(q)}">${esc(q)}</option>`).join("")}</select>
+      <input id="secA" maxlength="100" placeholder="Your answer" autocomplete="off" required>
+      <p class="hint">Remember this answer. It's the only way to reset your password if you forget it.</p>`:"";
   $("app").innerHTML=`
   <main class="authPage"><section class="authCard">
     <div class="authBrand"><div class="brand">delta</div><span class="eyebrow">FOUNDER NETWORK</span></div>
@@ -111,8 +117,10 @@ function showAuth(mode="signup"){
     <form class="authForm" onsubmit="doAuth(event,'${mode}')">
       <input id="email" type="email" placeholder="Email address" autocomplete="email" required>
       <input id="password" type="password" placeholder="Password (min 6 characters)" minlength="6" autocomplete="${su?"new-password":"current-password"}" required>
+      ${secHtml}
       <button class="primary full" id="authBtn" type="submit">${su?"Create my account":"Log in"} <span>→</span></button>
     </form>
+    ${su?"":`<p class="tiny"><a href="#" onclick="showForgot();return false">Forgot password?</a></p>`}
     <p class="tiny">${su?"Already on Delta?":"New to Delta?"} <a href="#" onclick="showAuth('${su?"login":"signup"}');return false">${su?"Log in":"Create account"}</a></p>
   </section></main>`;
 }
@@ -120,9 +128,54 @@ function showAuth(mode="signup"){
 async function doAuth(e,mode){
   e.preventDefault();
   const btn=$("authBtn");btn.disabled=true;
+  const body={email:$("email").value,password:$("password").value};
+  if(mode==="signup"){body.question=$("secQ").value;body.answer=$("secA").value;}
   try{
-    const r=await api("/auth/"+mode,{method:"POST",body:{email:$("email").value,password:$("password").value}});
+    const r=await api("/auth/"+mode,{method:"POST",body});
     token=r.token;localStorage.setItem("delta_token",token);me=r.profile;
+    me.full_name?renderShell("feed"):showProfile(true);
+  }catch(err){toast(err.message,"error");btn.disabled=false;}
+}
+
+function showForgot(){
+  stopPoll();document.body.classList.remove("chat");
+  $("app").innerHTML=`
+  <main class="authPage"><section class="authCard">
+    <div class="authBrand"><div class="brand">delta</div><span class="eyebrow">RESET PASSWORD</span></div>
+    <p class="authIntro">Enter your email, then answer your security question to set a new password.</p>
+    <div id="forgotStep">
+      <form class="authForm" onsubmit="findQuestion(event)">
+        <input id="fEmail" type="email" placeholder="Email address" autocomplete="email" required>
+        <button class="primary full" type="submit">Continue <span>→</span></button>
+      </form>
+    </div>
+    <p class="tiny"><a href="#" onclick="showAuth('login');return false">← Back to log in</a></p>
+  </section></main>`;
+}
+
+async function findQuestion(e){
+  e.preventDefault();
+  const btn=e.target.querySelector("[type=submit]");btn.disabled=true;
+  try{
+    resetEmail=$("fEmail").value.trim();
+    const r=await api("/auth/question",{method:"POST",body:{email:resetEmail}});
+    $("forgotStep").innerHTML=`
+      <form class="authForm" onsubmit="doReset(event)">
+        <div class="qBox">${esc(r.question)}</div>
+        <input id="fAnswer" placeholder="Your answer" autocomplete="off" required>
+        <input id="fPass" type="password" placeholder="New password (min 6 characters)" minlength="6" autocomplete="new-password" required>
+        <button class="primary full" type="submit">Reset password <span>→</span></button>
+      </form>`;
+  }catch(err){toast(err.message,"error");btn.disabled=false;}
+}
+
+async function doReset(e){
+  e.preventDefault();
+  const btn=e.target.querySelector("[type=submit]");btn.disabled=true;
+  try{
+    const r=await api("/auth/reset",{method:"POST",body:{email:resetEmail,answer:$("fAnswer").value,new_password:$("fPass").value}});
+    token=r.token;localStorage.setItem("delta_token",token);me=r.profile;
+    toast("Password updated ✦","success");
     me.full_name?renderShell("feed"):showProfile(true);
   }catch(err){toast(err.message,"error");btn.disabled=false;}
 }
