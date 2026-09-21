@@ -1,34 +1,38 @@
 <!DOCTYPE html>
-
 <html lang="en" data-theme="dark">
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,viewport-fit=cover"
->
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
 
-<title>Delta — Founder Network</title>
+  <meta
+    name="theme-color"
+    content="#07070b"
+  >
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>Delta — Founder Network</title>
 
-<link
-  rel="preconnect"
-  href="https://fonts.gstatic.com"
-  crossorigin
->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 
-<link
-  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
-  rel="stylesheet"
->
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
-<link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -36,11 +40,11 @@
 <body>
 
 
-<!-- =====================================================
-     BACKGROUND
-===================================================== -->
+<!-- =========================================================
+     PREMIUM DELTA BACKGROUND
+========================================================= -->
 
-<div class="aurora">
+<div class="aurora" aria-hidden="true">
 
   <i></i>
   <i></i>
@@ -49,19 +53,26 @@
 </div>
 
 
-<div class="float">
+<div class="deltaNoise" aria-hidden="true"></div>
+
+
+<!-- =========================================================
+     FLOATING DELTA ICONS
+========================================================= -->
+
+<div class="float" aria-hidden="true">
 
   <span
     class="fi"
     style="
-      --fc:#60A5FA;
-      --t:6s;
+      --fc:#a855f7;
+      --t:7s;
       --d:-1s;
       --r:-8deg;
       width:58px;
       height:58px;
-      top:12%;
-      left:7%
+      top:10%;
+      left:6%;
     "
   >
     ✦
@@ -71,14 +82,14 @@
   <span
     class="fi"
     style="
-      --fc:#A78BFA;
-      --t:7s;
+      --fc:#ef4444;
+      --t:8s;
       --d:-3s;
       --r:8deg;
       width:52px;
       height:52px;
-      top:28%;
-      right:6%
+      top:26%;
+      right:6%;
     "
   >
     ◇
@@ -88,14 +99,14 @@
   <span
     class="fi"
     style="
-      --fc:#F87171;
-      --t:8s;
+      --fc:#cbd5e1;
+      --t:9s;
       --d:-5s;
       --r:-7deg;
       width:48px;
       height:48px;
-      bottom:25%;
-      left:5%
+      bottom:27%;
+      left:5%;
     "
   >
     ↗
@@ -105,26 +116,65 @@
   <span
     class="fi"
     style="
-      --fc:#93C5FD;
-      --t:9s;
+      --fc:#9333ea;
+      --t:10s;
       --d:-2s;
       --r:7deg;
       width:50px;
       height:50px;
-      bottom:12%;
-      right:8%
+      bottom:13%;
+      right:8%;
     "
   >
     +
   </span>
 
+
+  <span
+    class="fi"
+    style="
+      --fc:#f87171;
+      --t:11s;
+      --d:-6s;
+      --r:-4deg;
+      width:42px;
+      height:42px;
+      top:46%;
+      left:2%;
+    "
+  >
+    Δ
+  </span>
+
+
+  <span
+    class="fi"
+    style="
+      --fc:#d8b4fe;
+      --t:8s;
+      --d:-4s;
+      --r:5deg;
+      width:44px;
+      height:44px;
+      top:62%;
+      right:3%;
+    "
+  >
+    ·
+  </span>
+
 </div>
 
+
+<!-- =========================================================
+     THEME BUTTON
+========================================================= -->
 
 <button
   class="iconbtn"
   id="themeBtn"
   onclick="toggleTheme()"
+  aria-label="Toggle theme"
 >
   ☀
 </button>
@@ -137,12 +187,8 @@
 
 /* ============================================================
    DELTA — FOUNDER NETWORK
+   COMPLETE FRONTEND
    ============================================================
-
-   Frontend:
-     HTML
-     CSS
-     JavaScript
 
    Backend:
      Supabase Auth
@@ -150,14 +196,20 @@
      Supabase Storage
      Supabase Realtime
 
-   No service_role key belongs here.
+   IMPORTANT:
+     Never put a Supabase service_role key in this file.
+
+   PROFILE SAVE:
+     This frontend uses UPSERT.
+     The Supabase RLS policy must allow:
+       auth.uid() = id
+
    ============================================================ */
 
 
 /* ============================================================
    SUPABASE
 ============================================================ */
-
 
 const SUPABASE_URL =
   "https://inhxlwsjlddhnpalbocl.supabase.co";
@@ -167,8 +219,9 @@ const SUPABASE_KEY =
   "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
 
 
-const { createClient } =
-  supabase;
+const {
+  createClient
+} = supabase;
 
 
 const db =
@@ -176,10 +229,10 @@ const db =
     SUPABASE_URL,
     SUPABASE_KEY,
     {
-      auth:{
-        persistSession:true,
-        autoRefreshToken:true,
-        detectSessionInUrl:true
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
       }
     }
   );
@@ -188,7 +241,6 @@ const db =
 /* ============================================================
    OPTIONS
 ============================================================ */
-
 
 const industries = [
 
@@ -223,7 +275,6 @@ const stages = [
    STATE
 ============================================================ */
 
-
 let me = null;
 
 let profile = null;
@@ -245,31 +296,30 @@ let authMode = "signup";
    HELPERS
 ============================================================ */
 
-
 const $ = id =>
   document.getElementById(id);
 
 
-function esc(value = ""){
+function esc(value = "") {
 
   return String(value)
 
-    .replaceAll("&","&amp;")
+    .replaceAll("&", "&amp;")
 
-    .replaceAll("<","&lt;")
+    .replaceAll("<", "&lt;")
 
-    .replaceAll(">","&gt;")
+    .replaceAll(">", "&gt;")
 
-    .replaceAll('"',"&quot;")
+    .replaceAll('"', "&quot;")
 
-    .replaceAll("'","&#039;");
+    .replaceAll("'", "&#039;");
 
 }
 
 
-function ago(date){
+function ago(date) {
 
-  if(!date)
+  if (!date)
     return "";
 
 
@@ -282,19 +332,19 @@ function ago(date){
     );
 
 
-  if(sec < 60)
+  if (sec < 60)
     return "now";
 
 
-  if(sec < 3600)
+  if (sec < 3600)
     return Math.floor(sec / 60) + "m";
 
 
-  if(sec < 86400)
+  if (sec < 86400)
     return Math.floor(sec / 3600) + "h";
 
 
-  if(sec < 604800)
+  if (sec < 604800)
     return Math.floor(sec / 86400) + "d";
 
 
@@ -304,7 +354,7 @@ function ago(date){
 }
 
 
-function initials(name = "Founder"){
+function initials(name = "Founder") {
 
   const parts =
     name
@@ -313,22 +363,22 @@ function initials(name = "Founder"){
       .filter(Boolean);
 
 
-  if(!parts.length)
+  if (!parts.length)
     return "F";
 
 
   return parts
     .map(x => x[0])
-    .slice(0,2)
+    .slice(0, 2)
     .join("")
     .toUpperCase();
 
 }
 
 
-function avatar(p,size = ""){
+function avatar(p, size = "") {
 
-  if(p?.avatar_url){
+  if (p?.avatar_url) {
 
     return `
 
@@ -346,9 +396,7 @@ function avatar(p,size = ""){
 
   return `
 
-    <div
-      class="avatar ${size} avatarText"
-    >
+    <div class="avatar ${size} avatarText">
       ${esc(initials(p?.full_name))}
     </div>
 
@@ -357,13 +405,13 @@ function avatar(p,size = ""){
 }
 
 
-function toast(message,type = ""){
+function toast(message, type = "") {
 
   const old =
     document.querySelector(".toast");
 
 
-  if(old)
+  if (old)
     old.remove();
 
 
@@ -384,15 +432,15 @@ function toast(message,type = ""){
 
   setTimeout(() => {
 
-    if(t.isConnected)
+    if (t.isConnected)
       t.remove();
 
-  },2800);
+  }, 3200);
 
 }
 
 
-function themeInit(){
+function themeInit() {
 
   const saved =
     localStorage.getItem(
@@ -408,7 +456,7 @@ function themeInit(){
     $("themeBtn");
 
 
-  if(btn){
+  if (btn) {
 
     btn.textContent =
       saved === "dark"
@@ -420,7 +468,7 @@ function themeInit(){
 }
 
 
-function toggleTheme(){
+function toggleTheme() {
 
   const next =
     document.documentElement.dataset.theme === "dark"
@@ -438,15 +486,23 @@ function toggleTheme(){
   );
 
 
-  $("themeBtn").textContent =
-    next === "dark"
-      ? "☀"
-      : "☾";
+  const btn =
+    $("themeBtn");
+
+
+  if (btn) {
+
+    btn.textContent =
+      next === "dark"
+        ? "☀"
+        : "☾";
+
+  }
 
 }
 
 
-function industryOptions(selected = ""){
+function industryOptions(selected = "") {
 
   return industries
     .map(x => `
@@ -464,7 +520,7 @@ function industryOptions(selected = ""){
 }
 
 
-function stageOptions(selected = ""){
+function stageOptions(selected = "") {
 
   return stages
     .map(x => `
@@ -482,9 +538,9 @@ function stageOptions(selected = ""){
 }
 
 
-function requireLogin(){
+function requireLogin() {
 
-  if(!me){
+  if (!me) {
 
     showAuth("login");
 
@@ -503,30 +559,95 @@ function requireLogin(){
 
 
 /* ============================================================
+   DELTA BRAND MARK
+============================================================ */
+
+function deltaMark(size = "normal") {
+
+  return `
+
+    <div class="deltaMark ${size}" aria-label="Delta">
+
+      <span class="deltaMarkGlow"></span>
+
+      <span class="deltaMarkShape">
+
+        <span class="deltaMarkTop"></span>
+
+        <span class="deltaMarkBottom"></span>
+
+      </span>
+
+    </div>
+
+  `;
+
+}
+
+
+function deltaBrand() {
+
+  return `
+
+    <div class="deltaBrand">
+
+      ${deltaMark("normal")}
+
+      <div class="deltaBrandText">
+
+        <strong>
+          delta
+        </strong>
+
+        <span>
+          founder network
+        </span>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ============================================================
    BOOT
 ============================================================ */
 
-
-async function boot(){
+async function boot() {
 
   themeInit();
 
 
   const {
-    data
+    data,
+    error
   } =
     await db.auth.getSession();
+
+
+  if (error) {
+
+    console.error(error);
+
+    showAuth("login");
+
+    return;
+
+  }
 
 
   me =
     data.session?.user?.id || null;
 
 
-  if(me){
+  if (me) {
 
     await loadCurrentProfile();
 
-  }else{
+  } else {
 
     showAuth("signup");
 
@@ -534,13 +655,13 @@ async function boot(){
 
 
   db.auth.onAuthStateChange(
-    async (_event,session) => {
+    async (_event, session) => {
 
       me =
         session?.user?.id || null;
 
 
-      if(!me){
+      if (!me) {
 
         profile = null;
 
@@ -559,7 +680,11 @@ async function boot(){
 }
 
 
-async function loadCurrentProfile(){
+async function loadCurrentProfile() {
+
+  if (!me)
+    return;
+
 
   const {
     data,
@@ -568,29 +693,23 @@ async function loadCurrentProfile(){
     await db
       .from("profiles")
       .select("*")
-      .eq("id",me)
+      .eq("id", me)
       .maybeSingle();
 
 
-  if(error){
+  if (error) {
 
-    console.error(error);
+    console.error(
+      "Profile load error:",
+      error
+    );
+
 
     toast(
       error.message,
       "error"
     );
 
-    return;
-
-  }
-
-
-  profile =
-    data;
-
-
-  if(!profile){
 
     showProfile(true);
 
@@ -599,10 +718,23 @@ async function loadCurrentProfile(){
   }
 
 
-  if(
+  profile =
+    data || null;
+
+
+  if (!profile) {
+
+    showProfile(true);
+
+    return;
+
+  }
+
+
+  if (
     !profile.full_name ||
     !profile.full_name.trim()
-  ){
+  ) {
 
     showProfile(true);
 
@@ -620,8 +752,7 @@ async function loadCurrentProfile(){
    AUTH
 ============================================================ */
 
-
-function showAuth(mode = "signup"){
+function showAuth(mode = "signup") {
 
   authMode = mode;
 
@@ -630,13 +761,13 @@ function showAuth(mode = "signup"){
 
     <main class="authPage">
 
+
       <section class="authCard">
+
 
         <div class="authBrand">
 
-          <div class="brand">
-            delta
-          </div>
+          ${deltaBrand()}
 
           <div class="eyebrow">
             FOUNDER NETWORK
@@ -806,6 +937,7 @@ function showAuth(mode = "signup"){
 
         </p>
 
+
       </section>
 
     </main>
@@ -815,47 +947,47 @@ function showAuth(mode = "signup"){
 }
 
 
-function setAuthMode(mode){
+function setAuthMode(mode) {
 
   showAuth(mode);
 
 }
 
 
-async function submitAuth(e){
+async function submitAuth(e) {
 
   e.preventDefault();
 
 
   const email =
     $("authEmail")
-      .value
+      ?.value
       .trim();
 
 
   const password =
     $("authPassword")
-      .value;
+      ?.value;
 
 
-  if(
+  if (
     !email ||
     !password
   )
     return;
 
 
-  try{
+  try {
 
-    if(authMode === "signup"){
+    if (authMode === "signup") {
 
       const fullName =
         $("authName")
-          .value
+          ?.value
           .trim();
 
 
-      if(!fullName){
+      if (!fullName) {
 
         toast(
           "Enter your name.",
@@ -877,36 +1009,41 @@ async function submitAuth(e){
 
           password,
 
-          options:{
-            data:{
-              full_name:fullName
+          options: {
+
+            data: {
+
+              full_name:
+                fullName
+
             }
+
           }
 
         });
 
 
-      if(error)
+      if (error)
         throw error;
 
 
-      if(data.session){
+      if (data.session) {
 
         toast(
           "Welcome to Delta ✦",
           "success"
         );
 
-      }else{
+      } else {
 
         toast(
-          "Account created. If email confirmation is enabled in Supabase, confirm your email first.",
+          "Account created. Confirm your email if confirmation is enabled.",
           "success"
         );
 
       }
 
-    }else{
+    } else {
 
       const {
         error
@@ -920,7 +1057,7 @@ async function submitAuth(e){
         });
 
 
-      if(error)
+      if (error)
         throw error;
 
 
@@ -931,12 +1068,13 @@ async function submitAuth(e){
 
     }
 
-  }catch(err){
+  } catch (err) {
 
     console.error(err);
 
     toast(
-      err.message,
+      err?.message ||
+      "Authentication failed.",
       "error"
     );
 
@@ -945,13 +1083,15 @@ async function submitAuth(e){
 }
 
 
-async function forgotPassword(){
+async function forgotPassword() {
 
   const email =
-    $("authEmail")?.value.trim();
+    $("authEmail")
+      ?.value
+      .trim();
 
 
-  if(!email){
+  if (!email) {
 
     toast(
       "Enter your email first.",
@@ -963,7 +1103,7 @@ async function forgotPassword(){
   }
 
 
-  try{
+  try {
 
     const {
       error
@@ -973,14 +1113,13 @@ async function forgotPassword(){
           email,
           {
             redirectTo:
-              window.location.origin
-              +
+              window.location.origin +
               window.location.pathname
           }
         );
 
 
-    if(error)
+    if (error)
       throw error;
 
 
@@ -989,7 +1128,7 @@ async function forgotPassword(){
       "success"
     );
 
-  }catch(err){
+  } catch (err) {
 
     toast(
       err.message,
@@ -1001,7 +1140,7 @@ async function forgotPassword(){
 }
 
 
-async function showResetPassword(){
+function showResetPassword() {
 
   $("app").innerHTML = `
 
@@ -1009,9 +1148,7 @@ async function showResetPassword(){
 
       <section class="authCard">
 
-        <div class="brand">
-          delta
-        </div>
+        ${deltaBrand()}
 
         <div class="eyebrow">
           PASSWORD RECOVERY
@@ -1057,14 +1194,14 @@ async function showResetPassword(){
 }
 
 
-async function updatePassword(e){
+async function updatePassword(e) {
 
   e.preventDefault();
 
 
   const password =
     $("newPassword")
-      .value;
+      ?.value;
 
 
   const {
@@ -1075,7 +1212,7 @@ async function updatePassword(e){
     });
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -1101,46 +1238,66 @@ async function updatePassword(e){
 
 
 /* ============================================================
-   PROFILE
+   PROFILE SETUP
 ============================================================ */
 
-
-function showProfile(first = false){
+function showProfile(first = false) {
 
   $("app").innerHTML = `
 
     <main class="profileSetup">
 
+
       <section class="setupCard">
+
+
+        <div class="setupBrand">
+
+          ${deltaBrand()}
+
+        </div>
+
 
         <div class="setupTop">
 
           <span class="eyebrow">
+
             ${
               first
                 ? "WELCOME TO DELTA"
                 : "YOUR PROFILE"
+
             }
+
           </span>
 
+
           <h1>
+
             ${
               first
                 ? "Build your founder identity."
                 : "Edit your profile."
+
             }
+
           </h1>
 
+
           <p>
+
             Tell other founders who you are,
             what you're building and what you want
             to find.
+
           </p>
 
         </div>
 
 
-        <form onsubmit="saveProfile(event)">
+        <form
+          onsubmit="saveProfile(event)"
+        >
 
 
           <div
@@ -1237,6 +1394,7 @@ function showProfile(first = false){
 
           <div class="two">
 
+
             <div>
 
               <label>
@@ -1277,6 +1435,7 @@ function showProfile(first = false){
               </select>
 
             </div>
+
 
           </div>
 
@@ -1319,6 +1478,7 @@ function showProfile(first = false){
 
         </form>
 
+
       </section>
 
     </main>
@@ -1328,13 +1488,13 @@ function showProfile(first = false){
 }
 
 
-function previewAvatar(e){
+function previewAvatar(e) {
 
   const file =
     e.target.files?.[0];
 
 
-  if(!file)
+  if (!file)
     return;
 
 
@@ -1359,14 +1519,16 @@ function previewAvatar(e){
    STORAGE
 ============================================================ */
 
+async function upload(file, bucket) {
 
-async function upload(file,bucket){
-
-  if(!file)
+  if (!file)
     return null;
 
 
-  if(file.size > 8 * 1024 * 1024){
+  if (
+    file.size >
+    8 * 1024 * 1024
+  ) {
 
     throw new Error(
       "Maximum image size is 8 MB."
@@ -1379,10 +1541,10 @@ async function upload(file,bucket){
     (
       file.name
         .split(".")
-        .pop()
-        || "jpg"
+        .pop() ||
+      "jpg"
     )
-    .toLowerCase();
+      .toLowerCase();
 
 
   const path =
@@ -1398,13 +1560,13 @@ async function upload(file,bucket){
         path,
         file,
         {
-          upsert:false,
-          cacheControl:"3600"
+          upsert: false,
+          cacheControl: "3600"
         }
       );
 
 
-  if(error)
+  if (error)
     throw error;
 
 
@@ -1423,20 +1585,14 @@ async function upload(file,bucket){
 
 /* ============================================================
    SAVE PROFILE
-   FIXED:
-   - Uses UPSERT instead of UPDATE + SINGLE
-   - Creates profile if it doesn't exist
-   - Updates profile if it already exists
-   - Does not attempt to coerce an empty response into one JSON object
 ============================================================ */
 
-
-async function saveProfile(e){
+async function saveProfile(e) {
 
   e.preventDefault();
 
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
@@ -1444,14 +1600,16 @@ async function saveProfile(e){
     e.submitter;
 
 
-  try{
+  const originalText =
+    saveButton?.innerHTML ||
+    "Save profile";
 
-    if(saveButton){
+
+  try {
+
+    if (saveButton) {
 
       saveButton.disabled = true;
-
-      saveButton.dataset.originalText =
-        saveButton.innerHTML;
 
       saveButton.innerHTML =
         "Saving...";
@@ -1465,7 +1623,7 @@ async function saveProfile(e){
         .trim();
 
 
-    if(!fullName){
+    if (!fullName) {
 
       toast(
         "Full name is required.",
@@ -1483,10 +1641,11 @@ async function saveProfile(e){
 
 
     let avatarUrl =
-      profile?.avatar_url || null;
+      profile?.avatar_url ||
+      null;
 
 
-    if(file){
+    if (file) {
 
       avatarUrl =
         await upload(
@@ -1499,39 +1658,44 @@ async function saveProfile(e){
 
     const payload = {
 
-      id:
-        me,
+      id: me,
 
       full_name:
         fullName,
 
       startup_name:
         $("startup")
-          .value
-          .trim() || null,
+          ?.value
+          .trim() ||
+        null,
 
       headline:
         $("headline")
-          .value
-          .trim() || null,
+          ?.value
+          .trim() ||
+        null,
 
       industry:
         $("industry")
-          .value || null,
+          ?.value ||
+        null,
 
       stage:
         $("stage")
-          .value || null,
+          ?.value ||
+        null,
 
       bio:
         $("bio")
-          .value
-          .trim() || null,
+          ?.value
+          .trim() ||
+        null,
 
       website_url:
         $("website")
-          .value
-          .trim() || null,
+          ?.value
+          .trim() ||
+        null,
 
       avatar_url:
         avatarUrl
@@ -1540,24 +1704,19 @@ async function saveProfile(e){
 
 
     /*
-      IMPORTANT FIX
+      IMPORTANT
 
-      Before:
-        update(...)
-        .select()
-        .single()
+      We use upsert on the authenticated user's
+      own UUID.
 
-      That fails when the profile row does not
-      exist yet because UPDATE returns zero rows.
+      INSERT:
+        creates the profile.
 
-      Now:
-        upsert(...)
+      UPDATE:
+        updates the profile.
 
-      If id exists:
-        UPDATE
-
-      If id does not exist:
-        INSERT
+      There is no .single() on the upsert response.
+      This avoids the "coerce empty JSON" problem.
     */
 
     const {
@@ -1568,41 +1727,64 @@ async function saveProfile(e){
         .upsert(
           payload,
           {
-            onConflict:"id"
+            onConflict: "id",
+            ignoreDuplicates: false
           }
         );
 
 
-    if(error)
+    if (error) {
+
+      console.error(
+        "Supabase profile upsert:",
+        error
+      );
+
+      /*
+        Make the actual RLS problem obvious.
+      */
+
+      if (
+        error.code === "42501" ||
+        /row-level security/i.test(
+          error.message || ""
+        )
+      ) {
+
+        throw new Error(
+          "Supabase blocked this profile save with RLS. Run the profiles RLS SQL supplied below the code."
+        );
+
+      }
+
       throw error;
+
+    }
 
 
     /*
       Fetch the saved profile separately.
-
-      maybeSingle() is safe when there is
-      either one row or no visible row.
     */
 
     const {
-      data:savedProfile,
-      error:fetchError
+      data: savedProfile,
+      error: fetchError
     } =
       await db
         .from("profiles")
         .select("*")
-        .eq("id",me)
+        .eq("id", me)
         .maybeSingle();
 
 
-    if(fetchError)
+    if (fetchError)
       throw fetchError;
 
 
-    if(!savedProfile){
+    if (!savedProfile) {
 
       throw new Error(
-        "Profile was saved, but Supabase could not return it. Check the profiles table RLS policies."
+        "Profile was saved, but it could not be read back. Check the SELECT policy for profiles."
       );
 
     }
@@ -1621,7 +1803,7 @@ async function saveProfile(e){
     renderShell();
 
 
-  }catch(err){
+  } catch (err) {
 
     console.error(
       "Profile save error:",
@@ -1636,17 +1818,15 @@ async function saveProfile(e){
     );
 
 
-  }finally{
+  } finally {
 
-    if(saveButton){
+    if (saveButton) {
 
       saveButton.disabled =
         false;
 
-
       saveButton.innerHTML =
-        saveButton.dataset.originalText ||
-        "Save profile";
+        originalText;
 
     }
 
@@ -1659,8 +1839,7 @@ async function saveProfile(e){
    SHELL
 ============================================================ */
 
-
-function renderShell(){
+function renderShell() {
 
   $("app").innerHTML = `
 
@@ -1669,15 +1848,10 @@ function renderShell(){
 
       <header class="topbar">
 
+
         <div>
 
-          <div class="logo">
-            delta
-          </div>
-
-          <div class="topSub">
-            founder network
-          </div>
+          ${deltaBrand()}
 
         </div>
 
@@ -1685,6 +1859,7 @@ function renderShell(){
         <button
           class="miniProfile"
           onclick="openMyProfile()"
+          aria-label="Open profile"
         >
 
           ${avatar(
@@ -1693,6 +1868,7 @@ function renderShell(){
           )}
 
         </button>
+
 
       </header>
 
@@ -1775,6 +1951,7 @@ function renderShell(){
 
       </nav>
 
+
     </div>
 
   `;
@@ -1789,16 +1966,15 @@ function renderShell(){
    TAB SWITCH
 ============================================================ */
 
-
-function switchTab(t){
+function switchTab(t) {
 
   tab = t;
 
 
-  if(
+  if (
     realtimeChannel &&
     t !== "messages"
-  ){
+  ) {
 
     db.removeChannel(
       realtimeChannel
@@ -1829,20 +2005,16 @@ function switchTab(t){
 
   const index = {
 
-    feed:0,
-
-    discover:1,
-
-    messages:2,
-
-    groups:3,
-
-    me:4
+    feed: 0,
+    discover: 1,
+    messages: 2,
+    groups: 3,
+    me: 4
 
   }[t];
 
 
-  if(buttons[index]){
+  if (buttons[index]) {
 
     buttons[index]
       .classList.add(
@@ -1853,23 +2025,23 @@ function switchTab(t){
   }
 
 
-  if(t === "feed")
+  if (t === "feed")
     loadFeed();
 
 
-  if(t === "discover")
+  if (t === "discover")
     loadDiscover();
 
 
-  if(t === "messages")
+  if (t === "messages")
     loadMessages();
 
 
-  if(t === "groups")
+  if (t === "groups")
     loadGroups();
 
 
-  if(t === "me")
+  if (t === "me")
     loadMyProfile();
 
 }
@@ -1879,8 +2051,7 @@ function switchTab(t){
    FEED
 ============================================================ */
 
-
-async function loadFeed(){
+async function loadFeed() {
 
   $("view").innerHTML = `
 
@@ -1944,6 +2115,7 @@ async function loadFeed(){
 
         <div class="composerActions">
 
+
           <label class="attach">
 
             ＋ Image
@@ -1965,6 +2137,7 @@ async function loadFeed(){
           >
             Post ✦
           </button>
+
 
         </div>
 
@@ -2004,12 +2177,12 @@ async function loadFeed(){
       .order(
         "created_at",
         {
-          ascending:false
+          ascending: false
         }
       );
 
 
-  if(error){
+  if (error) {
 
     console.error(error);
 
@@ -2028,7 +2201,7 @@ async function loadFeed(){
   }
 
 
-  if(!data?.length){
+  if (!data?.length) {
 
     $("feedList").innerHTML = `
 
@@ -2066,14 +2239,13 @@ async function loadFeed(){
    CREATE POST
 ============================================================ */
 
-
-function previewPostImage(e){
+function previewPostImage(e) {
 
   const file =
     e.target.files?.[0];
 
 
-  if(!file)
+  if (!file)
     return;
 
 
@@ -2094,9 +2266,9 @@ function previewPostImage(e){
 }
 
 
-async function createPost(){
+async function createPost() {
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
@@ -2111,7 +2283,10 @@ async function createPost(){
       ?.files?.[0];
 
 
-  if(!content && !file){
+  if (
+    !content &&
+    !file
+  ) {
 
     toast(
       "Write something or add an image.",
@@ -2123,12 +2298,12 @@ async function createPost(){
   }
 
 
-  try{
+  try {
 
     let imageUrl = null;
 
 
-    if(file){
+    if (file) {
 
       imageUrl =
         await upload(
@@ -2146,10 +2321,11 @@ async function createPost(){
         .from("posts")
         .insert({
 
-          user_id:me,
+          user_id: me,
 
           content:
-            content || null,
+            content ||
+            null,
 
           image_url:
             imageUrl
@@ -2157,7 +2333,7 @@ async function createPost(){
         });
 
 
-    if(error)
+    if (error)
       throw error;
 
 
@@ -2170,7 +2346,7 @@ async function createPost(){
     loadFeed();
 
 
-  }catch(err){
+  } catch (err) {
 
     console.error(err);
 
@@ -2188,11 +2364,11 @@ async function createPost(){
    POST HTML
 ============================================================ */
 
-
-function postHtml(post){
+function postHtml(post) {
 
   const p =
-    post.profiles || {};
+    post.profiles ||
+    {};
 
 
   const liked =
@@ -2230,9 +2406,7 @@ function postHtml(post){
 
             ${
               p.verified
-
                 ? `<span class="verified">✓</span>`
-
                 : ""
             }
 
@@ -2285,6 +2459,7 @@ function postHtml(post){
             `
         }
 
+
       </div>
 
 
@@ -2296,7 +2471,7 @@ function postHtml(post){
             <div class="postText">
 
               ${esc(post.content)
-                .replace(/\n/g,"<br>")}
+                .replace(/\n/g, "<br>")}
 
             </div>
 
@@ -2409,6 +2584,7 @@ function postHtml(post){
 
       </div>
 
+
     </article>
 
   `;
@@ -2420,14 +2596,13 @@ function postHtml(post){
    DELETE POST
 ============================================================ */
 
+async function deletePost(postId) {
 
-async function deletePost(postId){
-
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
-  if(
+  if (
     !confirm(
       "Delete this post?\n\nThis cannot be undone."
     )
@@ -2435,7 +2610,7 @@ async function deletePost(postId){
     return;
 
 
-  try{
+  try {
 
     const {
       error
@@ -2443,11 +2618,17 @@ async function deletePost(postId){
       await db
         .from("posts")
         .delete()
-        .eq("id",postId)
-        .eq("user_id",me);
+        .eq(
+          "id",
+          postId
+        )
+        .eq(
+          "user_id",
+          me
+        );
 
 
-    if(error)
+    if (error)
       throw error;
 
 
@@ -2460,7 +2641,7 @@ async function deletePost(postId){
     loadFeed();
 
 
-  }catch(err){
+  } catch (err) {
 
     toast(
       err.message,
@@ -2476,19 +2657,18 @@ async function deletePost(postId){
    LIKES
 ============================================================ */
 
-
 async function toggleLike(
   postId,
   liked
-){
+) {
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
-  try{
+  try {
 
-    if(liked){
+    if (liked) {
 
       const {
         error
@@ -2496,14 +2676,20 @@ async function toggleLike(
         await db
           .from("likes")
           .delete()
-          .eq("post_id",postId)
-          .eq("user_id",me);
+          .eq(
+            "post_id",
+            postId
+          )
+          .eq(
+            "user_id",
+            me
+          );
 
 
-      if(error)
+      if (error)
         throw error;
 
-    }else{
+    } else {
 
       const {
         error
@@ -2512,14 +2698,16 @@ async function toggleLike(
           .from("likes")
           .insert({
 
-            post_id:postId,
+            post_id:
+              postId,
 
-            user_id:me
+            user_id:
+              me
 
           });
 
 
-      if(error)
+      if (error)
         throw error;
 
     }
@@ -2528,7 +2716,7 @@ async function toggleLike(
     loadFeed();
 
 
-  }catch(err){
+  } catch (err) {
 
     toast(
       err.message,
@@ -2544,15 +2732,20 @@ async function toggleLike(
    COMMENTS
 ============================================================ */
 
-
-async function toggleComments(postId){
+async function toggleComments(postId) {
 
   const box =
     $("comments-" + postId);
 
 
-  if(!box)
+  if (!box)
     return;
+
+
+  const opening =
+    box.classList.contains(
+      "hidden"
+    );
 
 
   box.classList.toggle(
@@ -2560,13 +2753,16 @@ async function toggleComments(postId){
   );
 
 
-  if(
-    box.classList.contains(
-      "hidden"
-    )
-  )
+  if (!opening)
     return;
 
+
+  await loadComments(postId);
+
+}
+
+
+async function loadComments(postId) {
 
   const {
     data,
@@ -2585,12 +2781,12 @@ async function toggleComments(postId){
       .order(
         "created_at",
         {
-          ascending:true
+          ascending: true
         }
       );
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -2604,6 +2800,10 @@ async function toggleComments(postId){
 
   const list =
     $("commentList-" + postId);
+
+
+  if (!list)
+    return;
 
 
   list.innerHTML =
@@ -2655,9 +2855,9 @@ async function toggleComments(postId){
 }
 
 
-async function addComment(postId){
+async function addComment(postId) {
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
@@ -2671,7 +2871,7 @@ async function addComment(postId){
       .trim();
 
 
-  if(!content)
+  if (!content)
     return;
 
 
@@ -2682,16 +2882,18 @@ async function addComment(postId){
       .from("comments")
       .insert({
 
-        post_id:postId,
+        post_id:
+          postId,
 
-        user_id:me,
+        user_id:
+          me,
 
         content
 
       });
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -2706,21 +2908,10 @@ async function addComment(postId){
   input.value = "";
 
 
-  const box =
-    $("comments-" + postId);
+  await loadComments(
+    postId
+  );
 
-
-  if(box){
-
-    box.classList.remove(
-      "hidden"
-    );
-
-    await toggleComments(
-      postId
-    );
-
-  }
 
 }
 
@@ -2729,8 +2920,7 @@ async function addComment(postId){
    DISCOVER
 ============================================================ */
 
-
-async function loadDiscover(){
+async function loadDiscover() {
 
   $("view").innerHTML = `
 
@@ -2793,16 +2983,19 @@ async function loadDiscover(){
     await db
       .from("profiles")
       .select("*")
-      .neq("id",me)
+      .neq(
+        "id",
+        me
+      )
       .order(
         "created_at",
         {
-          ascending:false
+          ascending: false
         }
       );
 
 
-  if(error){
+  if (error) {
 
     $("founderList").innerHTML = `
 
@@ -2828,22 +3021,24 @@ async function loadDiscover(){
 }
 
 
-async function renderFounders(list){
+async function renderFounders(list) {
 
   const {
-    data:follows,
+    data: follows,
     error
   } =
     await db
       .from("follows")
-      .select("following_id")
+      .select(
+        "following_id"
+      )
       .eq(
         "follower_id",
         me
       );
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -2858,11 +3053,21 @@ async function renderFounders(list){
   const following =
     new Set(
       (follows || [])
-        .map(x => x.following_id)
+        .map(
+          x => x.following_id
+        )
     );
 
 
-  $("founderList").innerHTML =
+  const container =
+    $("founderList");
+
+
+  if (!container)
+    return;
+
+
+  container.innerHTML =
 
     list.length
 
@@ -3024,7 +3229,7 @@ async function renderFounders(list){
 }
 
 
-function filterFounders(){
+function filterFounders() {
 
   const input =
     $("founderSearch");
@@ -3034,7 +3239,8 @@ function filterFounders(){
     input
       ?.value
       .toLowerCase()
-      .trim() || "";
+      .trim() ||
+    "";
 
 
   const list =
@@ -3044,24 +3250,17 @@ function filterFounders(){
         [
 
           p.full_name,
-
           p.startup_name,
-
           p.headline,
-
           p.bio,
-
           p.industry,
-
           p.stage
 
         ]
 
-        .join(" ")
-
-        .toLowerCase()
-
-        .includes(q)
+          .join(" ")
+          .toLowerCase()
+          .includes(q)
 
       );
 
@@ -3072,22 +3271,21 @@ function filterFounders(){
 
 
 /* ============================================================
-   FOLLOW / CONNECT
+   FOLLOW
 ============================================================ */
-
 
 async function toggleFollow(
   id,
   isFollowing
-){
+) {
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
-  try{
+  try {
 
-    if(isFollowing){
+    if (isFollowing) {
 
       const {
         error
@@ -3105,10 +3303,10 @@ async function toggleFollow(
           );
 
 
-      if(error)
+      if (error)
         throw error;
 
-    }else{
+    } else {
 
       const {
         error
@@ -3117,14 +3315,16 @@ async function toggleFollow(
           .from("follows")
           .insert({
 
-            follower_id:me,
+            follower_id:
+              me,
 
-            following_id:id
+            following_id:
+              id
 
           });
 
 
-      if(error)
+      if (error)
         throw error;
 
     }
@@ -3133,7 +3333,7 @@ async function toggleFollow(
     loadDiscover();
 
 
-  }catch(err){
+  } catch (err) {
 
     toast(
       err.message,
@@ -3149,21 +3349,23 @@ async function toggleFollow(
    PUBLIC FOUNDER PROFILE
 ============================================================ */
 
-
-async function openFounder(id){
+async function openFounder(id) {
 
   const {
-    data:p,
+    data: p,
     error
   } =
     await db
       .from("profiles")
       .select("*")
-      .eq("id",id)
+      .eq(
+        "id",
+        id
+      )
       .single();
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -3175,7 +3377,8 @@ async function openFounder(id){
   }
 
 
-  activeFounder = p;
+  activeFounder =
+    p;
 
 
   const backTab =
@@ -3215,6 +3418,7 @@ async function openFounder(id){
             <span class="eyebrow">
               FOUNDER
             </span>
+
 
             <h1>
 
@@ -3260,6 +3464,7 @@ async function openFounder(id){
               "Independent project"
             )}
           </strong>
+
 
           <span>
 
@@ -3345,8 +3550,8 @@ async function openFounder(id){
 
 
   const {
-    data:posts,
-    error:postsError
+    data: posts,
+    error: postsError
   } =
     await db
       .from("posts")
@@ -3363,12 +3568,12 @@ async function openFounder(id){
       .order(
         "created_at",
         {
-          ascending:false
+          ascending: false
         }
       );
 
 
-  if(postsError){
+  if (postsError) {
 
     $("founderPosts").innerHTML = `
 
@@ -3414,8 +3619,7 @@ async function openFounder(id){
    MESSAGES
 ============================================================ */
 
-
-async function loadMessages(){
+async function loadMessages() {
 
   $("view").innerHTML = `
 
@@ -3473,12 +3677,12 @@ async function loadMessages(){
       .order(
         "created_at",
         {
-          ascending:false
+          ascending: false
         }
       );
 
 
-  if(error){
+  if (error) {
 
     $("messagePeople").innerHTML = `
 
@@ -3497,30 +3701,31 @@ async function loadMessages(){
     new Map();
 
 
-  (data || []).forEach(m => {
+  (data || [])
+    .forEach(m => {
 
-    const other =
-      m.sender_id === me
-        ? m.receiver
-        : m.sender;
+      const other =
+        m.sender_id === me
+          ? m.receiver
+          : m.sender;
 
 
-    if(
-      other &&
-      !people.has(other.id)
-    ){
+      if (
+        other &&
+        !people.has(other.id)
+      ) {
 
-      people.set(
-        other.id,
-        {
-          profile:other,
-          last:m
-        }
-      );
+        people.set(
+          other.id,
+          {
+            profile: other,
+            last: m
+          }
+        );
 
-    }
+      }
 
-  });
+    });
 
 
   $("messagePeople").innerHTML =
@@ -3626,14 +3831,13 @@ async function loadMessages(){
    START MESSAGE
 ============================================================ */
 
+async function startMessage(id) {
 
-async function startMessage(id){
-
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
-  if(id === me){
+  if (id === me) {
 
     toast(
       "You cannot message yourself.",
@@ -3646,17 +3850,20 @@ async function startMessage(id){
 
 
   const {
-    data:p,
+    data: p,
     error
   } =
     await db
       .from("profiles")
       .select("*")
-      .eq("id",id)
+      .eq(
+        "id",
+        id
+      )
       .single();
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -3688,8 +3895,7 @@ async function startMessage(id){
    CHAT
 ============================================================ */
 
-
-function renderChat(p){
+function renderChat(p) {
 
   $("view").innerHTML = `
 
@@ -3785,14 +3991,9 @@ function renderChat(p){
 }
 
 
-/* ============================================================
-   LOAD CHAT
-============================================================ */
-
-
 async function loadChatMessages(
   otherId
-){
+) {
 
   const {
     data,
@@ -3810,16 +4011,16 @@ async function loadChatMessages(
       .order(
         "created_at",
         {
-          ascending:true
+          ascending: true
         }
       );
 
 
-  if(error){
+  if (error) {
 
     console.error(error);
 
-    if($("chatMessages")){
+    if ($("chatMessages")) {
 
       $("chatMessages").innerHTML = `
 
@@ -3838,7 +4039,7 @@ async function loadChatMessages(
   }
 
 
-  if(!$("chatMessages"))
+  if (!$("chatMessages"))
     return;
 
 
@@ -3899,14 +4100,9 @@ async function loadChatMessages(
 }
 
 
-/* ============================================================
-   SEND MESSAGE
-============================================================ */
+async function sendMessage() {
 
-
-async function sendMessage(){
-
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
@@ -3914,7 +4110,7 @@ async function sendMessage(){
     $("messageInput");
 
 
-  if(!input)
+  if (!input)
     return;
 
 
@@ -3922,7 +4118,7 @@ async function sendMessage(){
     input.value.trim();
 
 
-  if(
+  if (
     !content ||
     !activeConversation
   )
@@ -3936,7 +4132,8 @@ async function sendMessage(){
       .from("messages")
       .insert({
 
-        sender_id:me,
+        sender_id:
+          me,
 
         receiver_id:
           activeConversation,
@@ -3946,7 +4143,7 @@ async function sendMessage(){
       });
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -3972,10 +4169,9 @@ async function sendMessage(){
    REALTIME DIRECT MESSAGES
 ============================================================ */
 
+function subscribeMessages() {
 
-function subscribeMessages(){
-
-  if(realtimeChannel){
+  if (realtimeChannel) {
 
     db.removeChannel(
       realtimeChannel
@@ -3987,24 +4183,21 @@ function subscribeMessages(){
 
 
   realtimeChannel =
-
     db
       .channel(
-        "delta-direct-" + me
+        "delta-direct-" +
+        me
       )
       .on(
-
         "postgres_changes",
-
         {
-          event:"INSERT",
-          schema:"public",
-          table:"messages"
+          event: "INSERT",
+          schema: "public",
+          table: "messages"
         },
-
         payload => {
 
-          if(
+          if (
             !activeConversation
           )
             return;
@@ -4029,7 +4222,7 @@ function subscribeMessages(){
             );
 
 
-          if(relevant){
+          if (relevant) {
 
             loadChatMessages(
               activeConversation
@@ -4038,7 +4231,6 @@ function subscribeMessages(){
           }
 
         }
-
       )
       .subscribe();
 
@@ -4049,8 +4241,7 @@ function subscribeMessages(){
    GROUPS
 ============================================================ */
 
-
-async function loadGroups(){
+async function loadGroups() {
 
   $("view").innerHTML = `
 
@@ -4084,6 +4275,7 @@ async function loadGroups(){
           +
         </button>
 
+
       </div>
 
 
@@ -4114,12 +4306,12 @@ async function loadGroups(){
       .order(
         "created_at",
         {
-          ascending:false
+          ascending: false
         }
       );
 
 
-  if(error){
+  if (error) {
 
     $("groupList").innerHTML = `
 
@@ -4134,7 +4326,7 @@ async function loadGroups(){
   }
 
 
-  if(!data?.length){
+  if (!data?.length) {
 
     $("groupList").innerHTML = `
 
@@ -4216,9 +4408,9 @@ async function loadGroups(){
 }
 
 
-async function createGroup(){
+async function createGroup() {
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
@@ -4228,7 +4420,7 @@ async function createGroup(){
     );
 
 
-  if(!name?.trim())
+  if (!name?.trim())
     return;
 
 
@@ -4247,19 +4439,22 @@ async function createGroup(){
       .from("groups")
       .insert({
 
-        owner_id:me,
+        owner_id:
+          me,
 
-        name:name.trim(),
+        name:
+          name.trim(),
 
         description:
           description.trim(),
 
-        icon:"✦"
+        icon:
+          "✦"
 
       });
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -4276,24 +4471,27 @@ async function createGroup(){
 }
 
 
-async function openGroup(id){
+async function openGroup(id) {
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
   const {
-    data:group,
+    data: group,
     error
   } =
     await db
       .from("groups")
       .select("*")
-      .eq("id",id)
+      .eq(
+        "id",
+        id
+      )
       .single();
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -4306,7 +4504,7 @@ async function openGroup(id){
 
 
   const {
-    data:membership
+    data: membership
   } =
     await db
       .from("group_members")
@@ -4322,23 +4520,25 @@ async function openGroup(id){
       .maybeSingle();
 
 
-  if(!membership){
+  if (!membership) {
 
     const {
-      error:joinError
+      error: joinError
     } =
       await db
         .from("group_members")
         .insert({
 
-          group_id:id,
+          group_id:
+            id,
 
-          user_id:me
+          user_id:
+            me
 
         });
 
 
-    if(joinError){
+    if (joinError) {
 
       toast(
         joinError.message,
@@ -4359,6 +4559,7 @@ async function openGroup(id){
 
       <header class="chatHeader">
 
+
         <button
           class="back"
           onclick="
@@ -4371,7 +4572,8 @@ async function openGroup(id){
 
         <div class="groupIcon smallIcon">
           ${esc(
-            group.icon || "✦"
+            group.icon ||
+            "✦"
           )}
         </div>
 
@@ -4391,6 +4593,7 @@ async function openGroup(id){
 
         </div>
 
+
       </header>
 
 
@@ -4407,6 +4610,7 @@ async function openGroup(id){
 
 
       <div class="chatComposer">
+
 
         <input
           id="groupInput"
@@ -4428,6 +4632,7 @@ async function openGroup(id){
           ↑
         </button>
 
+
       </div>
 
 
@@ -4443,7 +4648,7 @@ async function openGroup(id){
 }
 
 
-async function loadGroupMessages(id){
+async function loadGroupMessages(id) {
 
   const {
     data,
@@ -4462,12 +4667,12 @@ async function loadGroupMessages(id){
       .order(
         "created_at",
         {
-          ascending:true
+          ascending: true
         }
       );
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -4483,7 +4688,7 @@ async function loadGroupMessages(id){
     $("groupChat");
 
 
-  if(!box)
+  if (!box)
     return;
 
 
@@ -4555,9 +4760,9 @@ async function loadGroupMessages(id){
 }
 
 
-async function sendGroupMessage(id){
+async function sendGroupMessage(id) {
 
-  if(!requireLogin())
+  if (!requireLogin())
     return;
 
 
@@ -4571,7 +4776,7 @@ async function sendGroupMessage(id){
       .trim();
 
 
-  if(!content)
+  if (!content)
     return;
 
 
@@ -4582,16 +4787,18 @@ async function sendGroupMessage(id){
       .from("group_messages")
       .insert({
 
-        group_id:id,
+        group_id:
+          id,
 
-        user_id:me,
+        user_id:
+          me,
 
         content
 
       });
 
 
-  if(error){
+  if (error) {
 
     toast(
       error.message,
@@ -4611,9 +4818,9 @@ async function sendGroupMessage(id){
 }
 
 
-function subscribeGroupMessages(id){
+function subscribeGroupMessages(id) {
 
-  if(groupRealtimeChannel){
+  if (groupRealtimeChannel) {
 
     db.removeChannel(
       groupRealtimeChannel
@@ -4628,26 +4835,23 @@ function subscribeGroupMessages(id){
 
     db
       .channel(
-        "delta-group-" + id
+        "delta-group-" +
+        id
       )
       .on(
-
         "postgres_changes",
-
         {
-          event:"INSERT",
-          schema:"public",
-          table:"group_messages",
+          event: "INSERT",
+          schema: "public",
+          table: "group_messages",
           filter:
             `group_id=eq.${id}`
         },
-
         () => {
 
           loadGroupMessages(id);
 
         }
-
       )
       .subscribe();
 
@@ -4658,8 +4862,7 @@ function subscribeGroupMessages(id){
    MY PROFILE
 ============================================================ */
 
-
-async function loadMyProfile(){
+async function loadMyProfile() {
 
   const [
     postsResult,
@@ -4720,6 +4923,7 @@ async function loadMyProfile(){
           >
             Edit
           </button>
+
 
         </div>
 
@@ -4891,14 +5095,14 @@ async function loadMyProfile(){
 }
 
 
-function openMyProfile(){
+function openMyProfile() {
 
   switchTab("me");
 
 }
 
 
-function showEditProfile(){
+function showEditProfile() {
 
   showProfile(false);
 
@@ -4909,10 +5113,9 @@ function showEditProfile(){
    SIGN OUT
 ============================================================ */
 
+async function signOut() {
 
-async function signOut(){
-
-  if(
+  if (
     !confirm(
       "Sign out of Delta?"
     )
@@ -4920,7 +5123,7 @@ async function signOut(){
     return;
 
 
-  if(realtimeChannel){
+  if (realtimeChannel) {
 
     await db.removeChannel(
       realtimeChannel
@@ -4931,7 +5134,7 @@ async function signOut(){
   }
 
 
-  if(groupRealtimeChannel){
+  if (groupRealtimeChannel) {
 
     await db.removeChannel(
       groupRealtimeChannel
@@ -4965,13 +5168,13 @@ async function signOut(){
    PASSWORD RECOVERY EVENT
 ============================================================ */
 
-
 db.auth.onAuthStateChange(
   event => {
 
-    if(
-      event === "PASSWORD_RECOVERY"
-    ){
+    if (
+      event ===
+      "PASSWORD_RECOVERY"
+    ) {
 
       setTimeout(
         showResetPassword,
@@ -4985,9 +5188,8 @@ db.auth.onAuthStateChange(
 
 
 /* ============================================================
-   ERROR PROTECTION
+   GLOBAL ERROR PROTECTION
 ============================================================ */
-
 
 window.addEventListener(
   "error",
@@ -5006,7 +5208,6 @@ window.addEventListener(
 /* ============================================================
    START
 ============================================================ */
-
 
 boot();
 
