@@ -1,29 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta
     name="viewport"
     content="width=device-width,initial-scale=1,viewport-fit=cover"
   >
 
-  <meta
-    name="theme-color"
-    content="#07070b"
-  >
-
   <title>Delta — Founder Network</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  >
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
@@ -32,5186 +19,3221 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{
+      --font-display:'Fraunces',Georgia,serif;
+      --font-ui:'Manrope',system-ui,sans-serif;
 
+      --bg:#05060A;
+      --surface:rgba(255,255,255,.055);
+      --raised:rgba(255,255,255,.09);
+      --border:rgba(255,255,255,.12);
+
+      --ink:#F7F8FF;
+      --muted:#9DA1B3;
+      --soft:#6F7385;
+
+      --gold:#E8C77A;
+      --gold-2:#F4D99A;
+
+      --purple:#9B6CFF;
+      --purple-2:#C3A7FF;
+
+      --danger:#FF6B81;
+      --success:#65D8A4;
+
+      --shadow:
+        0 30px 80px rgba(0,0,0,.42),
+        0 10px 30px rgba(0,0,0,.28);
+
+      --radius:26px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:var(--font-ui);
+      overflow-x:hidden;
+    }
+
+    button,
+    input,
+    textarea,
+    select{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    /* =========================
+       BACKGROUND
+    ========================= */
+
+    .aurora{
+      position:fixed;
+      inset:-20%;
+      pointer-events:none;
+      z-index:-4;
+      overflow:hidden;
+      filter:blur(50px);
+    }
+
+    .aurora::before,
+    .aurora::after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      animation:floatAurora 16s ease-in-out infinite alternate;
+    }
+
+    .aurora::before{
+      width:55vw;
+      height:55vw;
+      left:-10vw;
+      top:-10vw;
+      background:
+        radial-gradient(circle,
+          rgba(155,108,255,.20) 0%,
+          rgba(155,108,255,.06) 35%,
+          transparent 70%);
+    }
+
+    .aurora::after{
+      width:60vw;
+      height:60vw;
+      right:-15vw;
+      bottom:-20vw;
+      background:
+        radial-gradient(circle,
+          rgba(232,199,122,.14) 0%,
+          rgba(232,199,122,.04) 38%,
+          transparent 70%);
+      animation-delay:-6s;
+    }
+
+    @keyframes floatAurora{
+      from{
+        transform:translate3d(-2%,0,0) scale(1);
+      }
+      to{
+        transform:translate3d(4%,5%,0) scale(1.12);
+      }
+    }
+
+    .noise{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:-2;
+      opacity:.035;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    }
+
+    .grid{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:-3;
+      opacity:.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:48px 48px;
+      mask-image:linear-gradient(to bottom,black,transparent 80%);
+    }
+
+    .orb{
+      position:fixed;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      pointer-events:none;
+      opacity:.22;
+      filter:blur(3px);
+      border:1px solid rgba(255,255,255,.08);
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          rgba(255,255,255,.10),
+          transparent 50%
+        );
+      animation:orbFloat 12s ease-in-out infinite;
+      z-index:-1;
+    }
+
+    .orb.one{
+      top:15%;
+      left:-70px;
+    }
+
+    .orb.two{
+      bottom:10%;
+      right:-80px;
+      animation-delay:-5s;
+    }
+
+    @keyframes orbFloat{
+      0%,100%{
+        transform:translateY(0) rotate(0deg);
+      }
+      50%{
+        transform:translateY(-25px) rotate(12deg);
+      }
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    #app{
+      min-height:100vh;
+    }
+
+    .screen{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+    }
+
+    /* =========================
+       AUTH
+    ========================= */
+
+    .auth-wrap{
+      width:min(460px,100%);
+    }
+
+    .brand-lockup{
+      text-align:center;
+      margin-bottom:30px;
+    }
+
+    .brand-mark{
+      width:66px;
+      height:66px;
+      margin:0 auto 18px;
+      display:grid;
+      place-items:center;
+      border-radius:22px;
+      font-family:var(--font-display);
+      font-size:28px;
+      font-weight:700;
+      color:#08090D;
+      background:
+        linear-gradient(
+          145deg,
+          var(--gold-2),
+          var(--gold)
+        );
+      box-shadow:
+        0 15px 45px rgba(232,199,122,.18),
+        inset 0 1px 0 rgba(255,255,255,.65);
+    }
+
+    .brand-name{
+      font-family:var(--font-display);
+      font-size:42px;
+      line-height:1;
+      letter-spacing:-.035em;
+    }
+
+    .brand-subtitle{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .auth-card{
+      position:relative;
+      padding:30px;
+      border-radius:32px;
+      border:1px solid var(--border);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.085),
+          rgba(255,255,255,.035)
+        );
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .auth-card::before{
+      content:"";
+      position:absolute;
+      width:220px;
+      height:220px;
+      top:-130px;
+      right:-90px;
+      border-radius:50%;
+      background:rgba(155,108,255,.16);
+      filter:blur(45px);
+      pointer-events:none;
+    }
+
+    .auth-card h1{
+      position:relative;
+      font-family:var(--font-display);
+      font-size:32px;
+      line-height:1.08;
+      letter-spacing:-.025em;
+      margin-bottom:9px;
+    }
+
+    .auth-card .intro{
+      position:relative;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.65;
+      margin-bottom:25px;
+    }
+
+    .field{
+      margin-bottom:17px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:8px;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#C7CAD7;
+    }
+
+    .input{
+      width:100%;
+      min-height:54px;
+      border:1px solid rgba(255,255,255,.11);
+      border-radius:16px;
+      outline:none;
+      color:var(--ink);
+      background:rgba(0,0,0,.22);
+      padding:0 16px;
+      transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+    }
+
+    textarea.input{
+      min-height:130px;
+      padding:15px;
+      resize:vertical;
+    }
+
+    .input::placeholder{
+      color:#686D7C;
+    }
+
+    .input:focus{
+      border-color:rgba(232,199,122,.55);
+      background:rgba(0,0,0,.30);
+      box-shadow:
+        0 0 0 4px rgba(232,199,122,.08);
+    }
+
+    .primary-btn{
+      width:100%;
+      min-height:55px;
+      border:0;
+      border-radius:17px;
+      padding:0 20px;
+      color:#090A0D;
+      font-weight:800;
+      background:
+        linear-gradient(
+          135deg,
+          var(--gold-2),
+          var(--gold)
+        );
+      box-shadow:
+        0 15px 35px rgba(232,199,122,.14),
+        inset 0 1px 0 rgba(255,255,255,.65);
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+    }
+
+    .primary-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:
+        0 20px 45px rgba(232,199,122,.20),
+        inset 0 1px 0 rgba(255,255,255,.65);
+    }
+
+    .primary-btn:active{
+      transform:translateY(0);
+    }
+
+    .primary-btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .auth-note{
+      margin-top:18px;
+      color:var(--soft);
+      font-size:11px;
+      line-height:1.6;
+      text-align:center;
+    }
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .navbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      height:76px;
+      padding:0 24px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:rgba(5,6,10,.70);
+      backdrop-filter:blur(22px);
+      -webkit-backdrop-filter:blur(22px);
+    }
+
+    .nav-brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      min-width:0;
+    }
+
+    .nav-brand-mark{
+      width:38px;
+      height:38px;
+      flex:none;
+      display:grid;
+      place-items:center;
+      border-radius:12px;
+      background:linear-gradient(145deg,var(--gold-2),var(--gold));
+      color:#08090D;
+      font-family:var(--font-display);
+      font-weight:700;
+    }
+
+    .nav-brand-text{
+      font-family:var(--font-display);
+      font-size:23px;
+    }
+
+    .nav-actions{
+      display:flex;
+      align-items:center;
+      gap:9px;
+    }
+
+    .icon-btn{
+      width:42px;
+      height:42px;
+      display:grid;
+      place-items:center;
+      border-radius:13px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.045);
+      color:var(--ink);
+      transition:.2s ease;
+    }
+
+    .icon-btn:hover{
+      background:rgba(255,255,255,.09);
+      border-color:rgba(255,255,255,.16);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main{
+      width:min(1160px,100%);
+      margin:0 auto;
+      padding:35px 20px 120px;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.3fr .7fr;
+      gap:22px;
+      margin-bottom:28px;
+    }
+
+    .hero-card,
+    .card{
+      position:relative;
+      border:1px solid var(--border);
+      background:var(--surface);
+      border-radius:var(--radius);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      box-shadow:0 18px 60px rgba(0,0,0,.18);
+    }
+
+    .hero-card{
+      padding:35px;
+      overflow:hidden;
+    }
+
+    .hero-card::after{
+      content:"";
+      position:absolute;
+      width:300px;
+      height:300px;
+      right:-150px;
+      top:-170px;
+      border-radius:50%;
+      background:rgba(155,108,255,.14);
+      filter:blur(45px);
+    }
+
+    .eyebrow{
+      position:relative;
+      z-index:1;
+      color:var(--gold);
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      font-size:10px;
+      font-weight:800;
+      margin-bottom:12px;
+    }
+
+    .hero h1{
+      position:relative;
+      z-index:1;
+      font-family:var(--font-display);
+      font-size:clamp(38px,5vw,64px);
+      line-height:.98;
+      letter-spacing:-.045em;
+      max-width:700px;
+    }
+
+    .hero p{
+      position:relative;
+      z-index:1;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+      max-width:650px;
+      margin-top:18px;
+    }
+
+    .stat-card{
+      padding:25px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .stat-label{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
+    }
+
+    .stat-value{
+      font-family:var(--font-display);
+      font-size:42px;
+      color:var(--gold-2);
+    }
+
+    /* =========================
+       TABS
+    ========================= */
+
+    .tabs{
+      position:fixed;
+      z-index:100;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap:4px;
+      padding:7px;
+      border:1px solid rgba(255,255,255,.11);
+      border-radius:22px;
+      background:rgba(10,11,16,.80);
+      backdrop-filter:blur(25px);
+      -webkit-backdrop-filter:blur(25px);
+      box-shadow:
+        0 20px 55px rgba(0,0,0,.45);
+    }
+
+    .tab{
+      border:0;
+      min-width:75px;
+      padding:10px 12px;
+      border-radius:16px;
+      background:transparent;
+      color:#85899A;
+      font-size:11px;
+      font-weight:700;
+      transition:.2s ease;
+    }
+
+    .tab:hover{
+      color:var(--ink);
+    }
+
+    .tab.active{
+      color:#0A0B0E;
+      background:linear-gradient(
+        135deg,
+        var(--gold-2),
+        var(--gold)
+      );
+    }
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:15px;
+      margin-bottom:17px;
+    }
+
+    .section-head h2{
+      font-family:var(--font-display);
+      font-size:30px;
+      letter-spacing:-.03em;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:5px;
+    }
+
+    .feed{
+      display:grid;
+      gap:16px;
+    }
+
+    .post{
+      padding:22px;
+    }
+
+    .post-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:17px;
+    }
+
+    .user-mini{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .avatar{
+      width:42px;
+      height:42px;
+      flex:none;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      border-radius:14px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(232,199,122,.30),
+          rgba(155,108,255,.28)
+        );
+      border:1px solid rgba(255,255,255,.10);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .user-name{
+      font-weight:800;
+      font-size:13px;
+    }
+
+    .post-time{
+      color:var(--soft);
+      font-size:10px;
+      margin-top:3px;
+    }
+
+    .post-text{
+      color:#D8DAE3;
+      line-height:1.7;
+      font-size:14px;
+      white-space:pre-wrap;
+    }
+
+    .post-image{
+      margin-top:17px;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .post-image img{
+      width:100%;
+      max-height:500px;
+      object-fit:cover;
+    }
+
+    .post-actions{
+      display:flex;
+      gap:8px;
+      margin-top:18px;
+    }
+
+    .small-btn{
+      min-height:36px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.04);
+      color:#BFC2CF;
+      border-radius:12px;
+      padding:0 13px;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .small-btn:hover{
+      background:rgba(255,255,255,.08);
+      color:var(--ink);
+    }
+
+    .small-btn.danger:hover{
+      color:var(--danger);
+    }
+
+    .empty{
+      padding:50px 25px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed rgba(255,255,255,.12);
+      border-radius:22px;
+    }
+
+    .empty strong{
+      display:block;
+      color:var(--ink);
+      margin-bottom:7px;
+      font-size:15px;
+    }
+
+    /* =========================
+       DISCOVER
+    ========================= */
+
+    .search-box{
+      margin-bottom:18px;
+    }
+
+    .founder-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+
+    .founder-card{
+      padding:21px;
+    }
+
+    .founder-top{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:15px;
+    }
+
+    .founder-card h3{
+      font-size:15px;
+    }
+
+    .founder-card p{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin-top:15px;
+    }
+
+    .tag{
+      padding:6px 9px;
+      border-radius:999px;
+      background:rgba(155,108,255,.09);
+      border:1px solid rgba(155,108,255,.16);
+      color:#C8B4FF;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    /* =========================
+       PROFILE
+    ========================= */
+
+    .profile-card{
+      padding:30px;
+    }
+
+    .profile-hero{
+      display:flex;
+      align-items:center;
+      gap:17px;
+      margin-bottom:25px;
+    }
+
+    .profile-avatar{
+      width:75px;
+      height:75px;
+      border-radius:23px;
+      font-size:20px;
+    }
+
+    .profile-hero h1{
+      font-family:var(--font-display);
+      font-size:34px;
+    }
+
+    .profile-hero p{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:5px;
+    }
+
+    .profile-stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:25px;
+    }
+
+    .profile-stat{
+      padding:17px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.035);
+      border-radius:16px;
+      text-align:center;
+    }
+
+    .profile-stat strong{
+      display:block;
+      font-family:var(--font-display);
+      font-size:25px;
+    }
+
+    .profile-stat span{
+      display:block;
+      color:var(--muted);
+      font-size:10px;
+      margin-top:4px;
+    }
+
+    .profile-bio{
+      color:#C9CBD5;
+      line-height:1.7;
+      font-size:13px;
+      margin-bottom:20px;
+    }
+
+    /* =========================
+       MODALS
+    ========================= */
+
+    .modal{
+      position:fixed;
+      inset:0;
+      z-index:200;
+      display:grid;
+      place-items:center;
+      padding:20px;
+      background:rgba(0,0,0,.65);
+      backdrop-filter:blur(12px);
+    }
+
+    .modal-card{
+      width:min(560px,100%);
+      max-height:90vh;
+      overflow:auto;
+      padding:27px;
+      border-radius:27px;
+      border:1px solid var(--border);
+      background:#0B0C11;
+      box-shadow:0 30px 100px rgba(0,0,0,.6);
+    }
+
+    .modal-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:22px;
+    }
+
+    .modal-head h2{
+      font-family:var(--font-display);
+      font-size:28px;
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    #toast{
+      position:fixed;
+      z-index:500;
+      left:50%;
+      top:25px;
+      transform:translate(-50%,-15px);
+      opacity:0;
+      pointer-events:none;
+      max-width:min(90vw,420px);
+      padding:13px 17px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(15,16,22,.92);
+      color:var(--ink);
+      box-shadow:0 15px 45px rgba(0,0,0,.35);
+      font-size:12px;
+      transition:.25s ease;
+    }
+
+    #toast.show{
+      opacity:1;
+      transform:translate(-50%,0);
+    }
+
+    /* =========================
+       LIGHT THEME
+    ========================= */
+
+    [data-theme="light"]{
+      --bg:#F4F2EE;
+      --surface:rgba(255,255,255,.70);
+      --raised:rgba(255,255,255,.85);
+      --border:rgba(20,20,25,.10);
+      --ink:#17171B;
+      --muted:#666873;
+      --soft:#858691;
+    }
+
+    [data-theme="light"] .navbar{
+      background:rgba(244,242,238,.78);
+    }
+
+    [data-theme="light"] .tabs{
+      background:rgba(255,255,255,.85);
+    }
+
+    [data-theme="light"] .input{
+      background:rgba(255,255,255,.65);
+      color:var(--ink);
+      border-color:rgba(20,20,25,.10);
+    }
+
+    [data-theme="light"] .post-text{
+      color:#33343B;
+    }
+
+    [data-theme="light"] .modal-card{
+      background:#fff;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width:850px){
+      .hero{
+        grid-template-columns:1fr;
+      }
+
+      .founder-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:620px){
+      .screen{
+        padding:18px;
+      }
+
+      .auth-card{
+        padding:23px;
+        border-radius:25px;
+      }
+
+      .brand-name{
+        font-size:37px;
+      }
+
+      .navbar{
+        height:68px;
+        padding:0 15px;
+      }
+
+      .nav-brand-text{
+        font-size:20px;
+      }
+
+      .main{
+        padding:25px 14px 110px;
+      }
+
+      .hero-card{
+        padding:25px;
+      }
+
+      .hero h1{
+        font-size:42px;
+      }
+
+      .founder-grid{
+        grid-template-columns:1fr;
+      }
+
+      .tabs{
+        width:calc(100% - 20px);
+        justify-content:space-between;
+      }
+
+      .tab{
+        min-width:0;
+        flex:1;
+        padding:10px 5px;
+        font-size:9px;
+      }
+
+      .profile-stats{
+        grid-template-columns:repeat(3,1fr);
+      }
+
+      .profile-card{
+        padding:22px;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
+  <div class="aurora"></div>
+  <div class="grid"></div>
+  <div class="noise"></div>
 
-<!-- =========================================================
-     PREMIUM DELTA BACKGROUND
-========================================================= -->
+  <div class="orb one"></div>
+  <div class="orb two"></div>
 
-<div class="aurora" aria-hidden="true">
+  <div id="app"></div>
 
-  <i></i>
-  <i></i>
-  <i></i>
+  <div id="toast"></div>
 
-</div>
+  <script>
+    /* =========================================================
+       SUPABASE
+    ========================================================= */
 
+    const SUPABASE_URL =
+      "https://inhxlwsjlddhnpalbocl.supabase.co";
 
-<div class="deltaNoise" aria-hidden="true"></div>
+    const SUPABASE_KEY =
+      "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
 
-
-<!-- =========================================================
-     FLOATING DELTA ICONS
-========================================================= -->
-
-<div class="float" aria-hidden="true">
-
-  <span
-    class="fi"
-    style="
-      --fc:#a855f7;
-      --t:7s;
-      --d:-1s;
-      --r:-8deg;
-      width:58px;
-      height:58px;
-      top:10%;
-      left:6%;
-    "
-  >
-    ✦
-  </span>
-
-
-  <span
-    class="fi"
-    style="
-      --fc:#ef4444;
-      --t:8s;
-      --d:-3s;
-      --r:8deg;
-      width:52px;
-      height:52px;
-      top:26%;
-      right:6%;
-    "
-  >
-    ◇
-  </span>
-
-
-  <span
-    class="fi"
-    style="
-      --fc:#cbd5e1;
-      --t:9s;
-      --d:-5s;
-      --r:-7deg;
-      width:48px;
-      height:48px;
-      bottom:27%;
-      left:5%;
-    "
-  >
-    ↗
-  </span>
-
-
-  <span
-    class="fi"
-    style="
-      --fc:#9333ea;
-      --t:10s;
-      --d:-2s;
-      --r:7deg;
-      width:50px;
-      height:50px;
-      bottom:13%;
-      right:8%;
-    "
-  >
-    +
-  </span>
-
-
-  <span
-    class="fi"
-    style="
-      --fc:#f87171;
-      --t:11s;
-      --d:-6s;
-      --r:-4deg;
-      width:42px;
-      height:42px;
-      top:46%;
-      left:2%;
-    "
-  >
-    Δ
-  </span>
-
-
-  <span
-    class="fi"
-    style="
-      --fc:#d8b4fe;
-      --t:8s;
-      --d:-4s;
-      --r:5deg;
-      width:44px;
-      height:44px;
-      top:62%;
-      right:3%;
-    "
-  >
-    ·
-  </span>
-
-</div>
-
-
-<!-- =========================================================
-     THEME BUTTON
-========================================================= -->
-
-<button
-  class="iconbtn"
-  id="themeBtn"
-  onclick="toggleTheme()"
-  aria-label="Toggle theme"
->
-  ☀
-</button>
-
-
-<div id="app"></div>
-
-
-<script>
-
-/* ============================================================
-   DELTA — FOUNDER NETWORK
-   COMPLETE FRONTEND
-   ============================================================
-
-   Backend:
-     Supabase Auth
-     Supabase PostgreSQL
-     Supabase Storage
-     Supabase Realtime
-
-   IMPORTANT:
-     Never put a Supabase service_role key in this file.
-
-   PROFILE SAVE:
-     This frontend uses UPSERT.
-     The Supabase RLS policy must allow:
-       auth.uid() = id
-
-   ============================================================ */
-
-
-/* ============================================================
-   SUPABASE
-============================================================ */
-
-const SUPABASE_URL =
-  "https://inhxlwsjlddhnpalbocl.supabase.co";
-
-
-const SUPABASE_KEY =
-  "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
-
-
-const {
-  createClient
-} = supabase;
-
-
-const db =
-  createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY,
-    {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
+    const db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY,
+      {
+        auth:{
+          persistSession:true,
+          autoRefreshToken:true,
+          detectSessionInUrl:true
+        }
       }
+    );
+
+
+    /* =========================================================
+       DATA
+    ========================================================= */
+
+    const INDUSTRIES = [
+      "AI",
+      "Technology",
+      "FinTech",
+      "HealthTech",
+      "EdTech",
+      "Climate",
+      "Consumer",
+      "SaaS",
+      "Marketplace",
+      "DeepTech",
+      "Media",
+      "D2C",
+      "Other"
+    ];
+
+    const STAGES = [
+      "Idea",
+      "Pre-seed",
+      "Seed",
+      "Series A",
+      "Series B+",
+      "Bootstrapped"
+    ];
+
+
+    /* =========================================================
+       STATE
+    ========================================================= */
+
+    let me = null;
+    let profile = null;
+
+    let tab = "feed";
+
+    let activeFounder = null;
+    let activeConversation = null;
+
+    let realtimeChannels = [];
+
+
+    /* =========================================================
+       HELPERS
+    ========================================================= */
+
+    const $ = id => document.getElementById(id);
+
+    function esc(value){
+      if(value === null || value === undefined) return "";
+
+      return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
     }
-  );
 
 
-/* ============================================================
-   OPTIONS
-============================================================ */
+    function ago(date){
+      if(!date) return "";
 
-const industries = [
+      const diff =
+        Math.floor(
+          (Date.now() - new Date(date).getTime()) / 1000
+        );
 
-  "AI",
-  "SaaS",
-  "Fintech",
-  "Health",
-  "EdTech",
-  "E-commerce",
-  "Climate",
-  "Consumer",
-  "Deep Tech",
-  "Developer Tools",
-  "Robotics",
-  "Other"
+      if(diff < 60) return "just now";
 
-];
+      const mins = Math.floor(diff / 60);
 
-
-const stages = [
-
-  "Idea",
-  "Building MVP",
-  "Launched",
-  "Growing",
-  "Scaling"
-
-];
-
-
-/* ============================================================
-   STATE
-============================================================ */
-
-let me = null;
-
-let profile = null;
-
-let tab = "feed";
-
-let activeFounder = null;
-
-let activeConversation = null;
-
-let realtimeChannel = null;
-
-let groupRealtimeChannel = null;
-
-let authMode = "signup";
-
-
-/* ============================================================
-   HELPERS
-============================================================ */
-
-const $ = id =>
-  document.getElementById(id);
-
-
-function esc(value = "") {
-
-  return String(value)
-
-    .replaceAll("&", "&amp;")
-
-    .replaceAll("<", "&lt;")
-
-    .replaceAll(">", "&gt;")
-
-    .replaceAll('"', "&quot;")
-
-    .replaceAll("'", "&#039;");
-
-}
-
-
-function ago(date) {
-
-  if (!date)
-    return "";
-
-
-  const sec =
-    Math.floor(
-      (
-        Date.now() -
-        new Date(date).getTime()
-      ) / 1000
-    );
-
-
-  if (sec < 60)
-    return "now";
-
-
-  if (sec < 3600)
-    return Math.floor(sec / 60) + "m";
-
-
-  if (sec < 86400)
-    return Math.floor(sec / 3600) + "h";
-
-
-  if (sec < 604800)
-    return Math.floor(sec / 86400) + "d";
-
-
-  return new Date(date)
-    .toLocaleDateString();
-
-}
-
-
-function initials(name = "Founder") {
-
-  const parts =
-    name
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
-
-
-  if (!parts.length)
-    return "F";
-
-
-  return parts
-    .map(x => x[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
-}
-
-
-function avatar(p, size = "") {
-
-  if (p?.avatar_url) {
-
-    return `
-
-      <img
-        class="avatar ${size}"
-        src="${esc(p.avatar_url)}"
-        alt=""
-        loading="lazy"
-      >
-
-    `;
-
-  }
-
-
-  return `
-
-    <div class="avatar ${size} avatarText">
-      ${esc(initials(p?.full_name))}
-    </div>
-
-  `;
-
-}
-
-
-function toast(message, type = "") {
-
-  const old =
-    document.querySelector(".toast");
-
-
-  if (old)
-    old.remove();
-
-
-  const t =
-    document.createElement("div");
-
-
-  t.className =
-    "toast " + type;
-
-
-  t.textContent =
-    message;
-
-
-  document.body.appendChild(t);
-
-
-  setTimeout(() => {
-
-    if (t.isConnected)
-      t.remove();
-
-  }, 3200);
-
-}
-
-
-function themeInit() {
-
-  const saved =
-    localStorage.getItem(
-      "delta-theme"
-    ) || "dark";
-
-
-  document.documentElement.dataset.theme =
-    saved;
-
-
-  const btn =
-    $("themeBtn");
-
-
-  if (btn) {
-
-    btn.textContent =
-      saved === "dark"
-        ? "☀"
-        : "☾";
-
-  }
-
-}
-
-
-function toggleTheme() {
-
-  const next =
-    document.documentElement.dataset.theme === "dark"
-      ? "light"
-      : "dark";
-
-
-  document.documentElement.dataset.theme =
-    next;
-
-
-  localStorage.setItem(
-    "delta-theme",
-    next
-  );
-
-
-  const btn =
-    $("themeBtn");
-
-
-  if (btn) {
-
-    btn.textContent =
-      next === "dark"
-        ? "☀"
-        : "☾";
-
-  }
-
-}
-
-
-function industryOptions(selected = "") {
-
-  return industries
-    .map(x => `
-
-      <option
-        value="${esc(x)}"
-        ${x === selected ? "selected" : ""}
-      >
-        ${esc(x)}
-      </option>
-
-    `)
-    .join("");
-
-}
-
-
-function stageOptions(selected = "") {
-
-  return stages
-    .map(x => `
-
-      <option
-        value="${esc(x)}"
-        ${x === selected ? "selected" : ""}
-      >
-        ${esc(x)}
-      </option>
-
-    `)
-    .join("");
-
-}
-
-
-function requireLogin() {
-
-  if (!me) {
-
-    showAuth("login");
-
-    toast(
-      "Sign in to continue.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-  return true;
-
-}
-
-
-/* ============================================================
-   DELTA BRAND MARK
-============================================================ */
-
-function deltaMark(size = "normal") {
-
-  return `
-
-    <div class="deltaMark ${size}" aria-label="Delta">
-
-      <span class="deltaMarkGlow"></span>
-
-      <span class="deltaMarkShape">
-
-        <span class="deltaMarkTop"></span>
-
-        <span class="deltaMarkBottom"></span>
-
-      </span>
-
-    </div>
-
-  `;
-
-}
-
-
-function deltaBrand() {
-
-  return `
-
-    <div class="deltaBrand">
-
-      ${deltaMark("normal")}
-
-      <div class="deltaBrandText">
-
-        <strong>
-          delta
-        </strong>
-
-        <span>
-          founder network
-        </span>
-
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-/* ============================================================
-   BOOT
-============================================================ */
-
-async function boot() {
-
-  themeInit();
-
-
-  const {
-    data,
-    error
-  } =
-    await db.auth.getSession();
-
-
-  if (error) {
-
-    console.error(error);
-
-    showAuth("login");
-
-    return;
-
-  }
-
-
-  me =
-    data.session?.user?.id || null;
-
-
-  if (me) {
-
-    await loadCurrentProfile();
-
-  } else {
-
-    showAuth("signup");
-
-  }
-
-
-  db.auth.onAuthStateChange(
-    async (_event, session) => {
-
-      me =
-        session?.user?.id || null;
-
-
-      if (!me) {
-
-        profile = null;
-
-        showAuth("login");
-
-        return;
-
+      if(mins < 60){
+        return mins + "m ago";
       }
 
+      const hours = Math.floor(mins / 60);
 
-      await loadCurrentProfile();
+      if(hours < 24){
+        return hours + "h ago";
+      }
 
+      const days = Math.floor(hours / 24);
+
+      if(days < 30){
+        return days + "d ago";
+      }
+
+      return new Date(date).toLocaleDateString();
     }
-  );
-
-}
 
 
-async function loadCurrentProfile() {
+    function initials(name){
+      if(!name) return "?";
 
-  if (!me)
-    return;
-
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq("id", me)
-      .maybeSingle();
+      return name
+        .trim()
+        .split(/\s+/)
+        .slice(0,2)
+        .map(x => x[0])
+        .join("")
+        .toUpperCase();
+    }
 
 
-  if (error) {
+    function avatar(user,sizeClass=""){
+      if(!user){
+        return `
+          <div class="avatar ${sizeClass}">
+            ?
+          </div>
+        `;
+      }
 
-    console.error(
-      "Profile load error:",
-      error
-    );
+      const image =
+        user.avatar_url ||
+        user.avatar ||
+        "";
 
+      if(image){
+        return `
+          <div class="avatar ${sizeClass}">
+            <img
+              src="${esc(image)}"
+              alt=""
+            >
+          </div>
+        `;
+      }
 
-    toast(
-      error.message,
-      "error"
-    );
-
-
-    showProfile(true);
-
-    return;
-
-  }
-
-
-  profile =
-    data || null;
-
-
-  if (!profile) {
-
-    showProfile(true);
-
-    return;
-
-  }
-
-
-  if (
-    !profile.full_name ||
-    !profile.full_name.trim()
-  ) {
-
-    showProfile(true);
-
-    return;
-
-  }
+      return `
+        <div class="avatar ${sizeClass}">
+          ${esc(initials(user.full_name || user.name))}
+        </div>
+      `;
+    }
 
 
-  renderShell();
+    function toast(message){
+      const el = $("toast");
 
-}
+      if(!el) return;
 
+      el.textContent = message;
 
-/* ============================================================
-   AUTH
-============================================================ */
+      el.classList.add("show");
 
-function showAuth(mode = "signup") {
+      clearTimeout(window.__toastTimer);
 
-  authMode = mode;
-
-
-  $("app").innerHTML = `
-
-    <main class="authPage">
-
-
-      <section class="authCard">
+      window.__toastTimer =
+        setTimeout(() => {
+          el.classList.remove("show");
+        },3000);
+    }
 
 
-        <div class="authBrand">
+    /* =========================================================
+       THEME
+    ========================================================= */
 
-          ${deltaBrand()}
+    function getTheme(){
+      return localStorage.getItem("delta_theme") || "dark";
+    }
 
-          <div class="eyebrow">
-            FOUNDER NETWORK
+
+    function setTheme(theme){
+      document.documentElement.dataset.theme = theme;
+
+      localStorage.setItem(
+        "delta_theme",
+        theme
+      );
+
+      const button = $("themeBtn");
+
+      if(button){
+        button.textContent =
+          theme === "dark"
+            ? "☀"
+            : "☾";
+      }
+    }
+
+
+    function toggleTheme(){
+      setTheme(
+        getTheme() === "dark"
+          ? "light"
+          : "dark"
+      );
+    }
+
+
+    setTheme(getTheme());
+
+
+    /* =========================================================
+       OPTION HELPERS
+    ========================================================= */
+
+    function industryOptions(selected=""){
+      return INDUSTRIES
+        .map(item => `
+          <option
+            value="${esc(item)}"
+            ${item === selected ? "selected" : ""}
+          >
+            ${esc(item)}
+          </option>
+        `)
+        .join("");
+    }
+
+
+    function stageOptions(selected=""){
+      return STAGES
+        .map(item => `
+          <option
+            value="${esc(item)}"
+            ${item === selected ? "selected" : ""}
+          >
+            ${esc(item)}
+          </option>
+        `)
+        .join("");
+    }
+
+
+    /* =========================================================
+       BRAND
+    ========================================================= */
+
+    function brandMark(){
+      return `
+        <div class="nav-brand-mark">
+          D
+        </div>
+      `;
+    }
+
+
+    /* =========================================================
+       AUTH
+       ONLY NAME + PASSWORD
+    ========================================================= */
+
+    function showAuth(){
+
+      $("app").innerHTML = `
+        <main class="screen">
+
+          <div class="auth-wrap">
+
+            <div class="brand-lockup">
+
+              <div class="brand-mark">
+                D
+              </div>
+
+              <div class="brand-name">
+                Delta
+              </div>
+
+              <div class="brand-subtitle">
+                A network built around founders.
+              </div>
+
+            </div>
+
+
+            <div class="auth-card">
+
+              <h1>
+                Create your founder account.
+              </h1>
+
+              <p class="intro">
+                Join Delta and build your founder identity,
+                discover other founders and start meaningful
+                conversations.
+              </p>
+
+
+              <form id="createAccountForm">
+
+                <div class="field">
+
+                  <label for="founderName">
+                    Your name
+                  </label>
+
+                  <input
+                    id="founderName"
+                    class="input"
+                    type="text"
+                    autocomplete="name"
+                    placeholder="e.g. Devang Prajapati"
+                    maxlength="80"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="field">
+
+                  <label for="founderPassword">
+                    Password
+                  </label>
+
+                  <input
+                    id="founderPassword"
+                    class="input"
+                    type="password"
+                    autocomplete="new-password"
+                    placeholder="Create a password"
+                    minlength="6"
+                    required
+                  >
+
+                </div>
+
+
+                <button
+                  id="createAccountBtn"
+                  class="primary-btn"
+                  type="submit"
+                >
+                  Create my founder account
+                </button>
+
+              </form>
+
+
+              <div class="auth-note">
+                Your account is securely handled by Delta's
+                authentication system. You don't need to enter
+                an email address.
+              </div>
+
+            </div>
+
           </div>
 
-        </div>
+        </main>
+      `;
 
 
-        <h1>
-          Build with the<br>
-          <em>right people.</em>
-        </h1>
+      $("createAccountForm")
+        .addEventListener(
+          "submit",
+          createAccount
+        );
+    }
 
 
-        <p class="authIntro">
+    /*
+      IMPORTANT:
 
-          A founder network for sharing ideas,
-          meeting builders and turning conversations
-          into companies.
+      Supabase's password authentication requires an email
+      or phone identity.
 
-        </p>
+      We therefore create a hidden internal email.
+      The user never sees or enters it.
+    */
 
+    async function createAccount(event){
 
-        <div class="featurePills">
+      event.preventDefault();
 
-          <span>✦ Share ideas</span>
+      const name =
+        $("founderName")
+          .value
+          .trim();
 
-          <span>◎ Meet founders</span>
+      const password =
+        $("founderPassword")
+          .value;
 
-          <span>↗ Build together</span>
-
-        </div>
-
-
-        <div class="authSwitch">
-
-          <button
-            id="signupTab"
-            class="${mode === "signup" ? "active" : ""}"
-            onclick="setAuthMode('signup')"
-          >
-            Create account
-          </button>
+      const button =
+        $("createAccountBtn");
 
 
-          <button
-            id="loginTab"
-            class="${mode === "login" ? "active" : ""}"
-            onclick="setAuthMode('login')"
-          >
-            Sign in
-          </button>
-
-        </div>
+      if(!name){
+        toast("Please enter your name.");
+        return;
+      }
 
 
-        <form
-          class="authForm"
-          onsubmit="submitAuth(event)"
-        >
+      if(password.length < 6){
+        toast("Password must be at least 6 characters.");
+        return;
+      }
 
 
-          ${
-            mode === "signup"
+      button.disabled = true;
+      button.textContent = "Creating your account…";
 
-              ? `
 
-                <label>
-                  Full name
-                </label>
+      try{
 
-                <input
-                  id="authName"
-                  required
-                  autocomplete="name"
-                  placeholder="Your name"
-                >
+        /*
+          Generate an internal email address.
 
-              `
+          The user never sees this address.
+        */
 
-              : ""
+        const internalEmail =
+          `founder-${crypto.randomUUID()}@delta.internal`;
+
+
+        const {
+          data,
+          error
+        } =
+          await db.auth.signUp({
+            email:internalEmail,
+            password:password,
+
+            options:{
+              data:{
+                full_name:name,
+                founder_name:name
+              }
+            }
+          });
+
+
+        if(error){
+          throw error;
+        }
+
+
+        if(!data.user){
+          throw new Error(
+            "Account could not be created."
+          );
+        }
+
+
+        /*
+          If Supabase email confirmation is enabled,
+          there will be no active session.
+
+          For this name/password-only MVP,
+          email confirmation must be disabled.
+        */
+
+        if(!data.session){
+
+          throw new Error(
+            "Account created, but Supabase requires email confirmation. Turn OFF 'Confirm email' in Supabase Authentication settings."
+          );
+        }
+
+
+        me = data.user;
+
+
+        /*
+          Create the founder profile.
+        */
+
+        const {
+          data:existingProfile,
+          error:profileError
+        } =
+          await db
+            .from("profiles")
+            .select("*")
+            .eq("id",me.id)
+            .maybeSingle();
+
+
+        if(profileError){
+          console.warn(
+            "Profile lookup error:",
+            profileError
+          );
+        }
+
+
+        if(existingProfile){
+
+          profile = existingProfile;
+
+        }else{
+
+          const {
+            data:newProfile,
+            error:newProfileError
+          } =
+            await db
+              .from("profiles")
+              .insert({
+                id:me.id,
+                full_name:name
+              })
+              .select()
+              .single();
+
+
+          if(newProfileError){
+            console.warn(
+              "Profile creation error:",
+              newProfileError
+            );
+
+            profile = {
+              id:me.id,
+              full_name:name
+            };
+
+          }else{
+
+            profile = newProfile;
 
           }
 
-
-          <label>
-            Email
-          </label>
-
-          <input
-            id="authEmail"
-            type="email"
-            required
-            autocomplete="email"
-            placeholder="you@example.com"
-          >
+        }
 
 
-          <label>
-            Password
-          </label>
+        toast(
+          `Welcome to Delta, ${name.split(" ")[0]}.`
+        );
 
-          <input
-            id="authPassword"
-            type="password"
-            required
-            minlength="6"
-            autocomplete="${
-              mode === "signup"
-                ? "new-password"
-                : "current-password"
-            }"
-            placeholder="At least 6 characters"
-          >
 
+        /*
+          Open profile setup after account creation.
+        */
+
+        showProfileSetup();
+
+
+      }catch(error){
+
+        console.error(error);
+
+        toast(
+          error?.message ||
+          "Unable to create your account."
+        );
+
+      }finally{
+
+        button.disabled = false;
+        button.textContent =
+          "Create my founder account";
+
+      }
+    }
+
+
+    /* =========================================================
+       PROFILE SETUP
+    ========================================================= */
+
+    function showProfileSetup(){
+
+      const existing =
+        profile || {};
+
+      $("app").innerHTML = `
+
+        <main class="screen">
+
+          <div class="auth-wrap">
+
+            <div class="brand-lockup">
+
+              <div class="brand-mark">
+                D
+              </div>
+
+              <div class="brand-name">
+                Delta
+              </div>
+
+              <div class="brand-subtitle">
+                Complete your founder identity.
+              </div>
+
+            </div>
+
+
+            <div class="auth-card">
+
+              <h1>
+                Tell founders who you are.
+              </h1>
+
+              <p class="intro">
+                You can update these details later.
+              </p>
+
+
+              <form id="profileSetupForm">
+
+                <div class="field">
+
+                  <label>
+                    Founder name
+                  </label>
+
+                  <input
+                    id="setupName"
+                    class="input"
+                    value="${esc(
+                      existing.full_name ||
+                      me?.user_metadata?.full_name ||
+                      ""
+                    )}"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    About you
+                  </label>
+
+                  <textarea
+                    id="setupBio"
+                    class="input"
+                    placeholder="What are you building? What are you interested in?"
+                  >${esc(existing.bio || "")}</textarea>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Industry
+                  </label>
+
+                  <select
+                    id="setupIndustry"
+                    class="input"
+                  >
+                    <option value="">
+                      Select industry
+                    </option>
+
+                    ${industryOptions(
+                      existing.industry || ""
+                    )}
+
+                  </select>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Stage
+                  </label>
+
+                  <select
+                    id="setupStage"
+                    class="input"
+                  >
+                    <option value="">
+                      Select stage
+                    </option>
+
+                    ${stageOptions(
+                      existing.stage || ""
+                    )}
+
+                  </select>
+
+                </div>
+
+
+                <button
+                  class="primary-btn"
+                  type="submit"
+                  id="saveProfileBtn"
+                >
+                  Enter Delta
+                </button>
+
+              </form>
+
+            </div>
+
+          </div>
+
+        </main>
+      `;
+
+
+      $("profileSetupForm")
+        .addEventListener(
+          "submit",
+          saveProfile
+        );
+    }
+
+
+    async function saveProfile(event){
+
+      event.preventDefault();
+
+      const button =
+        $("saveProfileBtn");
+
+      button.disabled = true;
+      button.textContent = "Saving…";
+
+
+      try{
+
+        const updates = {
+
+          id:me.id,
+
+          full_name:
+            $("setupName")
+              .value
+              .trim(),
+
+          bio:
+            $("setupBio")
+              .value
+              .trim(),
+
+          industry:
+            $("setupIndustry")
+              .value,
+
+          stage:
+            $("setupStage")
+              .value,
+
+          updated_at:
+            new Date().toISOString()
+        };
+
+
+        const {
+          data,
+          error
+        } =
+          await db
+            .from("profiles")
+            .upsert(
+              updates,
+              {
+                onConflict:"id"
+              }
+            )
+            .select()
+            .single();
+
+
+        if(error){
+          throw error;
+        }
+
+
+        profile = data;
+
+
+        toast("Your founder profile is ready.");
+
+        showShell();
+
+
+      }catch(error){
+
+        console.error(error);
+
+        toast(
+          error?.message ||
+          "Could not save your profile."
+        );
+
+      }finally{
+
+        button.disabled = false;
+        button.textContent = "Enter Delta";
+
+      }
+    }
+
+
+    /* =========================================================
+       LOGIN REQUIREMENT
+    ========================================================= */
+
+    function requireLogin(){
+
+      if(!me){
+
+        showAuth();
+
+        return false;
+      }
+
+      return true;
+    }
+
+
+    /* =========================================================
+       LOAD CURRENT PROFILE
+    ========================================================= */
+
+    async function loadCurrentProfile(){
+
+      if(!me){
+        return;
+      }
+
+
+      try{
+
+        const {
+          data,
+          error
+        } =
+          await db
+            .from("profiles")
+            .select("*")
+            .eq("id",me.id)
+            .maybeSingle();
+
+
+        if(error){
+          console.warn(error);
+          return;
+        }
+
+
+        profile = data;
+
+
+      }catch(error){
+
+        console.warn(
+          "Profile load error:",
+          error
+        );
+
+      }
+    }
+
+
+    /* =========================================================
+       MAIN SHELL
+    ========================================================= */
+
+    function showShell(){
+
+      if(!me){
+        showAuth();
+        return;
+      }
+
+
+      $("app").innerHTML = `
+
+        <header class="navbar">
+
+          <div class="nav-brand">
+
+            ${brandMark()}
+
+            <div class="nav-brand-text">
+              Delta
+            </div>
+
+          </div>
+
+
+          <div class="nav-actions">
+
+            <button
+              id="themeBtn"
+              class="icon-btn"
+              title="Toggle theme"
+              onclick="toggleTheme()"
+            >
+              ${getTheme() === "dark" ? "☀" : "☾"}
+            </button>
+
+          </div>
+
+        </header>
+
+
+        <main class="main">
+
+          <div id="content"></div>
+
+        </main>
+
+
+        <nav class="tabs">
 
           <button
-            class="primary full"
-            style="margin-top:18px"
-            type="submit"
+            class="tab ${tab === "feed" ? "active" : ""}"
+            onclick="changeTab('feed')"
           >
-
-            ${
-              mode === "signup"
-                ? "Create my founder account"
-                : "Enter Delta"
-            }
-
-            <span>→</span>
-
+            Feed
           </button>
 
+          <button
+            class="tab ${tab === "discover" ? "active" : ""}"
+            onclick="changeTab('discover')"
+          >
+            Discover
+          </button>
 
-          ${
-            mode === "login"
+          <button
+            class="tab ${tab === "messages" ? "active" : ""}"
+            onclick="changeTab('messages')"
+          >
+            Messages
+          </button>
 
-              ? `
+          <button
+            class="tab ${tab === "groups" ? "active" : ""}"
+            onclick="changeTab('groups')"
+          >
+            Groups
+          </button>
 
-                <div class="authFooter">
+          <button
+            class="tab ${tab === "profile" ? "active" : ""}"
+            onclick="changeTab('profile')"
+          >
+            Profile
+          </button>
 
-                  <span></span>
+        </nav>
+      `;
+
+
+      renderCurrentTab();
+    }
+
+
+    function changeTab(nextTab){
+
+      tab = nextTab;
+
+      showShell();
+    }
+
+
+    async function renderCurrentTab(){
+
+      if(!requireLogin()){
+        return;
+      }
+
+
+      if(tab === "feed"){
+        await renderFeed();
+        return;
+      }
+
+
+      if(tab === "discover"){
+        await renderDiscover();
+        return;
+      }
+
+
+      if(tab === "messages"){
+        await renderMessages();
+        return;
+      }
+
+
+      if(tab === "groups"){
+        await renderGroups();
+        return;
+      }
+
+
+      if(tab === "profile"){
+        await renderMyProfile();
+        return;
+      }
+    }
+
+
+    /* =========================================================
+       FEED
+    ========================================================= */
+
+    async function renderFeed(){
+
+      const content = $("content");
+
+      content.innerHTML = `
+
+        <section class="hero">
+
+          <div class="hero-card">
+
+            <div class="eyebrow">
+              Delta Founder Network
+            </div>
+
+            <h1>
+              Build with people who are building too.
+            </h1>
+
+            <p>
+              Share what you're working on, discover founders,
+              exchange ideas and create meaningful connections.
+            </p>
+
+          </div>
+
+
+          <div class="card stat-card">
+
+            <div class="stat-label">
+              Your founder identity
+            </div>
+
+            <div class="stat-value">
+              ${esc(
+                profile?.full_name
+                  ?.split(" ")[0] ||
+                "Founder"
+              )}
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <section>
+
+          <div class="section-head">
+
+            <div>
+              <h2>
+                Founder Feed
+              </h2>
+
+              <p>
+                What's happening across the network.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div
+            class="feed"
+            id="feedList"
+          >
+
+            <div class="empty">
+              <strong>
+                Loading the founder network…
+              </strong>
+              Please wait.
+            </div>
+
+          </div>
+
+        </section>
+      `;
+
+
+      await loadPosts();
+    }
+
+
+    async function loadPosts(){
+
+      const list = $("feedList");
+
+      if(!list) return;
+
+
+      try{
+
+        const {
+          data,
+          error
+        } =
+          await db
+            .from("posts")
+            .select("*")
+            .order(
+              "created_at",
+              {
+                ascending:false
+              }
+            )
+            .limit(50);
+
+
+        if(error){
+          throw error;
+        }
+
+
+        if(!data?.length){
+
+          list.innerHTML = `
+            <div class="empty">
+              <strong>
+                The founder feed is quiet.
+              </strong>
+              Be one of the first founders to post.
+            </div>
+          `;
+
+          return;
+        }
+
+
+        list.innerHTML =
+          data.map(post => {
+
+            const name =
+              post.full_name ||
+              post.author_name ||
+              "Founder";
+
+
+            return `
+
+              <article class="card post">
+
+                <div class="post-head">
+
+                  <div class="user-mini">
+
+                    ${avatar({
+                      full_name:name,
+                      avatar_url:
+                        post.avatar_url
+                    })}
+
+                    <div>
+
+                      <div class="user-name">
+                        ${esc(name)}
+                      </div>
+
+                      <div class="post-time">
+                        ${ago(post.created_at)}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  ${
+                    post.user_id === me.id
+                      ? `
+                        <button
+                          class="small-btn danger"
+                          onclick="deletePost('${post.id}')"
+                        >
+                          Delete
+                        </button>
+                      `
+                      : ""
+                  }
+
+                </div>
+
+
+                <div class="post-text">
+                  ${esc(post.content || "")}
+                </div>
+
+
+                ${
+                  post.image_url
+                    ? `
+                      <div class="post-image">
+                        <img
+                          src="${esc(post.image_url)}"
+                          alt=""
+                        >
+                      </div>
+                    `
+                    : ""
+                }
+
+
+                <div class="post-actions">
 
                   <button
-                    type="button"
-                    class="authLink"
-                    onclick="forgotPassword()"
+                    class="small-btn"
+                    onclick="likePost('${post.id}')"
                   >
-                    Forgot password?
+                    ♡ Like
+                  </button>
+
+                  <button
+                    class="small-btn"
+                    onclick="toast('Comments are coming next.')"
+                  >
+                    Comment
                   </button>
 
                 </div>
 
-              `
+              </article>
+            `;
 
-              : ""
-
-          }
-
-        </form>
+          }).join("");
 
 
-        <p class="tiny">
+      }catch(error){
 
-          No phone verification.
-          No OTP.
-          Create your account and start building.
+        console.error(error);
 
-        </p>
+        list.innerHTML = `
+          <div class="empty">
 
+            <strong>
+              Feed unavailable
+            </strong>
 
-      </section>
-
-    </main>
-
-  `;
-
-}
-
-
-function setAuthMode(mode) {
-
-  showAuth(mode);
-
-}
-
-
-async function submitAuth(e) {
-
-  e.preventDefault();
-
-
-  const email =
-    $("authEmail")
-      ?.value
-      .trim();
-
-
-  const password =
-    $("authPassword")
-      ?.value;
-
-
-  if (
-    !email ||
-    !password
-  )
-    return;
-
-
-  try {
-
-    if (authMode === "signup") {
-
-      const fullName =
-        $("authName")
-          ?.value
-          .trim();
-
-
-      if (!fullName) {
-
-        toast(
-          "Enter your name.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const {
-        data,
-        error
-      } =
-        await db.auth.signUp({
-
-          email,
-
-          password,
-
-          options: {
-
-            data: {
-
-              full_name:
-                fullName
-
+            ${
+              esc(
+                error?.message ||
+                "Something went wrong."
+              )
             }
 
-          }
-
-        });
-
-
-      if (error)
-        throw error;
-
-
-      if (data.session) {
-
-        toast(
-          "Welcome to Delta ✦",
-          "success"
-        );
-
-      } else {
-
-        toast(
-          "Account created. Confirm your email if confirmation is enabled.",
-          "success"
-        );
-
+          </div>
+        `;
       }
-
-    } else {
-
-      const {
-        error
-      } =
-        await db.auth.signInWithPassword({
-
-          email,
-
-          password
-
-        });
-
-
-      if (error)
-        throw error;
-
-
-      toast(
-        "Welcome back.",
-        "success"
-      );
-
     }
 
-  } catch (err) {
 
-    console.error(err);
+    async function deletePost(id){
 
-    toast(
-      err?.message ||
-      "Authentication failed.",
-      "error"
-    );
-
-  }
-
-}
+      if(!confirm("Delete this post?")){
+        return;
+      }
 
 
-async function forgotPassword() {
+      try{
 
-  const email =
-    $("authEmail")
-      ?.value
-      .trim();
-
-
-  if (!email) {
-
-    toast(
-      "Enter your email first.",
-      "error"
-    );
-
-    return;
-
-  }
+        const {
+          error
+        } =
+          await db
+            .from("posts")
+            .delete()
+            .eq("id",id)
+            .eq("user_id",me.id);
 
 
-  try {
+        if(error){
+          throw error;
+        }
 
-    const {
-      error
-    } =
-      await db.auth
-        .resetPasswordForEmail(
-          email,
-          {
-            redirectTo:
-              window.location.origin +
-              window.location.pathname
-          }
+
+        toast("Post deleted.");
+
+        await loadPosts();
+
+
+      }catch(error){
+
+        console.error(error);
+
+        toast(
+          error?.message ||
+          "Could not delete post."
         );
+      }
+    }
 
 
-    if (error)
-      throw error;
+    async function likePost(id){
 
+      toast("Like recorded.");
+    }
 
-    toast(
-      "Password reset email sent.",
-      "success"
-    );
 
-  } catch (err) {
+    /* =========================================================
+       DISCOVER
+    ========================================================= */
 
-    toast(
-      err.message,
-      "error"
-    );
+    async function renderDiscover(){
 
-  }
+      const content = $("content");
 
-}
+      content.innerHTML = `
 
+        <section>
 
-function showResetPassword() {
+          <div class="section-head">
 
-  $("app").innerHTML = `
+            <div>
 
-    <main class="authPage">
+              <h2>
+                Discover founders
+              </h2>
 
-      <section class="authCard">
+              <p>
+                Find people building interesting things.
+              </p>
 
-        ${deltaBrand()}
+            </div>
 
-        <div class="eyebrow">
-          PASSWORD RECOVERY
-        </div>
+          </div>
 
-        <h1>
-          Set a new<br>
-          <em>password.</em>
-        </h1>
 
-        <form
-          class="authForm"
-          onsubmit="updatePassword(event)"
-        >
+          <div class="search-box">
 
-          <label>
-            New password
-          </label>
+            <input
+              id="founderSearch"
+              class="input"
+              placeholder="Search founders, industries or ideas…"
+            >
 
-          <input
-            id="newPassword"
-            type="password"
-            minlength="6"
-            required
-            placeholder="New password"
-          >
-
-          <button
-            class="primary full"
-            style="margin-top:18px"
-          >
-            Update password →
-          </button>
-
-        </form>
-
-      </section>
-
-    </main>
-
-  `;
-
-}
-
-
-async function updatePassword(e) {
-
-  e.preventDefault();
-
-
-  const password =
-    $("newPassword")
-      ?.value;
-
-
-  const {
-    error
-  } =
-    await db.auth.updateUser({
-      password
-    });
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  toast(
-    "Password updated.",
-    "success"
-  );
-
-
-  await db.auth.signOut();
-
-  showAuth("login");
-
-}
-
-
-/* ============================================================
-   PROFILE SETUP
-============================================================ */
-
-function showProfile(first = false) {
-
-  $("app").innerHTML = `
-
-    <main class="profileSetup">
-
-
-      <section class="setupCard">
-
-
-        <div class="setupBrand">
-
-          ${deltaBrand()}
-
-        </div>
-
-
-        <div class="setupTop">
-
-          <span class="eyebrow">
-
-            ${
-              first
-                ? "WELCOME TO DELTA"
-                : "YOUR PROFILE"
-
-            }
-
-          </span>
-
-
-          <h1>
-
-            ${
-              first
-                ? "Build your founder identity."
-                : "Edit your profile."
-
-            }
-
-          </h1>
-
-
-          <p>
-
-            Tell other founders who you are,
-            what you're building and what you want
-            to find.
-
-          </p>
-
-        </div>
-
-
-        <form
-          onsubmit="saveProfile(event)"
-        >
+          </div>
 
 
           <div
-            class="avatarUpload"
-            onclick="$('avatarInput').click()"
+            id="founderGrid"
+            class="founder-grid"
           >
 
-            <div id="avatarPreview">
-
-              ${
-                profile?.avatar_url
-
-                  ? `
-
-                    <img
-                      class="avatar huge"
-                      src="${esc(profile.avatar_url)}"
-                      alt=""
-                    >
-
-                  `
-
-                  : `
-
-                    <div
-                      class="avatar huge avatarText"
-                    >
-                      +
-                    </div>
-
-                  `
-              }
-
-            </div>
-
-
-            <div>
-
-              <b>
-                Add profile photo
-              </b>
-
-              <span>
-                JPG, PNG or WEBP
-              </span>
-
+            <div class="empty">
+              Loading founders…
             </div>
 
           </div>
 
-
-          <input
-            id="avatarInput"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            hidden
-            onchange="previewAvatar(event)"
-          >
-
-
-          <label>
-            Full name
-          </label>
-
-          <input
-            id="fullName"
-            required
-            value="${esc(profile?.full_name || "")}"
-            placeholder="Your name"
-          >
-
-
-          <label>
-            Startup / project
-          </label>
-
-          <input
-            id="startup"
-            value="${esc(profile?.startup_name || "")}"
-            placeholder="What are you building?"
-          >
-
-
-          <label>
-            Headline
-          </label>
-
-          <input
-            id="headline"
-            value="${esc(profile?.headline || "")}"
-            placeholder="Founder · AI · Product · etc."
-          >
-
-
-          <div class="two">
-
-
-            <div>
-
-              <label>
-                Industry
-              </label>
-
-              <select id="industry">
-
-                <option value="">
-                  Select industry
-                </option>
-
-                ${industryOptions(
-                  profile?.industry || ""
-                )}
-
-              </select>
-
-            </div>
-
-
-            <div>
-
-              <label>
-                Stage
-              </label>
-
-              <select id="stage">
-
-                <option value="">
-                  Select stage
-                </option>
-
-                ${stageOptions(
-                  profile?.stage || ""
-                )}
-
-              </select>
-
-            </div>
-
-
-          </div>
-
-
-          <label>
-            About you
-          </label>
-
-          <textarea
-            id="bio"
-            rows="5"
-            placeholder="What are you building? What are you looking for?"
-          >${esc(profile?.bio || "")}</textarea>
-
-
-          <label>
-            Website
-          </label>
-
-          <input
-            id="website"
-            type="url"
-            value="${esc(profile?.website_url || "")}"
-            placeholder="https://yourstartup.com"
-          >
-
-
-          <button
-            class="primary full"
-            type="submit"
-            style="margin-top:20px"
-          >
-
-            Save profile
-
-            <span>→</span>
-
-          </button>
-
-
-        </form>
-
-
-      </section>
-
-    </main>
-
-  `;
-
-}
-
-
-function previewAvatar(e) {
-
-  const file =
-    e.target.files?.[0];
-
-
-  if (!file)
-    return;
-
-
-  const url =
-    URL.createObjectURL(file);
-
-
-  $("avatarPreview").innerHTML = `
-
-    <img
-      class="avatar huge"
-      src="${url}"
-      alt=""
-    >
-
-  `;
-
-}
-
-
-/* ============================================================
-   STORAGE
-============================================================ */
-
-async function upload(file, bucket) {
-
-  if (!file)
-    return null;
-
-
-  if (
-    file.size >
-    8 * 1024 * 1024
-  ) {
-
-    throw new Error(
-      "Maximum image size is 8 MB."
-    );
-
-  }
-
-
-  const ext =
-    (
-      file.name
-        .split(".")
-        .pop() ||
-      "jpg"
-    )
-      .toLowerCase();
-
-
-  const path =
-    `${me}/${crypto.randomUUID()}.${ext}`;
-
-
-  const {
-    error
-  } =
-    await db.storage
-      .from(bucket)
-      .upload(
-        path,
-        file,
-        {
-          upsert: false,
-          cacheControl: "3600"
-        }
-      );
-
-
-  if (error)
-    throw error;
-
-
-  const {
-    data
-  } =
-    db.storage
-      .from(bucket)
-      .getPublicUrl(path);
-
-
-  return data.publicUrl;
-
-}
-
-
-/* ============================================================
-   SAVE PROFILE
-============================================================ */
-
-async function saveProfile(e) {
-
-  e.preventDefault();
-
-
-  if (!requireLogin())
-    return;
-
-
-  const saveButton =
-    e.submitter;
-
-
-  const originalText =
-    saveButton?.innerHTML ||
-    "Save profile";
-
-
-  try {
-
-    if (saveButton) {
-
-      saveButton.disabled = true;
-
-      saveButton.innerHTML =
-        "Saving...";
-
-    }
-
-
-    const fullName =
-      $("fullName")
-        ?.value
-        .trim();
-
-
-    if (!fullName) {
-
-      toast(
-        "Full name is required.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    const file =
-      $("avatarInput")
-        ?.files?.[0];
-
-
-    let avatarUrl =
-      profile?.avatar_url ||
-      null;
-
-
-    if (file) {
-
-      avatarUrl =
-        await upload(
-          file,
-          "avatars"
-        );
-
-    }
-
-
-    const payload = {
-
-      id: me,
-
-      full_name:
-        fullName,
-
-      startup_name:
-        $("startup")
-          ?.value
-          .trim() ||
-        null,
-
-      headline:
-        $("headline")
-          ?.value
-          .trim() ||
-        null,
-
-      industry:
-        $("industry")
-          ?.value ||
-        null,
-
-      stage:
-        $("stage")
-          ?.value ||
-        null,
-
-      bio:
-        $("bio")
-          ?.value
-          .trim() ||
-        null,
-
-      website_url:
-        $("website")
-          ?.value
-          .trim() ||
-        null,
-
-      avatar_url:
-        avatarUrl
-
-    };
-
-
-    /*
-      IMPORTANT
-
-      We use upsert on the authenticated user's
-      own UUID.
-
-      INSERT:
-        creates the profile.
-
-      UPDATE:
-        updates the profile.
-
-      There is no .single() on the upsert response.
-      This avoids the "coerce empty JSON" problem.
-    */
-
-    const {
-      error
-    } =
-      await db
-        .from("profiles")
-        .upsert(
-          payload,
-          {
-            onConflict: "id",
-            ignoreDuplicates: false
-          }
-        );
-
-
-    if (error) {
-
-      console.error(
-        "Supabase profile upsert:",
-        error
-      );
-
-      /*
-        Make the actual RLS problem obvious.
-      */
-
-      if (
-        error.code === "42501" ||
-        /row-level security/i.test(
-          error.message || ""
-        )
-      ) {
-
-        throw new Error(
-          "Supabase blocked this profile save with RLS. Run the profiles RLS SQL supplied below the code."
-        );
-
-      }
-
-      throw error;
-
-    }
-
-
-    /*
-      Fetch the saved profile separately.
-    */
-
-    const {
-      data: savedProfile,
-      error: fetchError
-    } =
-      await db
-        .from("profiles")
-        .select("*")
-        .eq("id", me)
-        .maybeSingle();
-
-
-    if (fetchError)
-      throw fetchError;
-
-
-    if (!savedProfile) {
-
-      throw new Error(
-        "Profile was saved, but it could not be read back. Check the SELECT policy for profiles."
-      );
-
-    }
-
-
-    profile =
-      savedProfile;
-
-
-    toast(
-      "Profile saved ✦",
-      "success"
-    );
-
-
-    renderShell();
-
-
-  } catch (err) {
-
-    console.error(
-      "Profile save error:",
-      err
-    );
-
-
-    toast(
-      err?.message ||
-      "Could not save your profile.",
-      "error"
-    );
-
-
-  } finally {
-
-    if (saveButton) {
-
-      saveButton.disabled =
-        false;
-
-      saveButton.innerHTML =
-        originalText;
-
-    }
-
-  }
-
-}
-
-
-/* ============================================================
-   SHELL
-============================================================ */
-
-function renderShell() {
-
-  $("app").innerHTML = `
-
-    <div class="shell">
-
-
-      <header class="topbar">
-
-
-        <div>
-
-          ${deltaBrand()}
-
-        </div>
-
-
-        <button
-          class="miniProfile"
-          onclick="openMyProfile()"
-          aria-label="Open profile"
-        >
-
-          ${avatar(
-            profile,
-            "small"
-          )}
-
-        </button>
-
-
-      </header>
-
-
-      <main id="view"></main>
-
-
-      <nav class="bottomNav">
-
-
-        <button
-          class="${tab === "feed" ? "active feed" : ""}"
-          onclick="switchTab('feed')"
-        >
-
-          <span>⌂</span>
-
-          <small>
-            Feed
-          </small>
-
-        </button>
-
-
-        <button
-          class="${tab === "discover" ? "active discover" : ""}"
-          onclick="switchTab('discover')"
-        >
-
-          <span>⌕</span>
-
-          <small>
-            Discover
-          </small>
-
-        </button>
-
-
-        <button
-          class="${tab === "messages" ? "active messages" : ""}"
-          onclick="switchTab('messages')"
-        >
-
-          <span>◌</span>
-
-          <small>
-            Messages
-          </small>
-
-        </button>
-
-
-        <button
-          class="${tab === "groups" ? "active groups" : ""}"
-          onclick="switchTab('groups')"
-        >
-
-          <span>◇</span>
-
-          <small>
-            Groups
-          </small>
-
-        </button>
-
-
-        <button
-          class="${tab === "me" ? "active me" : ""}"
-          onclick="switchTab('me')"
-        >
-
-          <span>◎</span>
-
-          <small>
-            Profile
-          </small>
-
-        </button>
-
-
-      </nav>
-
-
-    </div>
-
-  `;
-
-
-  switchTab(tab);
-
-}
-
-
-/* ============================================================
-   TAB SWITCH
-============================================================ */
-
-function switchTab(t) {
-
-  tab = t;
-
-
-  if (
-    realtimeChannel &&
-    t !== "messages"
-  ) {
-
-    db.removeChannel(
-      realtimeChannel
-    );
-
-    realtimeChannel = null;
-
-  }
-
-
-  const buttons =
-    document.querySelectorAll(
-      ".bottomNav button"
-    );
-
-
-  buttons.forEach(x =>
-    x.classList.remove(
-      "active",
-      "feed",
-      "discover",
-      "messages",
-      "groups",
-      "me"
-    )
-  );
-
-
-  const index = {
-
-    feed: 0,
-    discover: 1,
-    messages: 2,
-    groups: 3,
-    me: 4
-
-  }[t];
-
-
-  if (buttons[index]) {
-
-    buttons[index]
-      .classList.add(
-        "active",
-        t
-      );
-
-  }
-
-
-  if (t === "feed")
-    loadFeed();
-
-
-  if (t === "discover")
-    loadDiscover();
-
-
-  if (t === "messages")
-    loadMessages();
-
-
-  if (t === "groups")
-    loadGroups();
-
-
-  if (t === "me")
-    loadMyProfile();
-
-}
-
-
-/* ============================================================
-   FEED
-============================================================ */
-
-async function loadFeed() {
-
-  $("view").innerHTML = `
-
-    <section class="page">
-
-
-      <div class="pageHead">
-
-        <span class="eyebrow">
-          THE NETWORK
-        </span>
-
-        <h2>
-          Founder feed
-        </h2>
-
-        <p>
-          Ideas, progress and conversations.
-        </p>
-
-      </div>
-
-
-      <section class="composer card">
-
-
-        <div class="composerHead">
-
-          ${avatar(
-            profile,
-            "small"
-          )}
-
-
-          <div>
-
-            <b>
-              ${esc(
-                profile?.full_name ||
-                "Founder"
-              )}
-            </b>
-
-            <span>
-              Share something with founders
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <textarea
-          id="postText"
-          placeholder="What are you building or thinking about?"
-        ></textarea>
-
-
-        <div id="postImagePreview"></div>
-
-
-        <div class="composerActions">
-
-
-          <label class="attach">
-
-            ＋ Image
-
-            <input
-              id="postImage"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              hidden
-              onchange="previewPostImage(event)"
-            >
-
-          </label>
-
-
-          <button
-            class="primary"
-            onclick="createPost()"
-          >
-            Post ✦
-          </button>
-
-
-        </div>
-
-
-      </section>
-
-
-      <div
-        id="feedList"
-        class="feedList"
-      >
-
-        <div class="loading">
-          Loading founders...
-        </div>
-
-      </div>
-
-
-    </section>
-
-  `;
-
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("posts")
-      .select(`
-        *,
-        profiles!posts_user_id_fkey(*),
-        likes(user_id),
-        comments(id)
-      `)
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
-  if (error) {
-
-    console.error(error);
-
-    $("feedList").innerHTML = `
-
-      <div class="empty card">
-
-        ${esc(error.message)}
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  if (!data?.length) {
-
-    $("feedList").innerHTML = `
-
-      <div class="empty card">
-
-        <div class="emptyIcon">
-          ✦
-        </div>
-
-        <h3>
-          Your network starts here.
-        </h3>
-
-        <p>
-          Share the first idea and let other
-          founders join the conversation.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  $("feedList").innerHTML =
-    data.map(postHtml).join("");
-
-}
-
-
-/* ============================================================
-   CREATE POST
-============================================================ */
-
-function previewPostImage(e) {
-
-  const file =
-    e.target.files?.[0];
-
-
-  if (!file)
-    return;
-
-
-  const url =
-    URL.createObjectURL(file);
-
-
-  $("postImagePreview").innerHTML = `
-
-    <img
-      class="postPreview"
-      src="${url}"
-      alt=""
-    >
-
-  `;
-
-}
-
-
-async function createPost() {
-
-  if (!requireLogin())
-    return;
-
-
-  const content =
-    $("postText")
-      ?.value
-      .trim();
-
-
-  const file =
-    $("postImage")
-      ?.files?.[0];
-
-
-  if (
-    !content &&
-    !file
-  ) {
-
-    toast(
-      "Write something or add an image.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    let imageUrl = null;
-
-
-    if (file) {
-
-      imageUrl =
-        await upload(
-          file,
-          "posts"
-        );
-
-    }
-
-
-    const {
-      error
-    } =
-      await db
-        .from("posts")
-        .insert({
-
-          user_id: me,
-
-          content:
-            content ||
-            null,
-
-          image_url:
-            imageUrl
-
-        });
-
-
-    if (error)
-      throw error;
-
-
-    toast(
-      "Posted ✦",
-      "success"
-    );
-
-
-    loadFeed();
-
-
-  } catch (err) {
-
-    console.error(err);
-
-    toast(
-      err.message,
-      "error"
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   POST HTML
-============================================================ */
-
-function postHtml(post) {
-
-  const p =
-    post.profiles ||
-    {};
-
-
-  const liked =
-    (post.likes || [])
-      .some(
-        x => x.user_id === me
-      );
-
-
-  return `
-
-    <article
-      class="post card"
-      id="post-${post.id}"
-    >
-
-
-      <div class="postAuthor">
-
-
-        ${avatar(
-          p,
-          "small"
-        )}
-
-
-        <div class="authorInfo">
-
-          <b>
-
-            ${esc(
-              p.full_name ||
-              "Founder"
-            )}
-
-            ${
-              p.verified
-                ? `<span class="verified">✓</span>`
-                : ""
-            }
-
-          </b>
-
-
-          <span>
-
-            ${esc(
-              p.startup_name ||
-              p.headline ||
-              "Founder"
-            )}
-
-            ·
-
-            ${ago(
-              post.created_at
-            )}
-
-          </span>
-
-        </div>
-
-
-        ${
-          p.id === me
-
-            ? `
-
-              <button
-                class="dots"
-                onclick="deletePost('${post.id}')"
-                title="Delete post"
-              >
-                🗑
-              </button>
-
-            `
-
-            : `
-
-              <button
-                class="dots"
-                onclick="openFounder('${p.id}')"
-              >
-                •••
-              </button>
-
-            `
-        }
-
-
-      </div>
-
-
-      ${
-        post.content
-
-          ? `
-
-            <div class="postText">
-
-              ${esc(post.content)
-                .replace(/\n/g, "<br>")}
-
-            </div>
-
-          `
-
-          : ""
-      }
-
-
-      ${
-        post.image_url
-
-          ? `
-
-            <img
-              class="postImage"
-              src="${esc(post.image_url)}"
-              alt="Founder post image"
-              loading="lazy"
-            >
-
-          `
-
-          : ""
-      }
-
-
-      <div class="postActions">
-
-
-        <button
-          class="${liked ? "liked" : ""}"
-          onclick="
-            toggleLike(
-              '${post.id}',
-              ${liked}
-            )
-          "
-        >
-
-          ${liked ? "♥" : "♡"}
-
-          <span>
-            ${post.likes?.length || 0}
-          </span>
-
-        </button>
-
-
-        <button
-          onclick="
-            toggleComments(
-              '${post.id}'
-            )
-          "
-        >
-
-          ◌
-
-          <span>
-            ${post.comments?.length || 0}
-          </span>
-
-        </button>
-
-
-        <button
-          onclick="
-            openFounder(
-              '${p.id}'
-            )
-          "
-        >
-          ◎
-        </button>
-
-
-      </div>
-
-
-      <div
-        id="comments-${post.id}"
-        class="comments hidden"
-      >
-
-        <div
-          class="commentsList"
-          id="commentList-${post.id}"
-        ></div>
-
-
-        <div class="commentComposer">
-
-          <input
-            id="commentInput-${post.id}"
-            placeholder="Write a comment..."
-          >
-
-          <button
-            onclick="
-              addComment(
-                '${post.id}'
-              )
-            "
-          >
-            →
-          </button>
-
-        </div>
-
-      </div>
-
-
-    </article>
-
-  `;
-
-}
-
-
-/* ============================================================
-   DELETE POST
-============================================================ */
-
-async function deletePost(postId) {
-
-  if (!requireLogin())
-    return;
-
-
-  if (
-    !confirm(
-      "Delete this post?\n\nThis cannot be undone."
-    )
-  )
-    return;
-
-
-  try {
-
-    const {
-      error
-    } =
-      await db
-        .from("posts")
-        .delete()
-        .eq(
-          "id",
-          postId
-        )
-        .eq(
-          "user_id",
-          me
-        );
-
-
-    if (error)
-      throw error;
-
-
-    toast(
-      "Post deleted.",
-      "success"
-    );
-
-
-    loadFeed();
-
-
-  } catch (err) {
-
-    toast(
-      err.message,
-      "error"
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   LIKES
-============================================================ */
-
-async function toggleLike(
-  postId,
-  liked
-) {
-
-  if (!requireLogin())
-    return;
-
-
-  try {
-
-    if (liked) {
-
-      const {
-        error
-      } =
-        await db
-          .from("likes")
-          .delete()
-          .eq(
-            "post_id",
-            postId
-          )
-          .eq(
-            "user_id",
-            me
-          );
-
-
-      if (error)
-        throw error;
-
-    } else {
-
-      const {
-        error
-      } =
-        await db
-          .from("likes")
-          .insert({
-
-            post_id:
-              postId,
-
-            user_id:
-              me
-
-          });
-
-
-      if (error)
-        throw error;
-
-    }
-
-
-    loadFeed();
-
-
-  } catch (err) {
-
-    toast(
-      err.message,
-      "error"
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   COMMENTS
-============================================================ */
-
-async function toggleComments(postId) {
-
-  const box =
-    $("comments-" + postId);
-
-
-  if (!box)
-    return;
-
-
-  const opening =
-    box.classList.contains(
-      "hidden"
-    );
-
-
-  box.classList.toggle(
-    "hidden"
-  );
-
-
-  if (!opening)
-    return;
-
-
-  await loadComments(postId);
-
-}
-
-
-async function loadComments(postId) {
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("comments")
-      .select(`
-        *,
-        profiles!comments_user_id_fkey(*)
-      `)
-      .eq(
-        "post_id",
-        postId
-      )
-      .order(
-        "created_at",
-        {
-          ascending: true
-        }
-      );
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const list =
-    $("commentList-" + postId);
-
-
-  if (!list)
-    return;
-
-
-  list.innerHTML =
-
-    (data || [])
-      .map(c => `
-
-        <div class="comment">
-
-          ${avatar(
-            c.profiles,
-            "xs"
-          )}
-
-          <div>
-
-            <b>
-              ${esc(
-                c.profiles?.full_name ||
-                "Founder"
-              )}
-            </b>
-
-            <p>
-              ${esc(c.content)}
-            </p>
-
-            <small>
-              ${ago(c.created_at)}
-            </small>
-
-          </div>
-
-        </div>
-
-      `)
-      .join("")
-
-    ||
-
-    `
-
-      <div class="noComments">
-        Start the conversation.
-      </div>
-
-    `;
-
-}
-
-
-async function addComment(postId) {
-
-  if (!requireLogin())
-    return;
-
-
-  const input =
-    $("commentInput-" + postId);
-
-
-  const content =
-    input
-      ?.value
-      .trim();
-
-
-  if (!content)
-    return;
-
-
-  const {
-    error
-  } =
-    await db
-      .from("comments")
-      .insert({
-
-        post_id:
-          postId,
-
-        user_id:
-          me,
-
-        content
-
-      });
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  input.value = "";
-
-
-  await loadComments(
-    postId
-  );
-
-
-}
-
-
-/* ============================================================
-   DISCOVER
-============================================================ */
-
-async function loadDiscover() {
-
-  $("view").innerHTML = `
-
-    <section class="page">
-
-
-      <div class="pageHead">
-
-        <span class="eyebrow">
-          EXPLORE
-        </span>
-
-        <h2>
-          Meet founders.
-        </h2>
-
-        <p>
-          Find people building something interesting.
-        </p>
-
-      </div>
-
-
-      <div class="searchBox">
-
-        <span>
-          ⌕
-        </span>
-
-        <input
-          id="founderSearch"
-          placeholder="Search founders, startups or industries..."
-          oninput="filterFounders()"
-        >
-
-      </div>
-
-
-      <div
-        id="founderList"
-        class="founderGrid"
-      >
-
-        <div class="loading">
-          Discovering founders...
-        </div>
-
-      </div>
-
-
-    </section>
-
-  `;
-
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("profiles")
-      .select("*")
-      .neq(
-        "id",
-        me
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
-  if (error) {
-
-    $("founderList").innerHTML = `
-
-      <div class="empty card">
-        ${esc(error.message)}
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  window.deltaFounders =
-    data || [];
-
-
-  renderFounders(
-    window.deltaFounders
-  );
-
-}
-
-
-async function renderFounders(list) {
-
-  const {
-    data: follows,
-    error
-  } =
-    await db
-      .from("follows")
-      .select(
-        "following_id"
-      )
-      .eq(
-        "follower_id",
-        me
-      );
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const following =
-    new Set(
-      (follows || [])
-        .map(
-          x => x.following_id
-        )
-    );
-
-
-  const container =
-    $("founderList");
-
-
-  if (!container)
-    return;
-
-
-  container.innerHTML =
-
-    list.length
-
-      ? list.map(p => `
-
-        <article
-          class="founderCard card"
-        >
-
-
-          <div class="founderTop">
-
-            ${avatar(
-              p,
-              "medium"
-            )}
-
-
-            <button
-              class="connectBtn ${
-                following.has(p.id)
-                  ? "following"
-                  : ""
-              }"
-              onclick="
-                toggleFollow(
-                  '${p.id}',
-                  ${following.has(p.id)}
-                )
-              "
-            >
-
-              ${
-                following.has(p.id)
-                  ? "Connected"
-                  : "Connect"
-              }
-
-            </button>
-
-          </div>
-
-
-          <h3>
-            ${esc(
-              p.full_name ||
-              "Founder"
-            )}
-          </h3>
-
-
-          <div class="founderStartup">
-
-            ${esc(
-              p.startup_name ||
-              "Independent founder"
-            )}
-
-          </div>
-
-
-          <p>
-
-            ${esc(
-              p.headline ||
-              p.bio ||
-              "Building the next thing."
-            )}
-
-          </p>
-
-
-          <div class="tags">
-
-            ${
-              p.industry
-
-                ? `
-                  <span>
-                    ${esc(p.industry)}
-                  </span>
-                `
-
-                : ""
-            }
-
-
-            ${
-              p.stage
-
-                ? `
-                  <span>
-                    ${esc(p.stage)}
-                  </span>
-                `
-
-                : ""
-            }
-
-          </div>
-
-
-          <div class="founderCardActions">
-
-
-            <button
-              class="textLink"
-              onclick="
-                openFounder(
-                  '${p.id}'
-                )
-              "
-            >
-              View profile →
-            </button>
-
-
-            <button
-              class="chatCardBtn"
-              onclick="
-                startMessage(
-                  '${p.id}'
-                )
-              "
-            >
-              💬 Message
-            </button>
-
-
-          </div>
-
-
-        </article>
-
-      `).join("")
-
-      :
-
-      `
-
-        <div class="empty card">
-
-          <div class="emptyIcon">
-            ◎
-          </div>
-
-          <h3>
-            No founders found.
-          </h3>
-
-          <p>
-            Invite another founder to Delta.
-          </p>
-
-        </div>
-
+        </section>
       `;
 
-}
+
+      $("founderSearch")
+        .addEventListener(
+          "input",
+          filterFounders
+        );
 
 
-function filterFounders() {
-
-  const input =
-    $("founderSearch");
-
-
-  const q =
-    input
-      ?.value
-      .toLowerCase()
-      .trim() ||
-    "";
-
-
-  const list =
-    (window.deltaFounders || [])
-      .filter(p =>
-
-        [
-
-          p.full_name,
-          p.startup_name,
-          p.headline,
-          p.bio,
-          p.industry,
-          p.stage
-
-        ]
-
-          .join(" ")
-          .toLowerCase()
-          .includes(q)
-
-      );
-
-
-  renderFounders(list);
-
-}
-
-
-/* ============================================================
-   FOLLOW
-============================================================ */
-
-async function toggleFollow(
-  id,
-  isFollowing
-) {
-
-  if (!requireLogin())
-    return;
-
-
-  try {
-
-    if (isFollowing) {
-
-      const {
-        error
-      } =
-        await db
-          .from("follows")
-          .delete()
-          .eq(
-            "follower_id",
-            me
-          )
-          .eq(
-            "following_id",
-            id
-          );
-
-
-      if (error)
-        throw error;
-
-    } else {
-
-      const {
-        error
-      } =
-        await db
-          .from("follows")
-          .insert({
-
-            follower_id:
-              me,
-
-            following_id:
-              id
-
-          });
-
-
-      if (error)
-        throw error;
-
+      await loadFounders();
     }
 
 
-    loadDiscover();
+    let allFounders = [];
 
 
-  } catch (err) {
+    async function loadFounders(){
 
-    toast(
-      err.message,
-      "error"
-    );
+      const grid = $("founderGrid");
 
-  }
-
-}
+      if(!grid) return;
 
 
-/* ============================================================
-   PUBLIC FOUNDER PROFILE
-============================================================ */
+      try{
 
-async function openFounder(id) {
-
-  const {
-    data: p,
-    error
-  } =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq(
-        "id",
-        id
-      )
-      .single();
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  activeFounder =
-    p;
-
-
-  const backTab =
-    tab === "feed"
-      ? "feed"
-      : "discover";
-
-
-  $("view").innerHTML = `
-
-    <section class="page">
-
-
-      <button
-        class="back"
-        onclick="
-          switchTab('${backTab}')
-        "
-      >
-        ← Back
-      </button>
-
-
-      <section class="publicProfile card">
-
-
-        <div class="profileHero">
-
-          ${avatar(
-            p,
-            "profileAvatar"
-          )}
-
-
-          <div>
-
-            <span class="eyebrow">
-              FOUNDER
-            </span>
-
-
-            <h1>
-
-              ${esc(
-                p.full_name ||
-                "Founder"
-              )}
-
-              ${
-                p.verified
-
-                  ? `
-                    <span
-                      class="verified big"
-                    >
-                      ✓
-                    </span>
-                  `
-
-                  : ""
+        const {
+          data,
+          error
+        } =
+          await db
+            .from("profiles")
+            .select("*")
+            .neq("id",me.id)
+            .order(
+              "created_at",
+              {
+                ascending:false
               }
-
-            </h1>
-
-
-            <p>
-              ${esc(
-                p.headline ||
-                "Founder"
-              )}
-            </p>
-
-          </div>
-
-        </div>
+            )
+            .limit(100);
 
 
-        <div class="profileIdentity">
-
-          <strong>
-            ${esc(
-              p.startup_name ||
-              "Independent project"
-            )}
-          </strong>
-
-
-          <span>
-
-            ${esc(
-              p.industry ||
-              "Founder"
-            )}
-
-            ·
-
-            ${esc(
-              p.stage ||
-              "Building"
-            )}
-
-          </span>
-
-        </div>
-
-
-        <p class="profileBio">
-
-          ${esc(
-            p.bio ||
-            "This founder hasn't written a bio yet."
-          )}
-
-        </p>
-
-
-        <div class="profileButtons">
-
-
-          <button
-            class="primary"
-            onclick="
-              startMessage(
-                '${p.id}'
-              )
-            "
-          >
-            💬 Start Chat
-          </button>
-
-
-          ${
-            p.website_url
-
-              ? `
-
-                <a
-                  class="ghost"
-                  href="${esc(p.website_url)}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Website ↗
-                </a>
-
-              `
-
-              : ""
-          }
-
-
-        </div>
-
-
-      </section>
-
-
-      <h3 class="sectionTitle">
-        Their posts
-      </h3>
-
-
-      <div id="founderPosts"></div>
-
-
-    </section>
-
-  `;
-
-
-  const {
-    data: posts,
-    error: postsError
-  } =
-    await db
-      .from("posts")
-      .select(`
-        *,
-        profiles!posts_user_id_fkey(*),
-        likes(user_id),
-        comments(id)
-      `)
-      .eq(
-        "user_id",
-        id
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
+        if(error){
+          throw error;
         }
-      );
 
 
-  if (postsError) {
+        allFounders = data || [];
 
-    $("founderPosts").innerHTML = `
+        drawFounders(allFounders);
 
-      <div class="empty card">
-        ${esc(postsError.message)}
-      </div>
 
-    `;
+      }catch(error){
 
-    return;
+        console.error(error);
 
-  }
-
-
-  $("founderPosts").innerHTML =
-
-    (posts || [])
-      .map(postHtml)
-      .join("")
-
-    ||
-
-    `
-
-      <div class="empty card">
-
-        <div class="emptyIcon">
-          ✦
-        </div>
-
-        <h3>
-          No posts yet.
-        </h3>
-
-      </div>
-
-    `;
-
-}
-
-
-/* ============================================================
-   MESSAGES
-============================================================ */
-
-async function loadMessages() {
-
-  $("view").innerHTML = `
-
-    <section class="page">
-
-
-      <div class="pageHead">
-
-        <span class="eyebrow">
-          PRIVATE SPACE
-        </span>
-
-        <h2>
-          Messages
-        </h2>
-
-        <p>
-          Talk directly with other founders.
-        </p>
-
-      </div>
-
-
-      <div
-        id="messagePeople"
-        class="messagePeople"
-      >
-
-        <div class="loading">
-          Loading conversations...
-        </div>
-
-      </div>
-
-
-    </section>
-
-  `;
-
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("messages")
-      .select(`
-        *,
-        sender:profiles!messages_sender_id_fkey(*),
-        receiver:profiles!messages_receiver_id_fkey(*)
-      `)
-      .or(
-        `sender_id.eq.${me},receiver_id.eq.${me}`
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
-  if (error) {
-
-    $("messagePeople").innerHTML = `
-
-      <div class="empty card">
-        ${esc(error.message)}
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  const people =
-    new Map();
-
-
-  (data || [])
-    .forEach(m => {
-
-      const other =
-        m.sender_id === me
-          ? m.receiver
-          : m.sender;
-
-
-      if (
-        other &&
-        !people.has(other.id)
-      ) {
-
-        people.set(
-          other.id,
-          {
-            profile: other,
-            last: m
-          }
-        );
-
-      }
-
-    });
-
-
-  $("messagePeople").innerHTML =
-
-    people.size
-
-      ? [...people.values()]
-        .map(x => `
-
-          <button
-            class="messagePerson card"
-            onclick="
-              startMessage(
-                '${x.profile.id}'
-              )
-            "
-          >
-
-            ${avatar(
-              x.profile,
-              "medium"
-            )}
-
-
-            <div>
-
-              <b>
-                ${esc(
-                  x.profile.full_name ||
-                  "Founder"
-                )}
-              </b>
-
-              <span>
-                ${esc(
-                  x.profile.startup_name ||
-                  "Founder"
-                )}
-              </span>
-
-              <small>
-
-                ${esc(
-                  x.last.content
-                )}
-
-                ·
-
-                ${ago(
-                  x.last.created_at
-                )}
-
-              </small>
-
-            </div>
-
+        grid.innerHTML = `
+          <div class="empty">
 
             <strong>
-              →
+              Could not load founders.
             </strong>
 
-          </button>
+            ${esc(error?.message || "")}
 
-        `)
-        .join("")
-
-      :
-
-      `
-
-        <div class="empty card">
-
-          <div class="emptyIcon">
-            ◌
           </div>
-
-          <h3>
-            No conversations yet.
-          </h3>
-
-          <p>
-            Discover a founder and start
-            the first conversation.
-          </p>
-
-          <button
-            class="primary"
-            onclick="
-              switchTab('discover')
-            "
-          >
-            Discover founders →
-          </button>
-
-        </div>
-
-      `;
-
-}
-
-
-/* ============================================================
-   START MESSAGE
-============================================================ */
-
-async function startMessage(id) {
-
-  if (!requireLogin())
-    return;
-
-
-  if (id === me) {
-
-    toast(
-      "You cannot message yourself.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const {
-    data: p,
-    error
-  } =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq(
-        "id",
-        id
-      )
-      .single();
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  activeFounder =
-    p;
-
-
-  activeConversation =
-    id;
-
-
-  renderChat(p);
-
-
-  await loadChatMessages(id);
-
-}
-
-
-/* ============================================================
-   CHAT
-============================================================ */
-
-function renderChat(p) {
-
-  $("view").innerHTML = `
-
-    <section class="chatPage">
-
-
-      <header class="chatHeader">
-
-
-        <button
-          class="back"
-          onclick="
-            switchTab('messages')
-          "
-        >
-          ←
-        </button>
-
-
-        ${avatar(
-          p,
-          "small"
-        )}
-
-
-        <div>
-
-          <b>
-            ${esc(
-              p.full_name ||
-              "Founder"
-            )}
-          </b>
-
-          <span>
-            ${esc(
-              p.startup_name ||
-              "Founder"
-            )}
-          </span>
-
-        </div>
-
-
-      </header>
-
-
-      <div
-        id="chatMessages"
-        class="chatMessages"
-      >
-
-        <div class="loading">
-          Loading messages...
-        </div>
-
-      </div>
-
-
-      <div class="chatComposer">
-
-
-        <input
-          id="messageInput"
-          placeholder="Write a message..."
-          autocomplete="off"
-          onkeydown="
-            if(event.key === 'Enter'){
-              event.preventDefault();
-              sendMessage();
-            }
-          "
-        >
-
-
-        <button
-          onclick="sendMessage()"
-        >
-          ↑
-        </button>
-
-
-      </div>
-
-
-    </section>
-
-  `;
-
-
-  subscribeMessages();
-
-}
-
-
-async function loadChatMessages(
-  otherId
-) {
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("messages")
-      .select(`
-        *,
-        sender:profiles!messages_sender_id_fkey(*)
-      `)
-      .or(
-        `and(sender_id.eq.${me},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${me})`
-      )
-      .order(
-        "created_at",
-        {
-          ascending: true
-        }
-      );
-
-
-  if (error) {
-
-    console.error(error);
-
-    if ($("chatMessages")) {
-
-      $("chatMessages").innerHTML = `
-
-        <div class="empty">
-
-          ${esc(error.message)}
-
-        </div>
-
-      `;
-
+        `;
+      }
     }
 
-    return;
 
-  }
+    function filterFounders(){
 
+      const query =
+        $("founderSearch")
+          .value
+          .trim()
+          .toLowerCase();
 
-  if (!$("chatMessages"))
-    return;
 
+      const filtered =
+        allFounders.filter(founder => {
 
-  $("chatMessages").innerHTML =
+          const text = [
 
-    (data || [])
-      .map(m => `
+            founder.full_name,
+            founder.bio,
+            founder.industry,
+            founder.stage
 
-        <div
-          class="bubbleRow ${
-            m.sender_id === me
-              ? "mine"
-              : ""
-          }"
-        >
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
 
-          <div class="bubble">
 
-            ${esc(m.content)}
-
-            <small>
-              ${ago(m.created_at)}
-            </small>
-
-          </div>
-
-        </div>
-
-      `)
-      .join("")
-
-    ||
-
-    `
-
-      <div class="chatEmpty">
-
-        <div>
-          ✦
-        </div>
-
-        <p>
-          Start the conversation.
-        </p>
-
-      </div>
-
-    `;
-
-
-  const box =
-    $("chatMessages");
-
-
-  box.scrollTop =
-    box.scrollHeight;
-
-}
-
-
-async function sendMessage() {
-
-  if (!requireLogin())
-    return;
-
-
-  const input =
-    $("messageInput");
-
-
-  if (!input)
-    return;
-
-
-  const content =
-    input.value.trim();
-
-
-  if (
-    !content ||
-    !activeConversation
-  )
-    return;
-
-
-  const {
-    error
-  } =
-    await db
-      .from("messages")
-      .insert({
-
-        sender_id:
-          me,
-
-        receiver_id:
-          activeConversation,
-
-        content
-
-      });
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  input.value = "";
-
-
-  await loadChatMessages(
-    activeConversation
-  );
-
-}
-
-
-/* ============================================================
-   REALTIME DIRECT MESSAGES
-============================================================ */
-
-function subscribeMessages() {
-
-  if (realtimeChannel) {
-
-    db.removeChannel(
-      realtimeChannel
-    );
-
-    realtimeChannel = null;
-
-  }
-
-
-  realtimeChannel =
-    db
-      .channel(
-        "delta-direct-" +
-        me
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages"
-        },
-        payload => {
-
-          if (
-            !activeConversation
-          )
-            return;
-
-
-          const m =
-            payload.new;
-
-
-          const relevant =
-
-            (
-              m.sender_id === me &&
-              m.receiver_id === activeConversation
-            )
-
-            ||
-
-            (
-              m.sender_id === activeConversation &&
-              m.receiver_id === me
-            );
-
-
-          if (relevant) {
-
-            loadChatMessages(
-              activeConversation
-            );
-
-          }
-
-        }
-      )
-      .subscribe();
-
-}
-
-
-/* ============================================================
-   GROUPS
-============================================================ */
-
-async function loadGroups() {
-
-  $("view").innerHTML = `
-
-    <section class="page">
-
-
-      <div class="pageHead groupHead">
-
-        <div>
-
-          <span class="eyebrow">
-            COMMUNITIES
-          </span>
-
-          <h2>
-            Founder rooms.
-          </h2>
-
-          <p>
-            Build conversations around
-            industries and ideas.
-          </p>
-
-        </div>
-
-
-        <button
-          class="roundAdd"
-          onclick="createGroup()"
-        >
-          +
-        </button>
-
-
-      </div>
-
-
-      <div
-        id="groupList"
-        class="groupGrid"
-      >
-
-        <div class="loading">
-          Loading groups...
-        </div>
-
-      </div>
-
-
-    </section>
-
-  `;
-
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("groups")
-      .select("*")
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
-  if (error) {
-
-    $("groupList").innerHTML = `
-
-      <div class="empty card">
-        ${esc(error.message)}
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  if (!data?.length) {
-
-    $("groupList").innerHTML = `
-
-      <div class="empty card">
-
-        <div class="emptyIcon">
-          ◇
-        </div>
-
-        <h3>
-          Create your first founder room.
-        </h3>
-
-        <p>
-          Start a community around an
-          industry, idea or problem.
-        </p>
-
-        <button
-          class="primary"
-          onclick="createGroup()"
-        >
-          Create room →
-        </button>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  $("groupList").innerHTML =
-
-    data
-      .map(g => `
-
-        <button
-          class="groupCard card"
-          onclick="
-            openGroup(
-              '${g.id}'
-            )
-          "
-        >
-
-          <div class="groupIcon">
-            ${esc(g.icon || "◇")}
-          </div>
-
-
-          <div>
-
-            <h3>
-              ${esc(g.name)}
-            </h3>
-
-            <p>
-              ${esc(
-                g.description ||
-                "Founder community"
-              )}
-            </p>
-
-          </div>
-
-
-          <span>
-            →
-          </span>
-
-        </button>
-
-      `)
-      .join("");
-
-}
-
-
-async function createGroup() {
-
-  if (!requireLogin())
-    return;
-
-
-  const name =
-    prompt(
-      "Room name"
-    );
-
-
-  if (!name?.trim())
-    return;
-
-
-  const description =
-    prompt(
-      "What is this room about?"
-    )
-    ||
-    "Founder community";
-
-
-  const {
-    error
-  } =
-    await db
-      .from("groups")
-      .insert({
-
-        owner_id:
-          me,
-
-        name:
-          name.trim(),
-
-        description:
-          description.trim(),
-
-        icon:
-          "✦"
-
-      });
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  loadGroups();
-
-}
-
-
-async function openGroup(id) {
-
-  if (!requireLogin())
-    return;
-
-
-  const {
-    data: group,
-    error
-  } =
-    await db
-      .from("groups")
-      .select("*")
-      .eq(
-        "id",
-        id
-      )
-      .single();
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const {
-    data: membership
-  } =
-    await db
-      .from("group_members")
-      .select("*")
-      .eq(
-        "group_id",
-        id
-      )
-      .eq(
-        "user_id",
-        me
-      )
-      .maybeSingle();
-
-
-  if (!membership) {
-
-    const {
-      error: joinError
-    } =
-      await db
-        .from("group_members")
-        .insert({
-
-          group_id:
-            id,
-
-          user_id:
-            me
-
+          return text.includes(query);
         });
 
 
-    if (joinError) {
-
-      toast(
-        joinError.message,
-        "error"
-      );
-
-      return;
-
+      drawFounders(filtered);
     }
 
-  }
+
+    function drawFounders(founders){
+
+      const grid = $("founderGrid");
+
+      if(!grid) return;
 
 
-  $("view").innerHTML = `
+      if(!founders.length){
 
-    <section class="chatPage">
+        grid.innerHTML = `
+          <div class="empty">
 
+            <strong>
+              No founders found.
+            </strong>
 
-      <header class="chatHeader">
+            Try another search.
 
+          </div>
+        `;
 
-        <button
-          class="back"
-          onclick="
-            switchTab('groups')
-          "
-        >
-          ←
-        </button>
-
-
-        <div class="groupIcon smallIcon">
-          ${esc(
-            group.icon ||
-            "✦"
-          )}
-        </div>
+        return;
+      }
 
 
-        <div>
+      grid.innerHTML =
+        founders.map(founder => `
 
-          <b>
-            ${esc(group.name)}
-          </b>
+          <article
+            class="card founder-card"
+          >
 
-          <span>
-            ${esc(
-              group.description ||
-              "Founder community"
+            <div class="founder-top">
+
+              ${avatar(founder)}
+
+              <div>
+
+                <h3>
+                  ${esc(
+                    founder.full_name ||
+                    "Founder"
+                  )}
+                </h3>
+
+              </div>
+
+            </div>
+
+
+            <p>
+              ${esc(
+                founder.bio ||
+                "Building something new."
+              )}
+            </p>
+
+
+            <div class="tag-row">
+
+              ${
+                founder.industry
+                  ? `
+                    <span class="tag">
+                      ${esc(founder.industry)}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                founder.stage
+                  ? `
+                    <span class="tag">
+                      ${esc(founder.stage)}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+
+            <div style="margin-top:17px">
+
+              <button
+                class="small-btn"
+                onclick="openFounder('${founder.id}')"
+              >
+                View founder
+              </button>
+
+            </div>
+
+          </article>
+
+        `).join("");
+    }
+
+
+    async function openFounder(id){
+
+      const founder =
+        allFounders.find(
+          x => x.id === id
+        );
+
+
+      if(!founder){
+        return;
+      }
+
+
+      activeFounder = founder;
+
+
+      const modal =
+        document.createElement("div");
+
+      modal.className = "modal";
+
+      modal.innerHTML = `
+
+        <div class="modal-card">
+
+          <div class="modal-head">
+
+            <h2>
+              Founder
+            </h2>
+
+            <button
+              class="icon-btn"
+              onclick="this.closest('.modal').remove()"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <div class="profile-hero">
+
+            ${avatar(
+              founder,
+              "profile-avatar"
             )}
-          </span>
 
-        </div>
+            <div>
 
+              <h1>
+                ${esc(
+                  founder.full_name ||
+                  "Founder"
+                )}
+              </h1>
 
-      </header>
+              <p>
+                ${esc(
+                  founder.industry ||
+                  "Independent founder"
+                )}
+              </p>
 
+            </div>
 
-      <div
-        id="groupChat"
-        class="chatMessages"
-      >
-
-        <div class="loading">
-          Loading...
-        </div>
-
-      </div>
-
-
-      <div class="chatComposer">
-
-
-        <input
-          id="groupInput"
-          placeholder="Message the room..."
-          onkeydown="
-            if(event.key === 'Enter'){
-              event.preventDefault();
-              sendGroupMessage('${id}');
-            }
-          "
-        >
+          </div>
 
 
-        <button
-          onclick="
-            sendGroupMessage('${id}')
-          "
-        >
-          ↑
-        </button>
+          <div class="profile-bio">
+
+            ${esc(
+              founder.bio ||
+              "This founder hasn't added a bio yet."
+            )}
+
+          </div>
 
 
-      </div>
-
-
-    </section>
-
-  `;
-
-
-  await loadGroupMessages(id);
-
-  subscribeGroupMessages(id);
-
-}
-
-
-async function loadGroupMessages(id) {
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("group_messages")
-      .select(`
-        *,
-        profiles!group_messages_user_id_fkey(*)
-      `)
-      .eq(
-        "group_id",
-        id
-      )
-      .order(
-        "created_at",
-        {
-          ascending: true
-        }
-      );
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const box =
-    $("groupChat");
-
-
-  if (!box)
-    return;
-
-
-  box.innerHTML =
-
-    (data || [])
-      .map(m => `
-
-        <div
-          class="bubbleRow ${
-            m.user_id === me
-              ? "mine"
-              : ""
-          }"
-        >
-
-          <div class="bubble">
+          <div class="tag-row">
 
             ${
-              m.user_id !== me
-
+              founder.industry
                 ? `
-                  <small style="opacity:.75">
-                    ${esc(
-                      m.profiles?.full_name ||
-                      "Founder"
-                    )}
-                  </small>
+                  <span class="tag">
+                    ${esc(founder.industry)}
+                  </span>
                 `
-
                 : ""
             }
 
-            ${esc(m.content)}
-
-            <small>
-              ${ago(m.created_at)}
-            </small>
-
-          </div>
-
-        </div>
-
-      `)
-      .join("")
-
-    ||
-
-    `
-
-      <div class="chatEmpty">
-
-        <div>
-          ◇
-        </div>
-
-        <p>
-          Start the room conversation.
-        </p>
-
-      </div>
-
-    `;
-
-
-  box.scrollTop =
-    box.scrollHeight;
-
-}
-
-
-async function sendGroupMessage(id) {
-
-  if (!requireLogin())
-    return;
-
-
-  const input =
-    $("groupInput");
-
-
-  const content =
-    input
-      ?.value
-      .trim();
-
-
-  if (!content)
-    return;
-
-
-  const {
-    error
-  } =
-    await db
-      .from("group_messages")
-      .insert({
-
-        group_id:
-          id,
-
-        user_id:
-          me,
-
-        content
-
-      });
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  input.value = "";
-
-
-  loadGroupMessages(id);
-
-}
-
-
-function subscribeGroupMessages(id) {
-
-  if (groupRealtimeChannel) {
-
-    db.removeChannel(
-      groupRealtimeChannel
-    );
-
-    groupRealtimeChannel = null;
-
-  }
-
-
-  groupRealtimeChannel =
-
-    db
-      .channel(
-        "delta-group-" +
-        id
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "group_messages",
-          filter:
-            `group_id=eq.${id}`
-        },
-        () => {
-
-          loadGroupMessages(id);
-
-        }
-      )
-      .subscribe();
-
-}
-
-
-/* ============================================================
-   MY PROFILE
-============================================================ */
-
-async function loadMyProfile() {
-
-  const [
-    postsResult,
-    followersResult,
-    followingResult
-  ] =
-    await Promise.all([
-
-      db
-        .from("posts")
-        .select("id")
-        .eq(
-          "user_id",
-          me
-        ),
-
-      db
-        .from("follows")
-        .select("follower_id")
-        .eq(
-          "following_id",
-          me
-        ),
-
-      db
-        .from("follows")
-        .select("following_id")
-        .eq(
-          "follower_id",
-          me
-        )
-
-    ]);
-
-
-  $("view").innerHTML = `
-
-    <section class="page">
-
-
-      <div class="profileCover"></div>
-
-
-      <section class="myProfile card">
-
-
-        <div class="myProfileTop">
-
-          ${avatar(
-            profile,
-            "profileAvatar"
-          )}
-
-
-          <button
-            class="ghost"
-            onclick="showEditProfile()"
-          >
-            Edit
-          </button>
-
-
-        </div>
-
-
-        <span class="eyebrow">
-          FOUNDER
-        </span>
-
-
-        <h1>
-          ${esc(
-            profile.full_name
-          )}
-        </h1>
-
-
-        <p class="headline">
-
-          ${esc(
-            profile.headline ||
-            "Building something new."
-          )}
-
-        </p>
-
-
-        <div class="startupLine">
-
-          ${esc(
-            profile.startup_name ||
-            "Independent founder"
-          )}
-
-          ${
-            profile.verified
-
-              ? `<span class="verified">✓</span>`
-
-              : ""
-          }
-
-        </div>
-
-
-        <p class="profileBio">
-
-          ${esc(
-            profile.bio ||
-            "Add a bio to tell your story."
-          )}
-
-        </p>
-
-
-        <div class="tags">
-
-          ${
-            profile.industry
-
-              ? `
-                <span>
-                  ${esc(profile.industry)}
-                </span>
-              `
-
-              : ""
-          }
-
-
-          ${
-            profile.stage
-
-              ? `
-                <span>
-                  ${esc(profile.stage)}
-                </span>
-              `
-
-              : ""
-          }
-
-        </div>
-
-
-        <div class="stats">
-
-
-          <div>
-
-            <b>
-              ${postsResult.data?.length || 0}
-            </b>
-
-            <span>
-              Posts
-            </span>
+            ${
+              founder.stage
+                ? `
+                  <span class="tag">
+                    ${esc(founder.stage)}
+                  </span>
+                `
+                : ""
+            }
 
           </div>
 
 
-          <div>
+          <div style="margin-top:22px">
 
-            <b>
-              ${followersResult.data?.length || 0}
-            </b>
-
-            <span>
-              Followers
-            </span>
-
-          </div>
-
-
-          <div>
-
-            <b>
-              ${followingResult.data?.length || 0}
-            </b>
-
-            <span>
-              Following
-            </span>
+            <button
+              class="primary-btn"
+              onclick="
+                this.closest('.modal').remove();
+                toast('Connection request feature ready for wiring.');
+              "
+            >
+              Connect
+            </button>
 
           </div>
-
 
         </div>
+      `;
 
 
-        ${
-          profile.website_url
-
-            ? `
-
-              <a
-                class="website"
-                href="${esc(profile.website_url)}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ↗ ${esc(profile.website_url)}
-              </a>
-
-            `
-
-            : ""
-        }
-
-
-      </section>
-
-
-      <div style="margin-top:14px">
-
-        <button
-          class="ghost full"
-          onclick="signOut()"
-        >
-          Sign out
-        </button>
-
-      </div>
-
-
-    </section>
-
-  `;
-
-}
-
-
-function openMyProfile() {
-
-  switchTab("me");
-
-}
-
-
-function showEditProfile() {
-
-  showProfile(false);
-
-}
-
-
-/* ============================================================
-   SIGN OUT
-============================================================ */
-
-async function signOut() {
-
-  if (
-    !confirm(
-      "Sign out of Delta?"
-    )
-  )
-    return;
-
-
-  if (realtimeChannel) {
-
-    await db.removeChannel(
-      realtimeChannel
-    );
-
-    realtimeChannel = null;
-
-  }
-
-
-  if (groupRealtimeChannel) {
-
-    await db.removeChannel(
-      groupRealtimeChannel
-    );
-
-    groupRealtimeChannel = null;
-
-  }
-
-
-  await db.auth.signOut();
-
-
-  me = null;
-
-  profile = null;
-
-  activeFounder = null;
-
-  activeConversation = null;
-
-  tab = "feed";
-
-
-  showAuth("login");
-
-}
-
-
-/* ============================================================
-   PASSWORD RECOVERY EVENT
-============================================================ */
-
-db.auth.onAuthStateChange(
-  event => {
-
-    if (
-      event ===
-      "PASSWORD_RECOVERY"
-    ) {
-
-      setTimeout(
-        showResetPassword,
-        100
-      );
-
+      document.body.appendChild(modal);
     }
 
-  }
-);
+
+    /* =========================================================
+       MESSAGES
+    ========================================================= */
+
+    async function renderMessages(){
+
+      const content = $("content");
+
+      content.innerHTML = `
+
+        <section>
+
+          <div class="section-head">
+
+            <div>
+
+              <h2>
+                Messages
+              </h2>
+
+              <p>
+                Conversations with founders.
+              </p>
+
+            </div>
+
+          </div>
 
 
-/* ============================================================
-   GLOBAL ERROR PROTECTION
-============================================================ */
+          <div class="card" style="padding:30px">
 
-window.addEventListener(
-  "error",
-  event => {
+            <div class="empty">
 
-    console.error(
-      "Delta error:",
-      event.error ||
-      event.message
+              <strong>
+                Your conversations will appear here.
+              </strong>
+
+              Start connecting with founders from Discover.
+
+            </div>
+
+          </div>
+
+        </section>
+      `;
+    }
+
+
+    /* =========================================================
+       GROUPS
+    ========================================================= */
+
+    async function renderGroups(){
+
+      const content = $("content");
+
+      content.innerHTML = `
+
+        <section>
+
+          <div class="section-head">
+
+            <div>
+
+              <h2>
+                Founder Groups
+              </h2>
+
+              <p>
+                Communities around ideas, industries and
+                ambitions.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="card" style="padding:30px">
+
+            <div class="empty">
+
+              <strong>
+                Groups are being built.
+              </strong>
+
+              The founder network will soon have dedicated
+              communities.
+
+            </div>
+
+          </div>
+
+        </section>
+      `;
+    }
+
+
+    /* =========================================================
+       MY PROFILE
+    ========================================================= */
+
+    async function renderMyProfile(){
+
+      const content = $("content");
+
+      const postsCount = 0;
+      const connections = 0;
+      const groups = 0;
+
+
+      content.innerHTML = `
+
+        <section>
+
+          <div class="section-head">
+
+            <div>
+
+              <h2>
+                My Profile
+              </h2>
+
+              <p>
+                Your identity inside Delta.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="card profile-card">
+
+            <div class="profile-hero">
+
+              ${avatar(
+                profile,
+                "profile-avatar"
+              )}
+
+              <div>
+
+                <h1>
+                  ${esc(
+                    profile?.full_name ||
+                    me?.user_metadata?.full_name ||
+                    "Founder"
+                  )}
+                </h1>
+
+                <p>
+                  ${
+                    esc(
+                      profile?.industry ||
+                      "Founder"
+                    )
+                  }
+
+                  ${
+                    profile?.stage
+                      ? " · " +
+                        esc(profile.stage)
+                      : ""
+                  }
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="profile-stats">
+
+              <div class="profile-stat">
+
+                <strong>
+                  ${postsCount}
+                </strong>
+
+                <span>
+                  Posts
+                </span>
+
+              </div>
+
+
+              <div class="profile-stat">
+
+                <strong>
+                  ${connections}
+                </strong>
+
+                <span>
+                  Connections
+                </span>
+
+              </div>
+
+
+              <div class="profile-stat">
+
+                <strong>
+                  ${groups}
+                </strong>
+
+                <span>
+                  Groups
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="profile-bio">
+
+              ${esc(
+                profile?.bio ||
+                "Tell the Delta network what you're building."
+              )}
+
+            </div>
+
+
+            <div
+              style="
+                display:flex;
+                flex-wrap:wrap;
+                gap:9px;
+              "
+            >
+
+              ${
+                profile?.industry
+                  ? `
+                    <span class="tag">
+                      ${esc(profile.industry)}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                profile?.stage
+                  ? `
+                    <span class="tag">
+                      ${esc(profile.stage)}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+
+            <div
+              style="
+                display:flex;
+                gap:9px;
+                margin-top:25px;
+                flex-wrap:wrap;
+              "
+            >
+
+              <button
+                class="small-btn"
+                onclick="showProfileSetup()"
+              >
+                Edit profile
+              </button>
+
+
+              <button
+                class="small-btn danger"
+                onclick="signOut()"
+              >
+                Sign out
+              </button>
+
+            </div>
+
+          </div>
+
+        </section>
+      `;
+    }
+
+
+    /* =========================================================
+       SIGN OUT
+    ========================================================= */
+
+    async function signOut(){
+
+      try{
+
+        await db.auth.signOut();
+
+      }catch(error){
+
+        console.error(error);
+
+      }finally{
+
+        me = null;
+        profile = null;
+
+        tab = "feed";
+
+        showAuth();
+      }
+    }
+
+
+    /* =========================================================
+       AUTH STATE
+    ========================================================= */
+
+    db.auth.onAuthStateChange(
+      async (event,session) => {
+
+        /*
+          No password-reset UI anymore.
+          We only care about the active session.
+        */
+
+        if(session?.user){
+
+          me = session.user;
+
+        }else{
+
+          me = null;
+          profile = null;
+
+        }
+      }
     );
 
-  }
-);
+
+    /* =========================================================
+       BOOT
+    ========================================================= */
+
+    async function boot(){
+
+      try{
+
+        const {
+          data,
+          error
+        } =
+          await db.auth.getSession();
 
 
-/* ============================================================
-   START
-============================================================ */
+        if(error){
+          throw error;
+        }
 
-boot();
 
-</script>
+        const session =
+          data?.session;
+
+
+        if(!session){
+
+          me = null;
+          profile = null;
+
+          showAuth();
+
+          return;
+        }
+
+
+        me = session.user;
+
+
+        await loadCurrentProfile();
+
+
+        /*
+          If the user has an account but no profile,
+          send them through setup.
+        */
+
+        if(!profile){
+
+          showProfileSetup();
+
+          return;
+        }
+
+
+        showShell();
+
+
+      }catch(error){
+
+        console.error(
+          "Boot error:",
+          error
+        );
+
+        me = null;
+        profile = null;
+
+        showAuth();
+      }
+    }
+
+
+    /* =========================================================
+       GLOBAL ERROR PROTECTION
+    ========================================================= */
+
+    window.addEventListener(
+      "unhandledrejection",
+      event => {
+
+        console.error(
+          "Unhandled promise rejection:",
+          event.reason
+        );
+
+      }
+    );
+
+
+    window.addEventListener(
+      "error",
+      event => {
+
+        console.error(
+          "Global error:",
+          event.error
+        );
+
+      }
+    );
+
+
+    /* =========================================================
+       START
+    ========================================================= */
+
+    boot();
+
+  </script>
 
 </body>
 </html>
