@@ -634,14 +634,15 @@
 
 const SUPABASE_URL = "https://inhxlwsjlddhnpalbocl.supabase.co";
 
-/*
-  PUT YOUR SUPABASE PUBLISHABLE / ANON KEY HERE.
+const SUPABASE_KEY =
+  "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
 
-  NEVER PUT THE SERVICE ROLE KEY HERE.
-*/
+const { createClient } = supabase;
 
-const SUPABASE_KEY = "PASTE_YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY";
-
+const db = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 const { createClient } = supabase;
 
 const db = createClient(
