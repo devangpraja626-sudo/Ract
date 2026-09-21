@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Delta — From connect to create</title>
+<script>document.documentElement.dataset.theme=localStorage.getItem("delta-theme")||"dark";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="aurora"><i></i><i></i><i></i></div>
+
+<div class="float">
+  <span class="fi" style="--fc:#3B82F6;--t:6s;--d:-1s;--r:-8deg;width:58px;height:58px;top:12%;left:7%">💡</span>
+  <span class="fi" style="--fc:#F43F5E;--t:7s;--d:-3s;--r:8deg;width:52px;height:52px;top:28%;right:6%">🚀</span>
+  <span class="fi" style="--fc:#8B5CF6;--t:8s;--d:-5s;--r:-7deg;width:48px;height:48px;bottom:25%;left:5%">✦</span>
+  <span class="fi" style="--fc:#C9CEE8;--t:9s;--d:-2s;--r:7deg;width:50px;height:50px;bottom:12%;right:8%">◇</span>
+</div>
+
+<button class="iconbtn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle day / night">☀</button>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   DELTA — front-end (talks to the Express API at /api)
+   ========================================================= */
+const industries=["AI","SaaS","Fintech","Health","EdTech","E-commerce","Climate","Consumer","Other"];
+const stages=["Idea","Building MVP","Launched","Growing","Scaling"];
+const tabs=[["feed","⌂","Feed"],["discover","⌕","Discover"],["messages","◌","Messages"],["groups","◇","Rooms"],["me","◎","Profile"]];
+
+let token=localStorage.getItem("delta_token"), me=null, tab="feed", poll=null;
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const esc=(v="")=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const ago=d=>{const s=Math.floor((Date.now()-new Date(d))/1000);if(s<60)return"now";if(s<3600)return Math.floor(s/60)+"m";if(s<86400)return Math.floor(s/3600)+"h";if(s<604800)return Math.floor(s/86400)+"d";return new Date(d).toLocaleDateString()};
+const clock=d=>new Date(d).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+const initials=(n="")=>(n.trim().split(/\s+/).map(x=>x[0]).slice(0,2).join("")||"D").toUpperCase();
+const avatar=(p,size="")=>p&&p.avatar_url
+  ?`<img class="avatar ${size}" src="${esc(p.avatar_url)}" alt="">`
+  :`<div class="avatar ${size} avatarText">${esc(initials(p&&p.full_name))}</div>`;
+const emptyBox=(icon,title,text)=>`<div class="empty card"><div class="emptyIcon">${icon}</div><h3>${title}</h3><p>${text}</p></div>`;
+const opts=(list,sel="")=>list.map(x=>`<option value="${esc(x)}" ${x===sel?"selected":""}>${esc(x)}</option>`).join("");
+function stopPoll(){if(poll){clearInterval(poll);poll=null}}
+
+function toast(msg,type=""){
+  document.querySelectorAll(".toast").forEach(t=>t.remove());
+  const t=document.createElement("div");t.className="toast "+type;t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2800);
+}
+
+/* ---------- day / night ---------- */
+function themeInit(){const t=localStorage.getItem("delta-theme")||"dark";document.documentElement.dataset.theme=t;$("themeBtn").textContent=t==="dark"?"☀":"☾";}
+function toggleTheme(){const n=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=n;localStorage.setItem("delta-theme",n);$("themeBtn").textContent=n==="dark"?"☀":"☾";}
+
+/* ---------- API ---------- */
+function dropSession(){token=null;me=null;localStorage.removeItem("delta_token");stopPoll();}
+async function api(path,{method="GET",body,form}={}){
+  const headers={};if(token)headers.Authorization="Bearer "+token;
+  let payload;
+  if(form)payload=form;else if(body){headers["Content-Type"]="application/json";payload=JSON.stringify(body);}
+  let r;
+  try{r=await fetch("/api"+path,{method,headers,body:payload});}
+  catch{throw new Error("Can't reach the server — check your connection");}
+  const data=await r.json().catch(()=>({}));
+  if(r.status===401&&!path.startsWith("/auth")){dropSession();showAuth("login");throw new Error("Please log in again");}
+  if(!r.ok)throw new Error(data.error||"Something went wrong");
+  return data;
+}
+
+/* shrink images in the browser before upload */
+function compress(file,max=1280,q=.82){
+  return new Promise(resolve=>{
+    if(!file.type.startsWith("image/")||file.type==="image/gif")return resolve(file);
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const s=Math.min(1,max/Math.max(img.width,img.height));
+      const w=Math.round(img.width*s),h=Math.round(img.height*s);
+      const c=document.createElement("canvas");c.width=w;c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      c.toBlob(b=>{URL.revokeObjectURL(url);resolve(b?new File([b],"image.jpg",{type:"image/jpeg"}):file)},"image/jpeg",q);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);resolve(file)};
+    img.src=url;
+  });
+}
+
+/* =========================================================
+   BOOT + AUTH
+   ========================================================= */
+async function boot(){
+  themeInit();
+  if(!token)return showAuth("signup");
+  try{me=await api("/me");}catch{return showAuth("login");}
+  me.full_name?renderShell("feed"):showProfile(true);
+}
+
+function showAuth(mode="signup"){
+  stopPoll();document.body.classList.remove("chat");
+  const su=mode==="signup";
+  $("app").innerHTML=`
+  <main class="authPage"><section class="authCard">
+    <div class="authBrand"><div class="brand">delta</div><span class="eyebrow">FOUNDER NETWORK</span></div>
+    <h1>From <em>connect</em><br>to create.</h1>
+    <p class="authIntro">A premium space for founders to share ideas, meet builders and turn conversations into companies.</p>
+    <div class="featurePills"><span>✦ Share ideas</span><span>◎ Meet founders</span><span>↗ Build together</span></div>
+    <form class="authForm" onsubmit="doAuth(event,'${mode}')">
+      <input id="email" type="email" placeholder="Email address" autocomplete="email" required>
+      <input id="password" type="password" placeholder="Password (min 6 characters)" minlength="6" autocomplete="${su?"new-password":"current-password"}" required>
+      <button class="primary full" id="authBtn" type="submit">${su?"Create my account":"Log in"} <span>→</span></button>
+    </form>
+    <p class="tiny">${su?"Already on Delta?":"New to Delta?"} <a href="#" onclick="showAuth('${su?"login":"signup"}');return false">${su?"Log in":"Create account"}</a></p>
+  </section></main>`;
+}
+
+async function doAuth(e,mode){
+  e.preventDefault();
+  const btn=$("authBtn");btn.disabled=true;
+  try{
+    const r=await api("/auth/"+mode,{method:"POST",body:{email:$("email").value,password:$("password").value}});
+    token=r.token;localStorage.setItem("delta_token",token);me=r.profile;
+    me.full_name?renderShell("feed"):showProfile(true);
+  }catch(err){toast(err.message,"error");btn.disabled=false;}
+}
+
+function logout(){dropSession();showAuth("login");}
+async function deleteAccount(){
+  if(!confirm("Delete your Delta account?\n\nYour profile, posts, comments, likes, connections and messages will be permanently removed."))return;
+  try{await api("/me",{method:"DELETE"});dropSession();showAuth("signup");toast("Account deleted","success");}
+  catch(e){toast(e.message,"error");}
+}
+
+/* =========================================================
+   PROFILE SETUP / EDIT
+   ========================================================= */
+function showProfile(first=false){
+  stopPoll();document.body.classList.remove("chat");
+  const p=me||{};
+  $("app").innerHTML=`
+  <main class="profileSetup"><section class="setupCard">
+    <div class="setupTop">
+      <span class="eyebrow">${first?"WELCOME TO DELTA":"YOUR PROFILE"}</span>
+      <h1>${first?"Build your founder identity.":"Edit your profile."}</h1>
+      <p>Tell other founders who you are, what you're building and who you want to meet.</p>
+    </div>
+    <form onsubmit="saveProfile(event)">
+      <div class="avatarUpload" onclick="$('avatarInput').click()">
+        <div id="avatarPreview">${p.avatar_url?`<img class="avatar huge" src="${esc(p.avatar_url)}" alt="">`:`<div class="avatar huge avatarText">+</div>`}</div>
+        <div><b>${p.avatar_url?"Change profile photo":"Add profile photo"}</b><span>PNG, JPG or WEBP</span></div>
+      </div>
+      <input id="avatarInput" type="file" accept="image/*" hidden onchange="previewAvatar(event)">
+
+      <label>Full name</label>
+      <input id="fullName" required maxlength="80" placeholder="Your name" value="${esc(p.full_name)}">
+      <label>Startup / project</label>
+      <input id="startup" maxlength="100" placeholder="What are you building?" value="${esc(p.startup_name)}">
+      <label>Headline</label>
+      <input id="headline" maxlength="120" placeholder="Founder · AI · Product · etc." value="${esc(p.headline)}">
+      <div class="two">
+        <div><label>Industry</label><select id="industry"><option value="">Select industry</option>${opts(industries,p.industry)}</select></div>
+        <div><label>Stage</label><select id="stage"><option value="">Select stage</option>${opts(stages,p.stage)}</select></div>
+      </div>
+      <label>About you</label>
+      <textarea id="bio" rows="5" maxlength="1000" placeholder="What are you building? What are you looking for?">${esc(p.bio)}</textarea>
+      <label>Website</label>
+      <input id="website" maxlength="200" placeholder="https://yourstartup.com" value="${esc(p.website_url)}">
+
+      <button class="primary full" type="submit" style="margin-top:22px">Save profile <span>→</span></button>
+      ${first?"":`<button class="ghost full" type="button" style="margin-top:10px" onclick="renderShell('me')">Cancel</button>`}
+    </form>
+  </section></main>`;
+}
+
+function previewAvatar(e){
+  const f=e.target.files[0];
+  if(f)$("avatarPreview").innerHTML=`<img class="avatar huge" src="${URL.createObjectURL(f)}" alt="">`;
+}
+
+async function saveProfile(e){
+  e.preventDefault();
+  const btn=e.target.querySelector("[type=submit]");btn.disabled=true;
+  const wasNew=!me.full_name;
+  try{
+    const f=new FormData();
+    [["full_name","fullName"],["startup_name","startup"],["headline","headline"],["industry","industry"],["stage","stage"],["bio","bio"],["website_url","website"]]
+      .forEach(([k,id])=>f.append(k,$(id).value));
+    const file=$("avatarInput").files[0];
+    if(file)f.append("avatar",await compress(file,512));
+    me=await api("/me",{method:"PUT",form:f});
+    toast("Profile saved ✦","success");
+    renderShell(wasNew?"feed":"me");
+  }catch(err){toast(err.message,"error");btn.disabled=false;}
+}
+
+/* =========================================================
+   SHELL + TABS
+   ========================================================= */
+function renderShell(t="feed"){
+  document.body.classList.remove("chat");
+  $("app").innerHTML=`
+  <div class="shell">
+    <header class="topbar">
+      <div><div class="logo">delta</div><div class="topSub">founder network</div></div>
+      <button class="miniProfile" onclick="switchTab('me')">${avatar(me,"small")}</button>
+    </header>
+    <main id="view"></main>
+    <nav class="bottomNav">
+      ${tabs.map(([k,i,l])=>`<button data-tab="${k}" onclick="switchTab('${k}')"><span>${i}</span><small>${l}</small></button>`).join("")}
+    </nav>
+  </div>`;
+  switchTab(t);
+}
+
+function switchTab(t){
+  tab=t;stopPoll();document.body.classList.remove("chat");
+  document.querySelectorAll(".bottomNav button").forEach(b=>{b.className=b.dataset.tab===t?"active "+t:"";});
+  window.scrollTo(0,0);
+  ({feed:loadFeed,discover:loadDiscover,messages:loadMessages,groups:loadGroups,me:loadMe})[t]();
+}
+
+/* =========================================================
+   FEED
+   ========================================================= */
+async function loadFeed(){
+  $("view").innerHTML=`
+  <section class="page">
+    <div class="pageHead"><span class="eyebrow">THE NETWORK</span><h2>Founder feed</h2><p>Ideas, progress and conversations.</p></div>
+    <section class="composer card">
+      <div class="composerHead">${avatar(me,"small")}<div><b>${esc(me.full_name)}</b><span>Share an idea with founders</span></div></div>
+      <textarea id="postText" maxlength="2000" placeholder="What are you building or thinking about?"></textarea>
+      <div id="postImagePreview"></div>
+      <div class="composerActions">
+        <label class="attach">＋ Image<input id="postImage" type="file" accept="image/*" hidden onchange="previewPostImage(event)"></label>
+        <button class="primary" id="postBtn" onclick="createPost()">Post ✦</button>
+      </div>
+    </section>
+    <div id="feedList" class="feedList"><div class="loading">Loading founders...</div></div>
+  </section>`;
+  renderPosts("feedList","/feed");
+}
+
+async function renderPosts(target,url){
+  try{
+    const list=await api(url);
+    if(!$(target))return;
+    $(target).innerHTML=list.length?list.map(postHtml).join(""):emptyBox("✦","Nothing here yet.","Share the first idea and let founders join the conversation.");
+  }catch(e){if($(target))$(target).innerHTML=`<div class="empty card">${esc(e.message)}</div>`;}
+}
+
+function previewPostImage(e){
+  const f=e.target.files[0];if(!f)return;
+  $("postImagePreview").innerHTML=`<div class="previewWrap"><img class="postPreview" src="${URL.createObjectURL(f)}" alt=""><button type="button" class="removeImg" onclick="clearPostImage()">✕</button></div>`;
+}
+function clearPostImage(){$("postImage").value="";$("postImagePreview").innerHTML="";}
+
+async function createPost(){
+  const content=$("postText").value.trim(),file=$("postImage").files[0];
+  if(!content&&!file)return toast("Write something or add an image","error");
+  const btn=$("postBtn");btn.disabled=true;btn.textContent="Posting…";
+  try{
+    const f=new FormData();f.append("content",content);
+    if(file)f.append("image",await compress(file,1280));
+    await api("/posts",{method:"POST",form:f});
+    toast("Posted ✦","success");loadFeed();
+  }catch(err){toast(err.message,"error");btn.disabled=false;btn.textContent="Post ✦";}
+}
+
+function postHtml(p){
+  const a=p.author,own=a.id===me.id;
+  return `
+  <article class="post card" id="post-${p.id}">
+    <div class="postAuthor">${avatar(a,"small")}
+      <div class="authorInfo">
+        <b onclick="openFounder('${a.id}')">${esc(a.full_name||"Founder")}${a.verified?'<span class="verified">✓</span>':""}</b>
+        <span>${esc(a.startup_name||a.headline||"Founder")} · ${ago(p.created_at)}</span>
+      </div>
+      ${own?`<button class="dots" onclick="deletePost('${p.id}')" title="Delete post">🗑</button>`:""}
+    </div>
+    ${p.content?`<div class="postText">${esc(p.content).replace(/\n/g,"<br>")}</div>`:""}
+    ${p.image_url?`<img class="postImage" loading="lazy" src="${esc(p.image_url)}" alt="">`:""}
+    <div class="postActions">
+      <button id="like-${p.id}" class="${p.liked?"liked":""}" onclick="toggleLike('${p.id}')">${p.liked?"♥":"♡"} <span>${p.likes}</span></button>
+      <button onclick="toggleComments('${p.id}')">◌ <span id="cc-${p.id}">${p.comments}</span></button>
+      ${own?"":`<button onclick="startChat('${a.id}')" title="Message">💬</button>`}
+    </div>
+    <div id="comments-${p.id}" class="comments hidden">
+      <div class="commentsList" id="cl-${p.id}"></div>
+      <div class="commentComposer">
+        <input id="ci-${p.id}" maxlength="500" placeholder="Write a comment..." onkeydown="if(event.key==='Enter')addComment('${p.id}')">
+        <button onclick="addComment('${p.id}')">→</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+async function deletePost(id){
+  if(!confirm("Delete this post?\n\nThis cannot be undone."))return;
+  try{await api("/posts/"+id,{method:"DELETE"});$("post-"+id)?.remove();toast("Post deleted","success");}
+  catch(e){toast(e.message,"error");}
+}
+
+async function toggleLike(id){
+  try{
+    const r=await api(`/posts/${id}/like`,{method:"POST"});
+    const b=$("like-"+id);b.className=r.liked?"liked":"";
+    b.innerHTML=`${r.liked?"♥":"♡"} <span>${r.likes}</span>`;
+  }catch(e){toast(e.message,"error");}
+}
+
+async function toggleComments(id){
+  const box=$("comments-"+id);box.classList.toggle("hidden");
+  if(!box.classList.contains("hidden"))await loadComments(id);
+}
+async function loadComments(id){
+  try{
+    const list=await api(`/posts/${id}/comments`);
+    $("cl-"+id).innerHTML=list.length
+      ?list.map(c=>`<div class="comment">${avatar(c.author,"xs")}<div><b>${esc(c.author.full_name||"Founder")}</b><p>${esc(c.content)}</p><small>${ago(c.created_at)}</small></div></div>`).join("")
+      :`<div class="noComments">Start the conversation.</div>`;
+    $("cc-"+id).textContent=list.length;
+  }catch(e){toast(e.message,"error");}
+}
+async function addComment(id){
+  const i=$("ci-"+id),content=i.value.trim();if(!content)return;
+  try{await api(`/posts/${id}/comments`,{method:"POST",body:{content}});i.value="";loadComments(id);}
+  catch(e){toast(e.message,"error");}
+}
+
+/* =========================================================
+   DISCOVER + CONNECT
+   ========================================================= */
+function loadDiscover(){
+  $("view").innerHTML=`
+  <section class="page">
+    <div class="pageHead"><span class="eyebrow">EXPLORE</span><h2>Meet founders.</h2><p>Find people building something interesting.</p></div>
+    <div class="searchBox"><span>⌕</span><input id="founderSearch" placeholder="Search founders, startups or industries..."></div>
+    <div id="founderList" class="founderGrid"><div class="loading">Discovering founders...</div></div>
+  </section>`;
+  let t;$("founderSearch").oninput=()=>{clearTimeout(t);t=setTimeout(fetchFounders,250);};
+  fetchFounders();
+}
+
+async function fetchFounders(){
+  const q=($("founderSearch")?.value||"").trim();
+  try{
+    const list=await api("/founders?q="+encodeURIComponent(q));
+    if(!$("founderList"))return;
+    $("founderList").innerHTML=list.length?list.map(founderCard).join(""):emptyBox("◎","No founders found.","Try another search or invite a friend to Delta.");
+  }catch(e){if($("founderList"))$("founderList").innerHTML=`<div class="empty card">${esc(e.message)}</div>`;}
+}
+
+function founderCard(p){
+  return `
+  <article class="founderCard card">
+    <div class="founderTop">${avatar(p,"medium")}
+      <button class="connectBtn ${p.connected?"following":""}" onclick="toggleConnect('${p.id}',this)">${p.connected?"Connected ✓":"Connect"}</button>
+    </div>
+    <h3>${esc(p.full_name)}</h3>
+    <div class="founderStartup">${esc(p.startup_name||"Independent founder")}</div>
+    <p>${esc(p.headline||p.bio||"Building the next thing.")}</p>
+    <div class="tags">${p.industry?`<span>${esc(p.industry)}</span>`:""}${p.stage?`<span>${esc(p.stage)}</span>`:""}</div>
+    <div class="founderCardActions">
+      <button class="textLink" onclick="openFounder('${p.id}')">View profile →</button>
+      <button class="chatCardBtn" onclick="startChat('${p.id}')">💬 Message</button>
+    </div>
+  </article>`;
+}
+
+async function toggleConnect(id,btn){
+  try{
+    const r=await api("/connect/"+id,{method:"POST"});
+    btn.textContent=r.connected?"Connected ✓":"Connect";
+    btn.classList.toggle("following",r.connected);
+  }catch(e){toast(e.message,"error");}
+}
+
+async function openFounder(id){
+  if(id===me.id)return switchTab("me");
+  try{
+    const p=await api("/founders/"+id);stopPoll();
+    $("view").innerHTML=`
+    <section class="page">
+      <button class="back" onclick="switchTab('${tab}')">← Back</button>
+      <section class="publicProfile card">
+        <div class="profileHero">${avatar(p,"profileAvatar")}
+          <div><span class="eyebrow">FOUNDER</span>
+            <h1>${esc(p.full_name)}${p.verified?'<span class="verified big">✓</span>':""}</h1>
+            <p>${esc(p.headline||"Founder")}</p></div>
+        </div>
+        <div class="profileIdentity"><strong>${esc(p.startup_name||"Independent project")}</strong>
+          <span>${esc(p.industry||"Founder")} · ${esc(p.stage||"Building")}</span></div>
+        <p class="profileBio">${esc(p.bio||"This founder hasn't written a bio yet.")}</p>
+        <div class="stats">
+          <div><b>${p.posts}</b><span>Posts</span></div>
+          <div><b>${p.followers}</b><span>Followers</span></div>
+          <div><b>${p.following}</b><span>Following</span></div>
+        </div>
+        <div class="profileButtons">
+          <button class="primary" onclick="startChat('${p.id}')">💬 Message</button>
+          <button class="ghost ${p.connected?"following":""}" onclick="toggleConnect('${p.id}',this)">${p.connected?"Connected ✓":"Connect"}</button>
+          ${p.website_url?`<a class="ghost" href="${esc(p.website_url)}" target="_blank" rel="noopener">Website ↗</a>`:""}
+        </div>
+      </section>
+      <h3 class="sectionTitle">Their posts</h3>
+      <div id="founderPosts" class="feedList"></div>
+    </section>`;
+    window.scrollTo(0,0);
+    renderPosts("founderPosts","/feed?user="+id);
+  }catch(e){toast(e.message,"error");}
+}
+
+/* =========================================================
+   MESSAGES  (direct)
+   ========================================================= */
+async function loadMessages(){
+  $("view").innerHTML=`
+  <section class="page">
+    <div class="pageHead"><span class="eyebrow">PRIVATE SPACE</span><h2>Messages</h2><p>Talk directly with other founders.</p></div>
+    <div id="messagePeople" class="messagePeople"><div class="loading">Loading conversations...</div></div>
+  </section>`;
+  const draw=async()=>{
+    if(!$("messagePeople"))return;
+    try{
+      const list=await api("/messages");
+      if(!$("messagePeople"))return;
+      $("messagePeople").innerHTML=list.length?list.map(c=>`
+        <button class="messagePerson card" onclick="startChat('${c.id}')">
+          ${avatar(c,"medium")}
+          <div><b>${esc(c.full_name||"Founder")}</b><span>${esc(c.startup_name||"Founder")}</span>
+            <small>${esc(c.content)} · ${ago(c.created_at)}</small></div>
+          <strong>→</strong>
+        </button>`).join("")
+        :`<div class="empty card"><div class="emptyIcon">◌</div><h3>No conversations yet.</h3><p>Discover a founder and start the first conversation.</p><button class="primary" onclick="switchTab('discover')">Discover founders →</button></div>`;
+    }catch(e){if($("messagePeople"))$("messagePeople").innerHTML=`<div class="empty card">${esc(e.message)}</div>`;}
+  };
+  await draw();poll=setInterval(draw,6000);
+}
+
+/* generic chat screen — used by DMs and rooms */
+function openChat({title,sub,icon,load,send,back,group}){
+  stopPoll();document.body.classList.add("chat");
+  $("view").innerHTML=`
+  <section class="chatPage">
+    <header class="chatHeader">
+      <button class="back" onclick="${back}">←</button>${icon}
+      <div><b>${esc(title)}</b><span>${esc(sub)}</span></div>
+    </header>
+    <div id="chatMessages" class="chatMessages"><div class="loading">Loading messages...</div></div>
+    <div class="chatComposer">
+      <input id="chatInput" maxlength="2000" placeholder="Write a message..." autocomplete="off">
+      <button id="chatSend">↑</button>
+    </div>
+  </section>`;
+  let lastKey="";
+  const draw=async()=>{
+    const box=$("chatMessages");if(!box)return;
+    let list;
+    try{list=await load();}catch(e){box.innerHTML=`<div class="empty">${esc(e.message)}</div>`;return;}
+    const key=list.length+":"+(list.length?list[list.length-1].id:0);
+    if(key===lastKey)return;
+    const stick=lastKey===""||box.scrollHeight-box.scrollTop-box.clientHeight<120;
+    lastKey=key;
+    box.innerHTML=list.length?list.map(m=>{
+      const mineMsg=m.sender_id===me.id;
+      return `<div class="bubbleRow ${mineMsg?"mine":""}"><div class="bubble">${group&&!mineMsg?`<strong class="who">${esc(m.full_name||"Founder")}</strong>`:""}${esc(m.content).replace(/\n/g,"<br>")}<small>${clock(m.created_at)}</small></div></div>`;
+    }).join(""):`<div class="chatEmpty"><div>✦</div><p>Start the conversation.</p></div>`;
+    if(stick)box.scrollTop=box.scrollHeight;
+  };
+  const doSend=async()=>{
+    const i=$("chatInput");if(!i)return;
+    const text=i.value.trim();if(!text)return;
+    i.value="";
+    try{await send(text);await draw();}catch(e){i.value=text;toast(e.message,"error");}
+  };
+  $("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend();}});
+  $("chatSend").onclick=doSend;
+  draw();poll=setInterval(draw,3000);
+}
+
+async function startChat(id){
+  if(id===me.id)return;
+  try{
+    const p=await api("/founders/"+id);
+    openChat({
+      title:p.full_name||"Founder",sub:p.startup_name||"Founder",icon:avatar(p,"small"),
+      back:"switchTab('messages')",
+      load:()=>api("/messages/"+id),
+      send:t=>api("/messages/"+id,{method:"POST",body:{content:t}})
+    });
+  }catch(e){toast(e.message,"error");}
+}
+
+/* =========================================================
+   ROOMS (groups)
+   ========================================================= */
+async function loadGroups(){
+  $("view").innerHTML=`
+  <section class="page">
+    <div class="pageHead groupHead">
+      <div><span class="eyebrow">COMMUNITIES</span><h2>Founder rooms.</h2><p>Group chats around industries and ideas.</p></div>
+      <button class="roundAdd" onclick="$('groupForm').classList.toggle('hidden')">+</button>
+    </div>
+    <form id="groupForm" class="groupForm card hidden" onsubmit="createGroup(event)">
+      <input id="gName" maxlength="60" placeholder="Room name" required>
+      <input id="gDesc" maxlength="200" placeholder="What is this room about?">
+      <button class="primary full" type="submit">Create room →</button>
+    </form>
+    <div id="groupList" class="groupGrid"><div class="loading">Loading rooms...</div></div>
+  </section>`;
+  try{
+    const list=await api("/groups");
+    if(!$("groupList"))return;
+    $("groupList").innerHTML=list.length?list.map(g=>`
+      <button class="groupCard card" onclick="openGroup('${g.id}')">
+        <div class="groupIcon">✦</div>
+        <div><h3>${esc(g.name)}</h3><p>${esc(g.description||"Founder community")} · ${g.members} member${g.members===1?"":"s"}${g.joined?" · Joined":""}</p></div>
+        <span>→</span>
+      </button>`).join(""):emptyBox("◇","Create the first founder room.","Start a community around an industry, idea or problem.");
+  }catch(e){if($("groupList"))$("groupList").innerHTML=`<div class="empty card">${esc(e.message)}</div>`;}
+}
+
+async function createGroup(e){
+  e.preventDefault();
+  try{
+    const r=await api("/groups",{method:"POST",body:{name:$("gName").value,description:$("gDesc").value}});
+    openGroup(r.id);
+  }catch(err){toast(err.message,"error");}
+}
+
+async function openGroup(id){
+  try{
+    const g=await api(`/groups/${id}/join`,{method:"POST"});
+    openChat({
+      title:g.name,sub:g.description||"Founder room",icon:`<div class="groupIcon smallIcon">✦</div>`,
+      back:"switchTab('groups')",group:true,
+      load:()=>api(`/groups/${id}/messages`),
+      send:t=>api(`/groups/${id}/messages`,{method:"POST",body:{content:t}})
+    });
+  }catch(e){toast(e.message,"error");}
+}
+
+/* =========================================================
+   MY PROFILE
+   ========================================================= */
+async function loadMe(){
+  $("view").innerHTML=`<section class="page"><div class="loading">Loading...</div></section>`;
+  try{
+    const p=await api("/founders/"+me.id);
+    if(tab!=="me")return;
+    $("view").innerHTML=`
+    <section class="page">
+      <div class="profileCover"></div>
+      <section class="myProfile card">
+        <div class="myProfileTop">${avatar(p,"profileAvatar")}<button class="ghost" onclick="showProfile(false)">Edit</button></div>
+        <span class="eyebrow">FOUNDER</span>
+        <h1>${esc(p.full_name)}</h1>
+        <p class="headline">${esc(p.headline||"Building something new.")}</p>
+        <div class="startupLine">${esc(p.startup_name||"Independent founder")}</div>
+        <p class="profileBio">${esc(p.bio||"Add a bio to tell your story.")}</p>
+        <div class="tags">${p.industry?`<span>${esc(p.industry)}</span>`:""}${p.stage?`<span>${esc(p.stage)}</span>`:""}</div>
+        <div class="stats">
+          <div><b>${p.posts}</b><span>Posts</span></div>
+          <div><b>${p.followers}</b><span>Followers</span></div>
+          <div><b>${p.following}</b><span>Following</span></div>
+        </div>
+        ${p.website_url?`<a class="website" href="${esc(p.website_url)}" target="_blank" rel="noopener">↗ ${esc(p.website_url)}</a>`:""}
+      </section>
+      <h3 class="sectionTitle" style="margin-top:22px">Your posts</h3>
+      <div id="myPosts" class="feedList"></div>
+      <div class="profileActions">
+        <button class="ghost full" onclick="logout()">Log out</button>
+        <button class="ghost full danger" onclick="deleteAccount()">Delete account</button>
+      </div>
+    </section>`;
+    renderPosts("myPosts","/feed?user="+me.id);
+  }catch(e){toast(e.message,"error");}
+}
+
+boot();
+</script>
+</body>
+</html>
