@@ -1423,6 +1423,11 @@ async function upload(file,bucket){
 
 /* ============================================================
    SAVE PROFILE
+   FIXED:
+   - Uses UPSERT instead of UPDATE + SINGLE
+   - Creates profile if it doesn't exist
+   - Updates profile if it already exists
+   - Does not attempt to coerce an empty response into one JSON object
 ============================================================ */
 
 
@@ -1435,7 +1440,42 @@ async function saveProfile(e){
     return;
 
 
+  const saveButton =
+    e.submitter;
+
+
   try{
+
+    if(saveButton){
+
+      saveButton.disabled = true;
+
+      saveButton.dataset.originalText =
+        saveButton.innerHTML;
+
+      saveButton.innerHTML =
+        "Saving...";
+
+    }
+
+
+    const fullName =
+      $("fullName")
+        ?.value
+        .trim();
+
+
+    if(!fullName){
+
+      toast(
+        "Full name is required.",
+        "error"
+      );
+
+      return;
+
+    }
+
 
     const file =
       $("avatarInput")
@@ -1459,10 +1499,11 @@ async function saveProfile(e){
 
     const payload = {
 
+      id:
+        me,
+
       full_name:
-        $("fullName")
-          .value
-          .trim(),
+        fullName,
 
       startup_name:
         $("startup")
@@ -1498,26 +1539,77 @@ async function saveProfile(e){
     };
 
 
+    /*
+      IMPORTANT FIX
+
+      Before:
+        update(...)
+        .select()
+        .single()
+
+      That fails when the profile row does not
+      exist yet because UPDATE returns zero rows.
+
+      Now:
+        upsert(...)
+
+      If id exists:
+        UPDATE
+
+      If id does not exist:
+        INSERT
+    */
+
     const {
-      data,
       error
     } =
       await db
         .from("profiles")
-        .update(payload)
-        .eq("id",me)
-        .select()
-        .single();
+        .upsert(
+          payload,
+          {
+            onConflict:"id"
+          }
+        );
 
 
     if(error)
       throw error;
 
 
-    profile = data;
+    /*
+      Fetch the saved profile separately.
+
+      maybeSingle() is safe when there is
+      either one row or no visible row.
+    */
+
+    const {
+      data:savedProfile,
+      error:fetchError
+    } =
+      await db
+        .from("profiles")
+        .select("*")
+        .eq("id",me)
+        .maybeSingle();
 
 
-    renderShell();
+    if(fetchError)
+      throw fetchError;
+
+
+    if(!savedProfile){
+
+      throw new Error(
+        "Profile was saved, but Supabase could not return it. Check the profiles table RLS policies."
+      );
+
+    }
+
+
+    profile =
+      savedProfile;
 
 
     toast(
@@ -1526,14 +1618,37 @@ async function saveProfile(e){
     );
 
 
+    renderShell();
+
+
   }catch(err){
 
-    console.error(err);
+    console.error(
+      "Profile save error:",
+      err
+    );
+
 
     toast(
-      err.message,
+      err?.message ||
+      "Could not save your profile.",
       "error"
     );
+
+
+  }finally{
+
+    if(saveButton){
+
+      saveButton.disabled =
+        false;
+
+
+      saveButton.innerHTML =
+        saveButton.dataset.originalText ||
+        "Save profile";
+
+    }
 
   }
 
