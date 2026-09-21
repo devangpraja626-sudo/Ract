@@ -320,3 +320,8 @@ body.chat .shell{padding-bottom:0}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
 }
+.fieldLabel{font-size:11px;font-weight:800;color:var(--muted);margin-top:6px}
+.authForm select{width:100%;border:1px solid var(--border);outline:0;border-radius:14px;background:var(--field);padding:13px 14px;transition:.2s}
+.authForm select:focus{border-color:var(--purple);box-shadow:0 0 0 4px color-mix(in srgb,var(--purple) 16%,transparent)}
+.hint{margin:0;color:var(--muted);font-size:11px}
+.qBox{padding:13px 14px;border-radius:14px;background:var(--field);border:1px solid var(--border);font-weight:700;font-size:13px;text-align:left}
