@@ -33,6 +33,7 @@ const upload = multer({
 /* ---------- helpers ---------- */
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const clip = (v, n) => String(v ?? "").trim().slice(0, n);
+const norm = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const mediaUrl = (id) => (id ? `/api/media/${id}` : null);
 const sign = (id) => jwt.sign({ id }, JWT_SECRET, { expiresIn: "30d" });
@@ -91,15 +92,25 @@ app.get("/api/media/:id", wrap(async (req, res) => {
 app.post("/api/auth/signup", wrap(async (req, res) => {
   const email = clip(req.body.email, 200).toLowerCase();
   const password = String(req.body.password || "");
+  const question = clip(req.body.question, 150);
+  const answer = norm(req.body.answer);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return res.status(400).json({ error: "Enter a valid email" });
   if (password.length < 6)
     return res.status(400).json({ error: "Password must be at least 6 characters" });
-  const hash = await bcrypt.hash(password, 10);
+  if (!question)
+    return res.status(400).json({ error: "Choose a security question" });
+  if (answer.length < 2)
+    return res.status(400).json({ error: "Enter an answer to your security question" });
+  const [hash, answerHash] = await Promise.all([
+    bcrypt.hash(password, 10),
+    bcrypt.hash(answer, 10),
+  ]);
   try {
     const { rows } = await pool.query(
-      "insert into profiles(email,password_hash) values($1,$2) returning *",
-      [email, hash]
+      `insert into profiles(email,password_hash,security_question,security_answer_hash)
+       values($1,$2,$3,$4) returning *`,
+      [email, hash, question, answerHash]
     );
     res.json({ token: sign(rows[0].id), profile: mine(rows[0]) });
   } catch (e) {
@@ -116,6 +127,51 @@ app.post("/api/auth/login", wrap(async (req, res) => {
   if (!rows[0] || !(await bcrypt.compare(password, rows[0].password_hash)))
     return res.status(401).json({ error: "Wrong email or password" });
   res.json({ token: sign(rows[0].id), profile: mine(rows[0]) });
+}));
+
+app.post("/api/auth/question", wrap(async (req, res) => {
+  const email = clip(req.body.email, 200).toLowerCase();
+  const { rows } = await pool.query(
+    "select security_question from profiles where email=$1", [email]
+  );
+  if (!rows[0] || !rows[0].security_question)
+    return res.status(404).json({ error: "No recoverable account found for that email" });
+  res.json({ question: rows[0].security_question });
+}));
+
+app.post("/api/auth/reset", wrap(async (req, res) => {
+  const email = clip(req.body.email, 200).toLowerCase();
+  const answer = norm(req.body.answer);
+  const password = String(req.body.new_password || "");
+  if (password.length < 6)
+    return res.status(400).json({ error: "New password must be at least 6 characters" });
+
+  const { rows } = await pool.query("select * from profiles where email=$1", [email]);
+  const u = rows[0];
+  if (!u || !u.security_answer_hash)
+    return res.status(400).json({ error: "This account can't be reset" });
+  if (u.reset_locked_until && new Date(u.reset_locked_until) > new Date())
+    return res.status(429).json({ error: "Too many wrong answers. Try again in 15 minutes." });
+
+  if (!(await bcrypt.compare(answer, u.security_answer_hash))) {
+    const fails = (u.reset_fails || 0) + 1;
+    if (fails >= 5) {
+      await pool.query(
+        "update profiles set reset_fails=0, reset_locked_until=now()+interval '15 minutes' where id=$1",
+        [u.id]
+      );
+      return res.status(429).json({ error: "Too many wrong answers. Try again in 15 minutes." });
+    }
+    await pool.query("update profiles set reset_fails=$2 where id=$1", [u.id, fails]);
+    return res.status(401).json({ error: "Wrong answer" });
+  }
+
+  const hash = await bcrypt.hash(password, 10);
+  await pool.query(
+    "update profiles set password_hash=$2, reset_fails=0, reset_locked_until=null where id=$1",
+    [u.id, hash]
+  );
+  res.json({ token: sign(u.id), profile: mine(u) });
 }));
 
 /* ---------- me ---------- */
