@@ -1,3239 +1,2664 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover"
-  >
-
-  <title>Delta — Founder Network</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root{
-      --font-display:'Fraunces',Georgia,serif;
-      --font-ui:'Manrope',system-ui,sans-serif;
-
-      --bg:#05060A;
-      --surface:rgba(255,255,255,.055);
-      --raised:rgba(255,255,255,.09);
-      --border:rgba(255,255,255,.12);
-
-      --ink:#F7F8FF;
-      --muted:#9DA1B3;
-      --soft:#6F7385;
-
-      --gold:#E8C77A;
-      --gold-2:#F4D99A;
-
-      --purple:#9B6CFF;
-      --purple-2:#C3A7FF;
-
-      --danger:#FF6B81;
-      --success:#65D8A4;
-
-      --shadow:
-        0 30px 80px rgba(0,0,0,.42),
-        0 10px 30px rgba(0,0,0,.28);
-
-      --radius:26px;
-    }
-
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-    }
-
-    html{
-      scroll-behavior:smooth;
-    }
-
-    body{
-      min-height:100vh;
-      background:var(--bg);
-      color:var(--ink);
-      font-family:var(--font-ui);
-      overflow-x:hidden;
-    }
-
-    button,
-    input,
-    textarea,
-    select{
-      font:inherit;
-    }
-
-    button{
-      cursor:pointer;
-    }
-
-    a{
-      color:inherit;
-      text-decoration:none;
-    }
-
-    img{
-      max-width:100%;
-      display:block;
-    }
-
-    .hidden{
-      display:none !important;
-    }
-
-    /* =========================
-       BACKGROUND
-    ========================= */
-
-    .aurora{
-      position:fixed;
-      inset:-20%;
-      pointer-events:none;
-      z-index:-4;
-      overflow:hidden;
-      filter:blur(50px);
-    }
-
-    .aurora::before,
-    .aurora::after{
-      content:"";
-      position:absolute;
-      border-radius:50%;
-      animation:floatAurora 16s ease-in-out infinite alternate;
-    }
-
-    .aurora::before{
-      width:55vw;
-      height:55vw;
-      left:-10vw;
-      top:-10vw;
-      background:
-        radial-gradient(circle,
-          rgba(155,108,255,.20) 0%,
-          rgba(155,108,255,.06) 35%,
-          transparent 70%);
-    }
-
-    .aurora::after{
-      width:60vw;
-      height:60vw;
-      right:-15vw;
-      bottom:-20vw;
-      background:
-        radial-gradient(circle,
-          rgba(232,199,122,.14) 0%,
-          rgba(232,199,122,.04) 38%,
-          transparent 70%);
-      animation-delay:-6s;
-    }
-
-    @keyframes floatAurora{
-      from{
-        transform:translate3d(-2%,0,0) scale(1);
-      }
-      to{
-        transform:translate3d(4%,5%,0) scale(1.12);
-      }
-    }
-
-    .noise{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:-2;
-      opacity:.035;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
-    }
-
-    .grid{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:-3;
-      opacity:.18;
-      background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-      background-size:48px 48px;
-      mask-image:linear-gradient(to bottom,black,transparent 80%);
-    }
-
-    .orb{
-      position:fixed;
-      width:180px;
-      height:180px;
-      border-radius:50%;
-      pointer-events:none;
-      opacity:.22;
-      filter:blur(3px);
-      border:1px solid rgba(255,255,255,.08);
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          rgba(255,255,255,.10),
-          transparent 50%
-        );
-      animation:orbFloat 12s ease-in-out infinite;
-      z-index:-1;
-    }
-
-    .orb.one{
-      top:15%;
-      left:-70px;
-    }
-
-    .orb.two{
-      bottom:10%;
-      right:-80px;
-      animation-delay:-5s;
-    }
-
-    @keyframes orbFloat{
-      0%,100%{
-        transform:translateY(0) rotate(0deg);
-      }
-      50%{
-        transform:translateY(-25px) rotate(12deg);
-      }
-    }
-
-    /* =========================
-       APP
-    ========================= */
-
-    #app{
-      min-height:100vh;
-    }
-
-    .screen{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:28px;
-    }
-
-    /* =========================
-       AUTH
-    ========================= */
-
-    .auth-wrap{
-      width:min(460px,100%);
-    }
-
-    .brand-lockup{
-      text-align:center;
-      margin-bottom:30px;
-    }
-
-    .brand-mark{
-      width:66px;
-      height:66px;
-      margin:0 auto 18px;
-      display:grid;
-      place-items:center;
-      border-radius:22px;
-      font-family:var(--font-display);
-      font-size:28px;
-      font-weight:700;
-      color:#08090D;
-      background:
-        linear-gradient(
-          145deg,
-          var(--gold-2),
-          var(--gold)
-        );
-      box-shadow:
-        0 15px 45px rgba(232,199,122,.18),
-        inset 0 1px 0 rgba(255,255,255,.65);
-    }
-
-    .brand-name{
-      font-family:var(--font-display);
-      font-size:42px;
-      line-height:1;
-      letter-spacing:-.035em;
-    }
-
-    .brand-subtitle{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .auth-card{
-      position:relative;
-      padding:30px;
-      border-radius:32px;
-      border:1px solid var(--border);
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255,255,255,.085),
-          rgba(255,255,255,.035)
-        );
-      backdrop-filter:blur(24px);
-      -webkit-backdrop-filter:blur(24px);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .auth-card::before{
-      content:"";
-      position:absolute;
-      width:220px;
-      height:220px;
-      top:-130px;
-      right:-90px;
-      border-radius:50%;
-      background:rgba(155,108,255,.16);
-      filter:blur(45px);
-      pointer-events:none;
-    }
-
-    .auth-card h1{
-      position:relative;
-      font-family:var(--font-display);
-      font-size:32px;
-      line-height:1.08;
-      letter-spacing:-.025em;
-      margin-bottom:9px;
-    }
-
-    .auth-card .intro{
-      position:relative;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.65;
-      margin-bottom:25px;
-    }
-
-    .field{
-      margin-bottom:17px;
-    }
-
-    .field label{
-      display:block;
-      margin-bottom:8px;
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:#C7CAD7;
-    }
-
-    .input{
-      width:100%;
-      min-height:54px;
-      border:1px solid rgba(255,255,255,.11);
-      border-radius:16px;
-      outline:none;
-      color:var(--ink);
-      background:rgba(0,0,0,.22);
-      padding:0 16px;
-      transition:
-        border-color .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
-    }
-
-    textarea.input{
-      min-height:130px;
-      padding:15px;
-      resize:vertical;
-    }
-
-    .input::placeholder{
-      color:#686D7C;
-    }
-
-    .input:focus{
-      border-color:rgba(232,199,122,.55);
-      background:rgba(0,0,0,.30);
-      box-shadow:
-        0 0 0 4px rgba(232,199,122,.08);
-    }
-
-    .primary-btn{
-      width:100%;
-      min-height:55px;
-      border:0;
-      border-radius:17px;
-      padding:0 20px;
-      color:#090A0D;
-      font-weight:800;
-      background:
-        linear-gradient(
-          135deg,
-          var(--gold-2),
-          var(--gold)
-        );
-      box-shadow:
-        0 15px 35px rgba(232,199,122,.14),
-        inset 0 1px 0 rgba(255,255,255,.65);
-      transition:
-        transform .18s ease,
-        box-shadow .18s ease;
-    }
-
-    .primary-btn:hover{
-      transform:translateY(-2px);
-      box-shadow:
-        0 20px 45px rgba(232,199,122,.20),
-        inset 0 1px 0 rgba(255,255,255,.65);
-    }
-
-    .primary-btn:active{
-      transform:translateY(0);
-    }
-
-    .primary-btn:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .auth-note{
-      margin-top:18px;
-      color:var(--soft);
-      font-size:11px;
-      line-height:1.6;
-      text-align:center;
-    }
-
-    /* =========================
-       NAVBAR
-    ========================= */
-
-    .navbar{
-      position:sticky;
-      top:0;
-      z-index:50;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:20px;
-      height:76px;
-      padding:0 24px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      background:rgba(5,6,10,.70);
-      backdrop-filter:blur(22px);
-      -webkit-backdrop-filter:blur(22px);
-    }
-
-    .nav-brand{
-      display:flex;
-      align-items:center;
-      gap:11px;
-      min-width:0;
-    }
-
-    .nav-brand-mark{
-      width:38px;
-      height:38px;
-      flex:none;
-      display:grid;
-      place-items:center;
-      border-radius:12px;
-      background:linear-gradient(145deg,var(--gold-2),var(--gold));
-      color:#08090D;
-      font-family:var(--font-display);
-      font-weight:700;
-    }
-
-    .nav-brand-text{
-      font-family:var(--font-display);
-      font-size:23px;
-    }
-
-    .nav-actions{
-      display:flex;
-      align-items:center;
-      gap:9px;
-    }
-
-    .icon-btn{
-      width:42px;
-      height:42px;
-      display:grid;
-      place-items:center;
-      border-radius:13px;
-      border:1px solid rgba(255,255,255,.09);
-      background:rgba(255,255,255,.045);
-      color:var(--ink);
-      transition:.2s ease;
-    }
-
-    .icon-btn:hover{
-      background:rgba(255,255,255,.09);
-      border-color:rgba(255,255,255,.16);
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
-
-    .main{
-      width:min(1160px,100%);
-      margin:0 auto;
-      padding:35px 20px 120px;
-    }
-
-    .hero{
-      display:grid;
-      grid-template-columns:1.3fr .7fr;
-      gap:22px;
-      margin-bottom:28px;
-    }
-
-    .hero-card,
-    .card{
-      position:relative;
-      border:1px solid var(--border);
-      background:var(--surface);
-      border-radius:var(--radius);
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
-      box-shadow:0 18px 60px rgba(0,0,0,.18);
-    }
-
-    .hero-card{
-      padding:35px;
-      overflow:hidden;
-    }
-
-    .hero-card::after{
-      content:"";
-      position:absolute;
-      width:300px;
-      height:300px;
-      right:-150px;
-      top:-170px;
-      border-radius:50%;
-      background:rgba(155,108,255,.14);
-      filter:blur(45px);
-    }
-
-    .eyebrow{
-      position:relative;
-      z-index:1;
-      color:var(--gold);
-      text-transform:uppercase;
-      letter-spacing:.13em;
-      font-size:10px;
-      font-weight:800;
-      margin-bottom:12px;
-    }
-
-    .hero h1{
-      position:relative;
-      z-index:1;
-      font-family:var(--font-display);
-      font-size:clamp(38px,5vw,64px);
-      line-height:.98;
-      letter-spacing:-.045em;
-      max-width:700px;
-    }
-
-    .hero p{
-      position:relative;
-      z-index:1;
-      color:var(--muted);
-      line-height:1.7;
-      font-size:14px;
-      max-width:650px;
-      margin-top:18px;
-    }
-
-    .stat-card{
-      padding:25px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-    }
-
-    .stat-label{
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:8px;
-    }
-
-    .stat-value{
-      font-family:var(--font-display);
-      font-size:42px;
-      color:var(--gold-2);
-    }
-
-    /* =========================
-       TABS
-    ========================= */
-
-    .tabs{
-      position:fixed;
-      z-index:100;
-      left:50%;
-      bottom:18px;
-      transform:translateX(-50%);
-      display:flex;
-      align-items:center;
-      gap:4px;
-      padding:7px;
-      border:1px solid rgba(255,255,255,.11);
-      border-radius:22px;
-      background:rgba(10,11,16,.80);
-      backdrop-filter:blur(25px);
-      -webkit-backdrop-filter:blur(25px);
-      box-shadow:
-        0 20px 55px rgba(0,0,0,.45);
-    }
-
-    .tab{
-      border:0;
-      min-width:75px;
-      padding:10px 12px;
-      border-radius:16px;
-      background:transparent;
-      color:#85899A;
-      font-size:11px;
-      font-weight:700;
-      transition:.2s ease;
-    }
-
-    .tab:hover{
-      color:var(--ink);
-    }
-
-    .tab.active{
-      color:#0A0B0E;
-      background:linear-gradient(
-        135deg,
-        var(--gold-2),
-        var(--gold)
-      );
-    }
-
-    /* =========================
-       CONTENT
-    ========================= */
-
-    .section-head{
-      display:flex;
-      align-items:end;
-      justify-content:space-between;
-      gap:15px;
-      margin-bottom:17px;
-    }
-
-    .section-head h2{
-      font-family:var(--font-display);
-      font-size:30px;
-      letter-spacing:-.03em;
-    }
-
-    .section-head p{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:5px;
-    }
-
-    .feed{
-      display:grid;
-      gap:16px;
-    }
-
-    .post{
-      padding:22px;
-    }
-
-    .post-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:17px;
-    }
-
-    .user-mini{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .avatar{
-      width:42px;
-      height:42px;
-      flex:none;
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      border-radius:14px;
-      background:
-        linear-gradient(
-          145deg,
-          rgba(232,199,122,.30),
-          rgba(155,108,255,.28)
-        );
-      border:1px solid rgba(255,255,255,.10);
-      font-size:12px;
-      font-weight:800;
-    }
-
-    .avatar img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    .user-name{
-      font-weight:800;
-      font-size:13px;
-    }
-
-    .post-time{
-      color:var(--soft);
-      font-size:10px;
-      margin-top:3px;
-    }
-
-    .post-text{
-      color:#D8DAE3;
-      line-height:1.7;
-      font-size:14px;
-      white-space:pre-wrap;
-    }
-
-    .post-image{
-      margin-top:17px;
-      border-radius:18px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .post-image img{
-      width:100%;
-      max-height:500px;
-      object-fit:cover;
-    }
-
-    .post-actions{
-      display:flex;
-      gap:8px;
-      margin-top:18px;
-    }
-
-    .small-btn{
-      min-height:36px;
-      border:1px solid rgba(255,255,255,.09);
-      background:rgba(255,255,255,.04);
-      color:#BFC2CF;
-      border-radius:12px;
-      padding:0 13px;
-      font-size:11px;
-      font-weight:700;
-    }
-
-    .small-btn:hover{
-      background:rgba(255,255,255,.08);
-      color:var(--ink);
-    }
-
-    .small-btn.danger:hover{
-      color:var(--danger);
-    }
-
-    .empty{
-      padding:50px 25px;
-      text-align:center;
-      color:var(--muted);
-      border:1px dashed rgba(255,255,255,.12);
-      border-radius:22px;
-    }
-
-    .empty strong{
-      display:block;
-      color:var(--ink);
-      margin-bottom:7px;
-      font-size:15px;
-    }
-
-    /* =========================
-       DISCOVER
-    ========================= */
-
-    .search-box{
-      margin-bottom:18px;
-    }
-
-    .founder-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:16px;
-    }
-
-    .founder-card{
-      padding:21px;
-    }
-
-    .founder-top{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:15px;
-    }
-
-    .founder-card h3{
-      font-size:15px;
-    }
-
-    .founder-card p{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.6;
-    }
-
-    .tag-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:7px;
-      margin-top:15px;
-    }
-
-    .tag{
-      padding:6px 9px;
-      border-radius:999px;
-      background:rgba(155,108,255,.09);
-      border:1px solid rgba(155,108,255,.16);
-      color:#C8B4FF;
-      font-size:10px;
-      font-weight:700;
-    }
-
-    /* =========================
-       PROFILE
-    ========================= */
-
-    .profile-card{
-      padding:30px;
-    }
-
-    .profile-hero{
-      display:flex;
-      align-items:center;
-      gap:17px;
-      margin-bottom:25px;
-    }
-
-    .profile-avatar{
-      width:75px;
-      height:75px;
-      border-radius:23px;
-      font-size:20px;
-    }
-
-    .profile-hero h1{
-      font-family:var(--font-display);
-      font-size:34px;
-    }
-
-    .profile-hero p{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:5px;
-    }
-
-    .profile-stats{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-bottom:25px;
-    }
-
-    .profile-stat{
-      padding:17px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.035);
-      border-radius:16px;
-      text-align:center;
-    }
-
-    .profile-stat strong{
-      display:block;
-      font-family:var(--font-display);
-      font-size:25px;
-    }
-
-    .profile-stat span{
-      display:block;
-      color:var(--muted);
-      font-size:10px;
-      margin-top:4px;
-    }
-
-    .profile-bio{
-      color:#C9CBD5;
-      line-height:1.7;
-      font-size:13px;
-      margin-bottom:20px;
-    }
-
-    /* =========================
-       MODALS
-    ========================= */
-
-    .modal{
-      position:fixed;
-      inset:0;
-      z-index:200;
-      display:grid;
-      place-items:center;
-      padding:20px;
-      background:rgba(0,0,0,.65);
-      backdrop-filter:blur(12px);
-    }
-
-    .modal-card{
-      width:min(560px,100%);
-      max-height:90vh;
-      overflow:auto;
-      padding:27px;
-      border-radius:27px;
-      border:1px solid var(--border);
-      background:#0B0C11;
-      box-shadow:0 30px 100px rgba(0,0,0,.6);
-    }
-
-    .modal-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:22px;
-    }
-
-    .modal-head h2{
-      font-family:var(--font-display);
-      font-size:28px;
-    }
-
-    /* =========================
-       TOAST
-    ========================= */
-
-    #toast{
-      position:fixed;
-      z-index:500;
-      left:50%;
-      top:25px;
-      transform:translate(-50%,-15px);
-      opacity:0;
-      pointer-events:none;
-      max-width:min(90vw,420px);
-      padding:13px 17px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(15,16,22,.92);
-      color:var(--ink);
-      box-shadow:0 15px 45px rgba(0,0,0,.35);
-      font-size:12px;
-      transition:.25s ease;
-    }
-
-    #toast.show{
-      opacity:1;
-      transform:translate(-50%,0);
-    }
-
-    /* =========================
-       LIGHT THEME
-    ========================= */
-
-    [data-theme="light"]{
-      --bg:#F4F2EE;
-      --surface:rgba(255,255,255,.70);
-      --raised:rgba(255,255,255,.85);
-      --border:rgba(20,20,25,.10);
-      --ink:#17171B;
-      --muted:#666873;
-      --soft:#858691;
-    }
-
-    [data-theme="light"] .navbar{
-      background:rgba(244,242,238,.78);
-    }
-
-    [data-theme="light"] .tabs{
-      background:rgba(255,255,255,.85);
-    }
-
-    [data-theme="light"] .input{
-      background:rgba(255,255,255,.65);
-      color:var(--ink);
-      border-color:rgba(20,20,25,.10);
-    }
-
-    [data-theme="light"] .post-text{
-      color:#33343B;
-    }
-
-    [data-theme="light"] .modal-card{
-      background:#fff;
-    }
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media(max-width:850px){
-      .hero{
-        grid-template-columns:1fr;
-      }
-
-      .founder-grid{
-        grid-template-columns:repeat(2,1fr);
-      }
-    }
-
-    @media(max-width:620px){
-      .screen{
-        padding:18px;
-      }
-
-      .auth-card{
-        padding:23px;
-        border-radius:25px;
-      }
-
-      .brand-name{
-        font-size:37px;
-      }
-
-      .navbar{
-        height:68px;
-        padding:0 15px;
-      }
-
-      .nav-brand-text{
-        font-size:20px;
-      }
-
-      .main{
-        padding:25px 14px 110px;
-      }
-
-      .hero-card{
-        padding:25px;
-      }
-
-      .hero h1{
-        font-size:42px;
-      }
-
-      .founder-grid{
-        grid-template-columns:1fr;
-      }
-
-      .tabs{
-        width:calc(100% - 20px);
-        justify-content:space-between;
-      }
-
-      .tab{
-        min-width:0;
-        flex:1;
-        padding:10px 5px;
-        font-size:9px;
-      }
-
-      .profile-stats{
-        grid-template-columns:repeat(3,1fr);
-      }
-
-      .profile-card{
-        padding:22px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="aurora"></div>
-  <div class="grid"></div>
-  <div class="noise"></div>
-
-  <div class="orb one"></div>
-  <div class="orb two"></div>
-
-  <div id="app"></div>
-
-  <div id="toast"></div>
-
-  <script>
-    /* =========================================================
-       SUPABASE
-    ========================================================= */
-
-    const SUPABASE_URL =
-      "https://inhxlwsjlddhnpalbocl.supabase.co";
-
-    const SUPABASE_KEY =
-      "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
-
-    const db = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY,
-      {
-        auth:{
-          persistSession:true,
-          autoRefreshToken:true,
-          detectSessionInUrl:true
-        }
-      }
+:root{
+
+  --bg:#050308;
+  --bg2:#09050f;
+
+  --surface:rgba(255,255,255,.055);
+  --surface-2:rgba(255,255,255,.075);
+
+  --border:rgba(255,255,255,.11);
+  --border-bright:rgba(255,255,255,.18);
+
+  --text:#f7f5fb;
+  --muted:#98919f;
+
+  --purple:#8b5cf6;
+  --purple-2:#a855f7;
+
+  --red:#ff3158;
+  --red-2:#ff1744;
+
+  --green:#43e7a4;
+
+  --radius:24px;
+
+  --shadow:
+    0 25px 80px rgba(0,0,0,.45);
+
+  --font-display:
+    "Space Grotesk",
+    sans-serif;
+
+  --font-ui:
+    "DM Sans",
+    sans-serif;
+
+}
+
+
+*{
+
+  box-sizing:border-box;
+
+}
+
+
+html{
+
+  scroll-behavior:smooth;
+
+}
+
+
+body{
+
+  margin:0;
+
+  min-height:100vh;
+
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(139,92,246,.12),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(255,49,88,.09),
+      transparent 30%
+    ),
+    var(--bg);
+
+  color:var(--text);
+
+  font-family:var(--font-ui);
+
+  overflow-x:hidden;
+
+}
+
+
+button,
+input,
+textarea{
+
+  font:inherit;
+
+}
+
+
+button{
+
+  cursor:pointer;
+
+}
+
+
+input,
+textarea{
+
+  width:100%;
+
+  color:var(--text);
+
+  background:
+    rgba(255,255,255,.045);
+
+  border:1px solid var(--border);
+
+  border-radius:15px;
+
+  padding:15px 16px;
+
+  outline:none;
+
+  transition:
+    border .2s,
+    box-shadow .2s,
+    background .2s;
+
+}
+
+
+input:focus,
+textarea:focus{
+
+  border-color:
+    rgba(139,92,246,.65);
+
+  box-shadow:
+    0 0 0 4px
+    rgba(139,92,246,.09);
+
+  background:
+    rgba(255,255,255,.06);
+
+}
+
+
+textarea{
+
+  min-height:120px;
+
+  resize:vertical;
+
+}
+
+
+.hidden{
+
+  display:none !important;
+
+}
+
+
+/* =====================================================
+   BACKGROUND
+===================================================== */
+
+.aurora{
+
+  position:fixed;
+
+  width:480px;
+
+  height:480px;
+
+  border-radius:50%;
+
+  filter:blur(110px);
+
+  pointer-events:none;
+
+  opacity:.2;
+
+  z-index:-2;
+
+  animation:
+    floatAurora 13s ease-in-out infinite;
+
+}
+
+
+.aurora-one{
+
+  background:#7c3aed;
+
+  left:-220px;
+
+  top:5%;
+
+}
+
+
+.aurora-two{
+
+  background:#e11d48;
+
+  right:-240px;
+
+  bottom:0;
+
+  animation-delay:-6s;
+
+}
+
+
+.noise{
+
+  position:fixed;
+
+  inset:0;
+
+  pointer-events:none;
+
+  opacity:.035;
+
+  z-index:-1;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+
+}
+
+
+@keyframes floatAurora{
+
+  0%,100%{
+    transform:translate3d(0,0,0) scale(1);
+  }
+
+  50%{
+    transform:translate3d(40px,-35px,0) scale(1.12);
+  }
+
+}
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+.auth-screen{
+
+  min-height:100vh;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  padding:30px 20px;
+
+  position:relative;
+
+}
+
+
+.auth-card{
+
+  width:min(460px,100%);
+
+  position:relative;
+
+  padding:40px;
+
+  border-radius:30px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.085),
+      rgba(255,255,255,.025)
     );
 
+  border:1px solid var(--border);
 
-    /* =========================================================
-       DATA
-    ========================================================= */
+  box-shadow:
+    0 50px 120px rgba(0,0,0,.58);
 
-    const INDUSTRIES = [
-      "AI",
-      "Technology",
-      "FinTech",
-      "HealthTech",
-      "EdTech",
-      "Climate",
-      "Consumer",
-      "SaaS",
-      "Marketplace",
-      "DeepTech",
-      "Media",
-      "D2C",
-      "Other"
-    ];
+  backdrop-filter:blur(28px);
 
-    const STAGES = [
-      "Idea",
-      "Pre-seed",
-      "Seed",
-      "Series A",
-      "Series B+",
-      "Bootstrapped"
-    ];
+}
 
 
-    /* =========================================================
-       STATE
-    ========================================================= */
+.auth-card::before{
 
-    let me = null;
-    let profile = null;
+  content:"";
 
-    let tab = "feed";
+  position:absolute;
 
-    let activeFounder = null;
-    let activeConversation = null;
+  inset:-1px;
 
-    let realtimeChannels = [];
+  border-radius:31px;
 
-
-    /* =========================================================
-       HELPERS
-    ========================================================= */
-
-    const $ = id => document.getElementById(id);
-
-    function esc(value){
-      if(value === null || value === undefined) return "";
-
-      return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-    }
-
-
-    function ago(date){
-      if(!date) return "";
-
-      const diff =
-        Math.floor(
-          (Date.now() - new Date(date).getTime()) / 1000
-        );
-
-      if(diff < 60) return "just now";
-
-      const mins = Math.floor(diff / 60);
-
-      if(mins < 60){
-        return mins + "m ago";
-      }
-
-      const hours = Math.floor(mins / 60);
-
-      if(hours < 24){
-        return hours + "h ago";
-      }
-
-      const days = Math.floor(hours / 24);
-
-      if(days < 30){
-        return days + "d ago";
-      }
-
-      return new Date(date).toLocaleDateString();
-    }
-
-
-    function initials(name){
-      if(!name) return "?";
-
-      return name
-        .trim()
-        .split(/\s+/)
-        .slice(0,2)
-        .map(x => x[0])
-        .join("")
-        .toUpperCase();
-    }
-
-
-    function avatar(user,sizeClass=""){
-      if(!user){
-        return `
-          <div class="avatar ${sizeClass}">
-            ?
-          </div>
-        `;
-      }
-
-      const image =
-        user.avatar_url ||
-        user.avatar ||
-        "";
-
-      if(image){
-        return `
-          <div class="avatar ${sizeClass}">
-            <img
-              src="${esc(image)}"
-              alt=""
-            >
-          </div>
-        `;
-      }
-
-      return `
-        <div class="avatar ${sizeClass}">
-          ${esc(initials(user.full_name || user.name))}
-        </div>
-      `;
-    }
-
-
-    function toast(message){
-      const el = $("toast");
-
-      if(!el) return;
-
-      el.textContent = message;
-
-      el.classList.add("show");
-
-      clearTimeout(window.__toastTimer);
-
-      window.__toastTimer =
-        setTimeout(() => {
-          el.classList.remove("show");
-        },3000);
-    }
-
-
-    /* =========================================================
-       THEME
-    ========================================================= */
-
-    function getTheme(){
-      return localStorage.getItem("delta_theme") || "dark";
-    }
-
-
-    function setTheme(theme){
-      document.documentElement.dataset.theme = theme;
-
-      localStorage.setItem(
-        "delta_theme",
-        theme
-      );
-
-      const button = $("themeBtn");
-
-      if(button){
-        button.textContent =
-          theme === "dark"
-            ? "☀"
-            : "☾";
-      }
-    }
-
-
-    function toggleTheme(){
-      setTheme(
-        getTheme() === "dark"
-          ? "light"
-          : "dark"
-      );
-    }
-
-
-    setTheme(getTheme());
-
-
-    /* =========================================================
-       OPTION HELPERS
-    ========================================================= */
-
-    function industryOptions(selected=""){
-      return INDUSTRIES
-        .map(item => `
-          <option
-            value="${esc(item)}"
-            ${item === selected ? "selected" : ""}
-          >
-            ${esc(item)}
-          </option>
-        `)
-        .join("");
-    }
-
-
-    function stageOptions(selected=""){
-      return STAGES
-        .map(item => `
-          <option
-            value="${esc(item)}"
-            ${item === selected ? "selected" : ""}
-          >
-            ${esc(item)}
-          </option>
-        `)
-        .join("");
-    }
-
-
-    /* =========================================================
-       BRAND
-    ========================================================= */
-
-    function brandMark(){
-      return `
-        <div class="nav-brand-mark">
-          D
-        </div>
-      `;
-    }
-
-
-    /* =========================================================
-       AUTH
-       ONLY NAME + PASSWORD
-    ========================================================= */
-
-    function showAuth(){
-
-      $("app").innerHTML = `
-        <main class="screen">
-
-          <div class="auth-wrap">
-
-            <div class="brand-lockup">
-
-              <div class="brand-mark">
-                D
-              </div>
-
-              <div class="brand-name">
-                Delta
-              </div>
-
-              <div class="brand-subtitle">
-                A network built around founders.
-              </div>
-
-            </div>
-
-
-            <div class="auth-card">
-
-              <h1>
-                Create your founder account.
-              </h1>
-
-              <p class="intro">
-                Join Delta and build your founder identity,
-                discover other founders and start meaningful
-                conversations.
-              </p>
-
-
-              <form id="createAccountForm">
-
-                <div class="field">
-
-                  <label for="founderName">
-                    Your name
-                  </label>
-
-                  <input
-                    id="founderName"
-                    class="input"
-                    type="text"
-                    autocomplete="name"
-                    placeholder="e.g. Devang Prajapati"
-                    maxlength="80"
-                    required
-                  >
-
-                </div>
-
-
-                <div class="field">
-
-                  <label for="founderPassword">
-                    Password
-                  </label>
-
-                  <input
-                    id="founderPassword"
-                    class="input"
-                    type="password"
-                    autocomplete="new-password"
-                    placeholder="Create a password"
-                    minlength="6"
-                    required
-                  >
-
-                </div>
-
-
-                <button
-                  id="createAccountBtn"
-                  class="primary-btn"
-                  type="submit"
-                >
-                  Create my founder account
-                </button>
-
-              </form>
-
-
-              <div class="auth-note">
-                Your account is securely handled by Delta's
-                authentication system. You don't need to enter
-                an email address.
-              </div>
-
-            </div>
-
-          </div>
-
-        </main>
-      `;
-
-
-      $("createAccountForm")
-        .addEventListener(
-          "submit",
-          createAccount
-        );
-    }
-
-
-    /*
-      IMPORTANT:
-
-      Supabase's password authentication requires an email
-      or phone identity.
-
-      We therefore create a hidden internal email.
-      The user never sees or enters it.
-    */
-
-    async function createAccount(event){
-
-      event.preventDefault();
-
-      const name =
-        $("founderName")
-          .value
-          .trim();
-
-      const password =
-        $("founderPassword")
-          .value;
-
-      const button =
-        $("createAccountBtn");
-
-
-      if(!name){
-        toast("Please enter your name.");
-        return;
-      }
-
-
-      if(password.length < 6){
-        toast("Password must be at least 6 characters.");
-        return;
-      }
-
-
-      button.disabled = true;
-      button.textContent = "Creating your account…";
-
-
-      try{
-
-        /*
-          Generate an internal email address.
-
-          The user never sees this address.
-        */
-
-        const internalEmail =
-          `founder-${crypto.randomUUID()}@delta.internal`;
-
-
-        const {
-          data,
-          error
-        } =
-          await db.auth.signUp({
-            email:internalEmail,
-            password:password,
-
-            options:{
-              data:{
-                full_name:name,
-                founder_name:name
-              }
-            }
-          });
-
-
-        if(error){
-          throw error;
-        }
-
-
-        if(!data.user){
-          throw new Error(
-            "Account could not be created."
-          );
-        }
-
-
-        /*
-          If Supabase email confirmation is enabled,
-          there will be no active session.
-
-          For this name/password-only MVP,
-          email confirmation must be disabled.
-        */
-
-        if(!data.session){
-
-          throw new Error(
-            "Account created, but Supabase requires email confirmation. Turn OFF 'Confirm email' in Supabase Authentication settings."
-          );
-        }
-
-
-        me = data.user;
-
-
-        /*
-          Create the founder profile.
-        */
-
-        const {
-          data:existingProfile,
-          error:profileError
-        } =
-          await db
-            .from("profiles")
-            .select("*")
-            .eq("id",me.id)
-            .maybeSingle();
-
-
-        if(profileError){
-          console.warn(
-            "Profile lookup error:",
-            profileError
-          );
-        }
-
-
-        if(existingProfile){
-
-          profile = existingProfile;
-
-        }else{
-
-          const {
-            data:newProfile,
-            error:newProfileError
-          } =
-            await db
-              .from("profiles")
-              .insert({
-                id:me.id,
-                full_name:name
-              })
-              .select()
-              .single();
-
-
-          if(newProfileError){
-            console.warn(
-              "Profile creation error:",
-              newProfileError
-            );
-
-            profile = {
-              id:me.id,
-              full_name:name
-            };
-
-          }else{
-
-            profile = newProfile;
-
-          }
-
-        }
-
-
-        toast(
-          `Welcome to Delta, ${name.split(" ")[0]}.`
-        );
-
-
-        /*
-          Open profile setup after account creation.
-        */
-
-        showProfileSetup();
-
-
-      }catch(error){
-
-        console.error(error);
-
-        toast(
-          error?.message ||
-          "Unable to create your account."
-        );
-
-      }finally{
-
-        button.disabled = false;
-        button.textContent =
-          "Create my founder account";
-
-      }
-    }
-
-
-    /* =========================================================
-       PROFILE SETUP
-    ========================================================= */
-
-    function showProfileSetup(){
-
-      const existing =
-        profile || {};
-
-      $("app").innerHTML = `
-
-        <main class="screen">
-
-          <div class="auth-wrap">
-
-            <div class="brand-lockup">
-
-              <div class="brand-mark">
-                D
-              </div>
-
-              <div class="brand-name">
-                Delta
-              </div>
-
-              <div class="brand-subtitle">
-                Complete your founder identity.
-              </div>
-
-            </div>
-
-
-            <div class="auth-card">
-
-              <h1>
-                Tell founders who you are.
-              </h1>
-
-              <p class="intro">
-                You can update these details later.
-              </p>
-
-
-              <form id="profileSetupForm">
-
-                <div class="field">
-
-                  <label>
-                    Founder name
-                  </label>
-
-                  <input
-                    id="setupName"
-                    class="input"
-                    value="${esc(
-                      existing.full_name ||
-                      me?.user_metadata?.full_name ||
-                      ""
-                    )}"
-                    required
-                  >
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    About you
-                  </label>
-
-                  <textarea
-                    id="setupBio"
-                    class="input"
-                    placeholder="What are you building? What are you interested in?"
-                  >${esc(existing.bio || "")}</textarea>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Industry
-                  </label>
-
-                  <select
-                    id="setupIndustry"
-                    class="input"
-                  >
-                    <option value="">
-                      Select industry
-                    </option>
-
-                    ${industryOptions(
-                      existing.industry || ""
-                    )}
-
-                  </select>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Stage
-                  </label>
-
-                  <select
-                    id="setupStage"
-                    class="input"
-                  >
-                    <option value="">
-                      Select stage
-                    </option>
-
-                    ${stageOptions(
-                      existing.stage || ""
-                    )}
-
-                  </select>
-
-                </div>
-
-
-                <button
-                  class="primary-btn"
-                  type="submit"
-                  id="saveProfileBtn"
-                >
-                  Enter Delta
-                </button>
-
-              </form>
-
-            </div>
-
-          </div>
-
-        </main>
-      `;
-
-
-      $("profileSetupForm")
-        .addEventListener(
-          "submit",
-          saveProfile
-        );
-    }
-
-
-    async function saveProfile(event){
-
-      event.preventDefault();
-
-      const button =
-        $("saveProfileBtn");
-
-      button.disabled = true;
-      button.textContent = "Saving…";
-
-
-      try{
-
-        const updates = {
-
-          id:me.id,
-
-          full_name:
-            $("setupName")
-              .value
-              .trim(),
-
-          bio:
-            $("setupBio")
-              .value
-              .trim(),
-
-          industry:
-            $("setupIndustry")
-              .value,
-
-          stage:
-            $("setupStage")
-              .value,
-
-          updated_at:
-            new Date().toISOString()
-        };
-
-
-        const {
-          data,
-          error
-        } =
-          await db
-            .from("profiles")
-            .upsert(
-              updates,
-              {
-                onConflict:"id"
-              }
-            )
-            .select()
-            .single();
-
-
-        if(error){
-          throw error;
-        }
-
-
-        profile = data;
-
-
-        toast("Your founder profile is ready.");
-
-        showShell();
-
-
-      }catch(error){
-
-        console.error(error);
-
-        toast(
-          error?.message ||
-          "Could not save your profile."
-        );
-
-      }finally{
-
-        button.disabled = false;
-        button.textContent = "Enter Delta";
-
-      }
-    }
-
-
-    /* =========================================================
-       LOGIN REQUIREMENT
-    ========================================================= */
-
-    function requireLogin(){
-
-      if(!me){
-
-        showAuth();
-
-        return false;
-      }
-
-      return true;
-    }
-
-
-    /* =========================================================
-       LOAD CURRENT PROFILE
-    ========================================================= */
-
-    async function loadCurrentProfile(){
-
-      if(!me){
-        return;
-      }
-
-
-      try{
-
-        const {
-          data,
-          error
-        } =
-          await db
-            .from("profiles")
-            .select("*")
-            .eq("id",me.id)
-            .maybeSingle();
-
-
-        if(error){
-          console.warn(error);
-          return;
-        }
-
-
-        profile = data;
-
-
-      }catch(error){
-
-        console.warn(
-          "Profile load error:",
-          error
-        );
-
-      }
-    }
-
-
-    /* =========================================================
-       MAIN SHELL
-    ========================================================= */
-
-    function showShell(){
-
-      if(!me){
-        showAuth();
-        return;
-      }
-
-
-      $("app").innerHTML = `
-
-        <header class="navbar">
-
-          <div class="nav-brand">
-
-            ${brandMark()}
-
-            <div class="nav-brand-text">
-              Delta
-            </div>
-
-          </div>
-
-
-          <div class="nav-actions">
-
-            <button
-              id="themeBtn"
-              class="icon-btn"
-              title="Toggle theme"
-              onclick="toggleTheme()"
-            >
-              ${getTheme() === "dark" ? "☀" : "☾"}
-            </button>
-
-          </div>
-
-        </header>
-
-
-        <main class="main">
-
-          <div id="content"></div>
-
-        </main>
-
-
-        <nav class="tabs">
-
-          <button
-            class="tab ${tab === "feed" ? "active" : ""}"
-            onclick="changeTab('feed')"
-          >
-            Feed
-          </button>
-
-          <button
-            class="tab ${tab === "discover" ? "active" : ""}"
-            onclick="changeTab('discover')"
-          >
-            Discover
-          </button>
-
-          <button
-            class="tab ${tab === "messages" ? "active" : ""}"
-            onclick="changeTab('messages')"
-          >
-            Messages
-          </button>
-
-          <button
-            class="tab ${tab === "groups" ? "active" : ""}"
-            onclick="changeTab('groups')"
-          >
-            Groups
-          </button>
-
-          <button
-            class="tab ${tab === "profile" ? "active" : ""}"
-            onclick="changeTab('profile')"
-          >
-            Profile
-          </button>
-
-        </nav>
-      `;
-
-
-      renderCurrentTab();
-    }
-
-
-    function changeTab(nextTab){
-
-      tab = nextTab;
-
-      showShell();
-    }
-
-
-    async function renderCurrentTab(){
-
-      if(!requireLogin()){
-        return;
-      }
-
-
-      if(tab === "feed"){
-        await renderFeed();
-        return;
-      }
-
-
-      if(tab === "discover"){
-        await renderDiscover();
-        return;
-      }
-
-
-      if(tab === "messages"){
-        await renderMessages();
-        return;
-      }
-
-
-      if(tab === "groups"){
-        await renderGroups();
-        return;
-      }
-
-
-      if(tab === "profile"){
-        await renderMyProfile();
-        return;
-      }
-    }
-
-
-    /* =========================================================
-       FEED
-    ========================================================= */
-
-    async function renderFeed(){
-
-      const content = $("content");
-
-      content.innerHTML = `
-
-        <section class="hero">
-
-          <div class="hero-card">
-
-            <div class="eyebrow">
-              Delta Founder Network
-            </div>
-
-            <h1>
-              Build with people who are building too.
-            </h1>
-
-            <p>
-              Share what you're working on, discover founders,
-              exchange ideas and create meaningful connections.
-            </p>
-
-          </div>
-
-
-          <div class="card stat-card">
-
-            <div class="stat-label">
-              Your founder identity
-            </div>
-
-            <div class="stat-value">
-              ${esc(
-                profile?.full_name
-                  ?.split(" ")[0] ||
-                "Founder"
-              )}
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <section>
-
-          <div class="section-head">
-
-            <div>
-              <h2>
-                Founder Feed
-              </h2>
-
-              <p>
-                What's happening across the network.
-              </p>
-            </div>
-
-          </div>
-
-
-          <div
-            class="feed"
-            id="feedList"
-          >
-
-            <div class="empty">
-              <strong>
-                Loading the founder network…
-              </strong>
-              Please wait.
-            </div>
-
-          </div>
-
-        </section>
-      `;
-
-
-      await loadPosts();
-    }
-
-
-    async function loadPosts(){
-
-      const list = $("feedList");
-
-      if(!list) return;
-
-
-      try{
-
-        const {
-          data,
-          error
-        } =
-          await db
-            .from("posts")
-            .select("*")
-            .order(
-              "created_at",
-              {
-                ascending:false
-              }
-            )
-            .limit(50);
-
-
-        if(error){
-          throw error;
-        }
-
-
-        if(!data?.length){
-
-          list.innerHTML = `
-            <div class="empty">
-              <strong>
-                The founder feed is quiet.
-              </strong>
-              Be one of the first founders to post.
-            </div>
-          `;
-
-          return;
-        }
-
-
-        list.innerHTML =
-          data.map(post => {
-
-            const name =
-              post.full_name ||
-              post.author_name ||
-              "Founder";
-
-
-            return `
-
-              <article class="card post">
-
-                <div class="post-head">
-
-                  <div class="user-mini">
-
-                    ${avatar({
-                      full_name:name,
-                      avatar_url:
-                        post.avatar_url
-                    })}
-
-                    <div>
-
-                      <div class="user-name">
-                        ${esc(name)}
-                      </div>
-
-                      <div class="post-time">
-                        ${ago(post.created_at)}
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  ${
-                    post.user_id === me.id
-                      ? `
-                        <button
-                          class="small-btn danger"
-                          onclick="deletePost('${post.id}')"
-                        >
-                          Delete
-                        </button>
-                      `
-                      : ""
-                  }
-
-                </div>
-
-
-                <div class="post-text">
-                  ${esc(post.content || "")}
-                </div>
-
-
-                ${
-                  post.image_url
-                    ? `
-                      <div class="post-image">
-                        <img
-                          src="${esc(post.image_url)}"
-                          alt=""
-                        >
-                      </div>
-                    `
-                    : ""
-                }
-
-
-                <div class="post-actions">
-
-                  <button
-                    class="small-btn"
-                    onclick="likePost('${post.id}')"
-                  >
-                    ♡ Like
-                  </button>
-
-                  <button
-                    class="small-btn"
-                    onclick="toast('Comments are coming next.')"
-                  >
-                    Comment
-                  </button>
-
-                </div>
-
-              </article>
-            `;
-
-          }).join("");
-
-
-      }catch(error){
-
-        console.error(error);
-
-        list.innerHTML = `
-          <div class="empty">
-
-            <strong>
-              Feed unavailable
-            </strong>
-
-            ${
-              esc(
-                error?.message ||
-                "Something went wrong."
-              )
-            }
-
-          </div>
-        `;
-      }
-    }
-
-
-    async function deletePost(id){
-
-      if(!confirm("Delete this post?")){
-        return;
-      }
-
-
-      try{
-
-        const {
-          error
-        } =
-          await db
-            .from("posts")
-            .delete()
-            .eq("id",id)
-            .eq("user_id",me.id);
-
-
-        if(error){
-          throw error;
-        }
-
-
-        toast("Post deleted.");
-
-        await loadPosts();
-
-
-      }catch(error){
-
-        console.error(error);
-
-        toast(
-          error?.message ||
-          "Could not delete post."
-        );
-      }
-    }
-
-
-    async function likePost(id){
-
-      toast("Like recorded.");
-    }
-
-
-    /* =========================================================
-       DISCOVER
-    ========================================================= */
-
-    async function renderDiscover(){
-
-      const content = $("content");
-
-      content.innerHTML = `
-
-        <section>
-
-          <div class="section-head">
-
-            <div>
-
-              <h2>
-                Discover founders
-              </h2>
-
-              <p>
-                Find people building interesting things.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="search-box">
-
-            <input
-              id="founderSearch"
-              class="input"
-              placeholder="Search founders, industries or ideas…"
-            >
-
-          </div>
-
-
-          <div
-            id="founderGrid"
-            class="founder-grid"
-          >
-
-            <div class="empty">
-              Loading founders…
-            </div>
-
-          </div>
-
-        </section>
-      `;
-
-
-      $("founderSearch")
-        .addEventListener(
-          "input",
-          filterFounders
-        );
-
-
-      await loadFounders();
-    }
-
-
-    let allFounders = [];
-
-
-    async function loadFounders(){
-
-      const grid = $("founderGrid");
-
-      if(!grid) return;
-
-
-      try{
-
-        const {
-          data,
-          error
-        } =
-          await db
-            .from("profiles")
-            .select("*")
-            .neq("id",me.id)
-            .order(
-              "created_at",
-              {
-                ascending:false
-              }
-            )
-            .limit(100);
-
-
-        if(error){
-          throw error;
-        }
-
-
-        allFounders = data || [];
-
-        drawFounders(allFounders);
-
-
-      }catch(error){
-
-        console.error(error);
-
-        grid.innerHTML = `
-          <div class="empty">
-
-            <strong>
-              Could not load founders.
-            </strong>
-
-            ${esc(error?.message || "")}
-
-          </div>
-        `;
-      }
-    }
-
-
-    function filterFounders(){
-
-      const query =
-        $("founderSearch")
-          .value
-          .trim()
-          .toLowerCase();
-
-
-      const filtered =
-        allFounders.filter(founder => {
-
-          const text = [
-
-            founder.full_name,
-            founder.bio,
-            founder.industry,
-            founder.stage
-
-          ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
-
-
-          return text.includes(query);
-        });
-
-
-      drawFounders(filtered);
-    }
-
-
-    function drawFounders(founders){
-
-      const grid = $("founderGrid");
-
-      if(!grid) return;
-
-
-      if(!founders.length){
-
-        grid.innerHTML = `
-          <div class="empty">
-
-            <strong>
-              No founders found.
-            </strong>
-
-            Try another search.
-
-          </div>
-        `;
-
-        return;
-      }
-
-
-      grid.innerHTML =
-        founders.map(founder => `
-
-          <article
-            class="card founder-card"
-          >
-
-            <div class="founder-top">
-
-              ${avatar(founder)}
-
-              <div>
-
-                <h3>
-                  ${esc(
-                    founder.full_name ||
-                    "Founder"
-                  )}
-                </h3>
-
-              </div>
-
-            </div>
-
-
-            <p>
-              ${esc(
-                founder.bio ||
-                "Building something new."
-              )}
-            </p>
-
-
-            <div class="tag-row">
-
-              ${
-                founder.industry
-                  ? `
-                    <span class="tag">
-                      ${esc(founder.industry)}
-                    </span>
-                  `
-                  : ""
-              }
-
-              ${
-                founder.stage
-                  ? `
-                    <span class="tag">
-                      ${esc(founder.stage)}
-                    </span>
-                  `
-                  : ""
-              }
-
-            </div>
-
-
-            <div style="margin-top:17px">
-
-              <button
-                class="small-btn"
-                onclick="openFounder('${founder.id}')"
-              >
-                View founder
-              </button>
-
-            </div>
-
-          </article>
-
-        `).join("");
-    }
-
-
-    async function openFounder(id){
-
-      const founder =
-        allFounders.find(
-          x => x.id === id
-        );
-
-
-      if(!founder){
-        return;
-      }
-
-
-      activeFounder = founder;
-
-
-      const modal =
-        document.createElement("div");
-
-      modal.className = "modal";
-
-      modal.innerHTML = `
-
-        <div class="modal-card">
-
-          <div class="modal-head">
-
-            <h2>
-              Founder
-            </h2>
-
-            <button
-              class="icon-btn"
-              onclick="this.closest('.modal').remove()"
-            >
-              ×
-            </button>
-
-          </div>
-
-
-          <div class="profile-hero">
-
-            ${avatar(
-              founder,
-              "profile-avatar"
-            )}
-
-            <div>
-
-              <h1>
-                ${esc(
-                  founder.full_name ||
-                  "Founder"
-                )}
-              </h1>
-
-              <p>
-                ${esc(
-                  founder.industry ||
-                  "Independent founder"
-                )}
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="profile-bio">
-
-            ${esc(
-              founder.bio ||
-              "This founder hasn't added a bio yet."
-            )}
-
-          </div>
-
-
-          <div class="tag-row">
-
-            ${
-              founder.industry
-                ? `
-                  <span class="tag">
-                    ${esc(founder.industry)}
-                  </span>
-                `
-                : ""
-            }
-
-            ${
-              founder.stage
-                ? `
-                  <span class="tag">
-                    ${esc(founder.stage)}
-                  </span>
-                `
-                : ""
-            }
-
-          </div>
-
-
-          <div style="margin-top:22px">
-
-            <button
-              class="primary-btn"
-              onclick="
-                this.closest('.modal').remove();
-                toast('Connection request feature ready for wiring.');
-              "
-            >
-              Connect
-            </button>
-
-          </div>
-
-        </div>
-      `;
-
-
-      document.body.appendChild(modal);
-    }
-
-
-    /* =========================================================
-       MESSAGES
-    ========================================================= */
-
-    async function renderMessages(){
-
-      const content = $("content");
-
-      content.innerHTML = `
-
-        <section>
-
-          <div class="section-head">
-
-            <div>
-
-              <h2>
-                Messages
-              </h2>
-
-              <p>
-                Conversations with founders.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="card" style="padding:30px">
-
-            <div class="empty">
-
-              <strong>
-                Your conversations will appear here.
-              </strong>
-
-              Start connecting with founders from Discover.
-
-            </div>
-
-          </div>
-
-        </section>
-      `;
-    }
-
-
-    /* =========================================================
-       GROUPS
-    ========================================================= */
-
-    async function renderGroups(){
-
-      const content = $("content");
-
-      content.innerHTML = `
-
-        <section>
-
-          <div class="section-head">
-
-            <div>
-
-              <h2>
-                Founder Groups
-              </h2>
-
-              <p>
-                Communities around ideas, industries and
-                ambitions.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="card" style="padding:30px">
-
-            <div class="empty">
-
-              <strong>
-                Groups are being built.
-              </strong>
-
-              The founder network will soon have dedicated
-              communities.
-
-            </div>
-
-          </div>
-
-        </section>
-      `;
-    }
-
-
-    /* =========================================================
-       MY PROFILE
-    ========================================================= */
-
-    async function renderMyProfile(){
-
-      const content = $("content");
-
-      const postsCount = 0;
-      const connections = 0;
-      const groups = 0;
-
-
-      content.innerHTML = `
-
-        <section>
-
-          <div class="section-head">
-
-            <div>
-
-              <h2>
-                My Profile
-              </h2>
-
-              <p>
-                Your identity inside Delta.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="card profile-card">
-
-            <div class="profile-hero">
-
-              ${avatar(
-                profile,
-                "profile-avatar"
-              )}
-
-              <div>
-
-                <h1>
-                  ${esc(
-                    profile?.full_name ||
-                    me?.user_metadata?.full_name ||
-                    "Founder"
-                  )}
-                </h1>
-
-                <p>
-                  ${
-                    esc(
-                      profile?.industry ||
-                      "Founder"
-                    )
-                  }
-
-                  ${
-                    profile?.stage
-                      ? " · " +
-                        esc(profile.stage)
-                      : ""
-                  }
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div class="profile-stats">
-
-              <div class="profile-stat">
-
-                <strong>
-                  ${postsCount}
-                </strong>
-
-                <span>
-                  Posts
-                </span>
-
-              </div>
-
-
-              <div class="profile-stat">
-
-                <strong>
-                  ${connections}
-                </strong>
-
-                <span>
-                  Connections
-                </span>
-
-              </div>
-
-
-              <div class="profile-stat">
-
-                <strong>
-                  ${groups}
-                </strong>
-
-                <span>
-                  Groups
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <div class="profile-bio">
-
-              ${esc(
-                profile?.bio ||
-                "Tell the Delta network what you're building."
-              )}
-
-            </div>
-
-
-            <div
-              style="
-                display:flex;
-                flex-wrap:wrap;
-                gap:9px;
-              "
-            >
-
-              ${
-                profile?.industry
-                  ? `
-                    <span class="tag">
-                      ${esc(profile.industry)}
-                    </span>
-                  `
-                  : ""
-              }
-
-              ${
-                profile?.stage
-                  ? `
-                    <span class="tag">
-                      ${esc(profile.stage)}
-                    </span>
-                  `
-                  : ""
-              }
-
-            </div>
-
-
-            <div
-              style="
-                display:flex;
-                gap:9px;
-                margin-top:25px;
-                flex-wrap:wrap;
-              "
-            >
-
-              <button
-                class="small-btn"
-                onclick="showProfileSetup()"
-              >
-                Edit profile
-              </button>
-
-
-              <button
-                class="small-btn danger"
-                onclick="signOut()"
-              >
-                Sign out
-              </button>
-
-            </div>
-
-          </div>
-
-        </section>
-      `;
-    }
-
-
-    /* =========================================================
-       SIGN OUT
-    ========================================================= */
-
-    async function signOut(){
-
-      try{
-
-        await db.auth.signOut();
-
-      }catch(error){
-
-        console.error(error);
-
-      }finally{
-
-        me = null;
-        profile = null;
-
-        tab = "feed";
-
-        showAuth();
-      }
-    }
-
-
-    /* =========================================================
-       AUTH STATE
-    ========================================================= */
-
-    db.auth.onAuthStateChange(
-      async (event,session) => {
-
-        /*
-          No password-reset UI anymore.
-          We only care about the active session.
-        */
-
-        if(session?.user){
-
-          me = session.user;
-
-        }else{
-
-          me = null;
-          profile = null;
-
-        }
-      }
+  background:
+    linear-gradient(
+      120deg,
+      rgba(168,85,247,.28),
+      transparent 35%,
+      rgba(255,49,88,.2)
     );
 
+  pointer-events:none;
 
-    /* =========================================================
-       BOOT
-    ========================================================= */
+  z-index:-1;
 
-    async function boot(){
-
-      try{
-
-        const {
-          data,
-          error
-        } =
-          await db.auth.getSession();
+}
 
 
-        if(error){
-          throw error;
-        }
+.brand-lockup{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:13px;
+
+  margin-bottom:45px;
+
+}
 
 
-        const session =
-          data?.session;
+.delta-mark{
 
+  width:46px;
 
-        if(!session){
+  height:46px;
 
-          me = null;
-          profile = null;
+  display:grid;
 
-          showAuth();
+  place-items:center;
 
-          return;
-        }
+  border-radius:15px;
 
+  font-family:var(--font-display);
 
-        me = session.user;
+  font-size:25px;
 
+  font-weight:700;
 
-        await loadCurrentProfile();
-
-
-        /*
-          If the user has an account but no profile,
-          send them through setup.
-        */
-
-        if(!profile){
-
-          showProfileSetup();
-
-          return;
-        }
-
-
-        showShell();
-
-
-      }catch(error){
-
-        console.error(
-          "Boot error:",
-          error
-        );
-
-        me = null;
-        profile = null;
-
-        showAuth();
-      }
-    }
-
-
-    /* =========================================================
-       GLOBAL ERROR PROTECTION
-    ========================================================= */
-
-    window.addEventListener(
-      "unhandledrejection",
-      event => {
-
-        console.error(
-          "Unhandled promise rejection:",
-          event.reason
-        );
-
-      }
+  background:
+    linear-gradient(
+      135deg,
+      var(--purple),
+      var(--red)
     );
 
+  box-shadow:
+    0 12px 35px
+    rgba(139,92,246,.28);
 
-    window.addEventListener(
-      "error",
-      event => {
+}
 
-        console.error(
-          "Global error:",
-          event.error
-        );
 
-      }
+.brand-name{
+
+  font-family:var(--font-display);
+
+  font-weight:700;
+
+  letter-spacing:.22em;
+
+}
+
+
+.brand-sub{
+
+  color:var(--muted);
+
+  font-size:9px;
+
+  letter-spacing:.18em;
+
+  margin-top:2px;
+
+}
+
+
+.auth-heading .eyebrow{
+
+  display:inline-block;
+
+  color:#b99aff;
+
+  font-size:10px;
+
+  letter-spacing:.2em;
+
+  font-weight:700;
+
+}
+
+
+.auth-heading h1{
+
+  margin:13px 0 13px;
+
+  font-family:var(--font-display);
+
+  font-size:43px;
+
+  line-height:1.02;
+
+  letter-spacing:-.045em;
+
+}
+
+
+.auth-heading h1 span{
+
+  background:
+    linear-gradient(
+      90deg,
+      #b993ff,
+      #ff4d6d
     );
 
+  -webkit-background-clip:text;
 
-    /* =========================================================
-       START
-    ========================================================= */
+  background-clip:text;
 
-    boot();
+  color:transparent;
 
-  </script>
+}
 
-</body>
-</html>
+
+.auth-heading p{
+
+  color:var(--muted);
+
+  line-height:1.65;
+
+  margin-bottom:30px;
+
+}
+
+
+.auth-form{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:10px;
+
+}
+
+
+.auth-form label{
+
+  color:#c8c1cf;
+
+  font-size:12px;
+
+  font-weight:600;
+
+  margin-top:7px;
+
+}
+
+
+.primary-btn{
+
+  margin-top:13px;
+
+  width:100%;
+
+  min-height:53px;
+
+  border:0;
+
+  border-radius:16px;
+
+  color:white;
+
+  font-weight:700;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:10px;
+
+  background:
+    linear-gradient(
+      100deg,
+      #7c3aed,
+      #a855f7 45%,
+      #ef3154
+    );
+
+  box-shadow:
+    0 18px 45px
+    rgba(124,58,237,.22);
+
+  transition:
+    transform .2s,
+    box-shadow .2s;
+
+}
+
+
+.primary-btn:hover{
+
+  transform:translateY(-2px);
+
+  box-shadow:
+    0 22px 55px
+    rgba(168,85,247,.3);
+
+}
+
+
+.text-btn,
+.forgot-btn{
+
+  border:0;
+
+  background:none;
+
+  color:#bba6dd;
+
+  padding:8px;
+
+}
+
+
+.forgot-btn{
+
+  color:#807885;
+
+  font-size:12px;
+
+}
+
+
+.form-back{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:7px;
+
+  color:#a998b4;
+
+  font-size:13px;
+
+  cursor:pointer;
+
+  margin-bottom:10px;
+
+}
+
+
+.auth-message{
+
+  min-height:22px;
+
+  margin-top:15px;
+
+  text-align:center;
+
+  color:#ff7189;
+
+  font-size:13px;
+
+}
+
+
+.auth-message.success{
+
+  color:var(--green);
+
+}
+
+
+.auth-message.loading{
+
+  color:#bda7ff;
+
+}
+
+
+.small-muted,
+.modal-muted{
+
+  color:var(--muted);
+
+  line-height:1.6;
+
+  font-size:13px;
+
+}
+
+
+.recovery-icon{
+
+  width:50px;
+
+  height:50px;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:16px;
+
+  color:#bd9bff;
+
+  background:
+    rgba(139,92,246,.13);
+
+  margin:15px 0;
+
+}
+
+
+/* =====================================================
+   APP
+===================================================== */
+
+.app{
+
+  min-height:100vh;
+
+}
+
+
+.topbar{
+
+  height:74px;
+
+  position:fixed;
+
+  left:0;
+
+  right:0;
+
+  top:0;
+
+  z-index:50;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:30px;
+
+  padding:0 30px;
+
+  background:
+    rgba(5,3,8,.72);
+
+  border-bottom:
+    1px solid rgba(255,255,255,.07);
+
+  backdrop-filter:blur(25px);
+
+}
+
+
+.top-brand{
+
+  width:220px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:11px;
+
+  font-family:var(--font-display);
+
+  font-weight:700;
+
+  letter-spacing:.18em;
+
+}
+
+
+.mini-mark{
+
+  width:34px;
+
+  height:34px;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--purple),
+      var(--red)
+    );
+
+}
+
+
+.top-search{
+
+  max-width:530px;
+
+  flex:1;
+
+  height:42px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:0 14px;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  border-radius:13px;
+
+  background:
+    rgba(255,255,255,.04);
+
+}
+
+
+.top-search svg{
+
+  color:#77707e;
+
+}
+
+
+.top-search input{
+
+  padding:0;
+
+  border:0;
+
+  background:none;
+
+  box-shadow:none;
+
+}
+
+
+.top-actions{
+
+  margin-left:auto;
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+
+.icon-btn,
+.avatar-btn{
+
+  width:42px;
+
+  height:42px;
+
+  border-radius:13px;
+
+  border:
+    1px solid var(--border);
+
+  background:
+    rgba(255,255,255,.045);
+
+  color:white;
+
+}
+
+
+.avatar-btn{
+
+  border-color:
+    rgba(168,85,247,.35);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(139,92,246,.25),
+      rgba(255,49,88,.18)
+    );
+
+}
+
+
+.main-shell{
+
+  display:grid;
+
+  grid-template-columns:240px minmax(0,1fr);
+
+  padding-top:74px;
+
+  min-height:100vh;
+
+}
+
+
+.sidebar{
+
+  position:fixed;
+
+  top:74px;
+
+  bottom:0;
+
+  width:240px;
+
+  padding:25px 18px;
+
+  border-right:
+    1px solid rgba(255,255,255,.065);
+
+  background:
+    rgba(5,3,8,.32);
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+
+.sidebar-profile{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  padding:10px;
+
+  border-radius:17px;
+
+  background:
+    rgba(255,255,255,.035);
+
+  margin-bottom:25px;
+
+}
+
+
+.sidebar-profile strong{
+
+  display:block;
+
+  font-size:13px;
+
+}
+
+
+.sidebar-profile span{
+
+  color:#716b77;
+
+  font-size:11px;
+
+}
+
+
+.avatar{
+
+  width:40px;
+
+  height:40px;
+
+  flex:none;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:14px;
+
+  overflow:hidden;
+
+  color:white;
+
+  font-family:var(--font-display);
+
+  font-weight:700;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6d28d9,
+      #be123c
+    );
+
+}
+
+
+.avatar img{
+
+  width:100%;
+
+  height:100%;
+
+  object-fit:cover;
+
+}
+
+
+.avatar-large{
+
+  width:40px;
+
+  height:40px;
+
+}
+
+
+.main-nav{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:6px;
+
+}
+
+
+.nav-item{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:13px;
+
+  height:48px;
+
+  padding:0 14px;
+
+  color:#88818e;
+
+  background:none;
+
+  border:0;
+
+  border-radius:14px;
+
+  text-align:left;
+
+  transition:.2s;
+
+}
+
+
+.nav-item svg{
+
+  width:18px;
+
+}
+
+
+.nav-item:hover{
+
+  background:
+    rgba(255,255,255,.045);
+
+  color:white;
+
+}
+
+
+.nav-item.active{
+
+  color:white;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(139,92,246,.15),
+      rgba(255,49,88,.07)
+    );
+
+  border:
+    1px solid rgba(139,92,246,.12);
+
+}
+
+
+.sidebar-bottom{
+
+  margin-top:auto;
+
+}
+
+
+.network-status{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:13px;
+
+  margin-bottom:13px;
+
+  border-radius:16px;
+
+  background:
+    rgba(255,255,255,.025);
+
+}
+
+
+.status-dot{
+
+  width:8px;
+
+  height:8px;
+
+  border-radius:50%;
+
+  background:#43e7a4;
+
+  box-shadow:
+    0 0 14px #43e7a4;
+
+}
+
+
+.network-status strong{
+
+  display:block;
+
+  font-size:11px;
+
+}
+
+
+.network-status small{
+
+  display:block;
+
+  color:#6d6673;
+
+  font-size:9px;
+
+  margin-top:3px;
+
+}
+
+
+.logout-btn{
+
+  width:100%;
+
+  display:flex;
+
+  gap:10px;
+
+  align-items:center;
+
+  padding:12px;
+
+  border:0;
+
+  border-radius:13px;
+
+  background:none;
+
+  color:#817984;
+
+}
+
+
+.logout-btn:hover{
+
+  color:#ff6a80;
+
+  background:
+    rgba(255,49,88,.06);
+
+}
+
+
+/* =====================================================
+   CONTENT
+===================================================== */
+
+.content{
+
+  grid-column:2;
+
+  width:min(1100px,100%);
+
+  padding:45px 42px 100px;
+
+  margin:auto;
+
+}
+
+
+.page-heading{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:flex-end;
+
+  gap:25px;
+
+  margin-bottom:30px;
+
+}
+
+
+.eyebrow{
+
+  font-size:10px;
+
+  color:#a990d7;
+
+  letter-spacing:.19em;
+
+  font-weight:700;
+
+}
+
+
+.page-heading h2{
+
+  margin:8px 0 5px;
+
+  font-family:var(--font-display);
+
+  font-size:34px;
+
+  letter-spacing:-.035em;
+
+}
+
+
+.page-heading p{
+
+  color:var(--muted);
+
+  margin:0;
+
+}
+
+
+.create-btn{
+
+  height:45px;
+
+  padding:0 18px;
+
+  border:1px solid rgba(168,85,247,.25);
+
+  border-radius:13px;
+
+  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(139,92,246,.2),
+      rgba(255,49,88,.12)
+    );
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+}
+
+
+/* =====================================================
+   COMPOSER
+===================================================== */
+
+.composer{
+
+  margin-bottom:24px;
+
+  padding:20px;
+
+  border:
+    1px solid rgba(168,85,247,.18);
+
+  border-radius:22px;
+
+  background:
+    rgba(255,255,255,.045);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.22);
+
+}
+
+
+.composer-top{
+
+  display:flex;
+
+  gap:13px;
+
+}
+
+
+.composer textarea{
+
+  min-height:85px;
+
+  border:0;
+
+  background:transparent;
+
+  padding-top:7px;
+
+}
+
+
+.composer-bottom{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  padding-top:10px;
+
+  border-top:
+    1px solid rgba(255,255,255,.06);
+
+}
+
+
+.upload-btn{
+
+  color:#a998b1;
+
+  font-size:12px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:7px;
+
+  cursor:pointer;
+
+}
+
+
+.primary-small{
+
+  border:0;
+
+  border-radius:12px;
+
+  padding:10px 16px;
+
+  color:white;
+
+  font-size:12px;
+
+  font-weight:700;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--purple),
+      var(--red)
+    );
+
+}
+
+
+.secondary-btn{
+
+  border:
+    1px solid rgba(255,255,255,.12);
+
+  background:
+    rgba(255,255,255,.045);
+
+  color:#e7e3eb;
+
+  border-radius:12px;
+
+  padding:9px 14px;
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:7px;
+
+}
+
+
+.image-preview{
+
+  margin-top:12px;
+
+  max-height:320px;
+
+  overflow:hidden;
+
+  border-radius:16px;
+
+}
+
+
+.image-preview img{
+
+  width:100%;
+
+  height:100%;
+
+  max-height:320px;
+
+  object-fit:cover;
+
+}
+
+
+/* =====================================================
+   POSTS
+===================================================== */
+
+.feed-list{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:18px;
+
+}
+
+
+.post-card{
+
+  padding:22px;
+
+  border-radius:23px;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.055),
+      rgba(255,255,255,.022)
+    );
+
+  box-shadow:
+    0 18px 60px rgba(0,0,0,.2);
+
+}
+
+
+.post-header{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+}
+
+
+.post-author{
+
+  flex:1;
+
+}
+
+
+.post-author strong{
+
+  display:block;
+
+  font-size:13px;
+
+}
+
+
+.post-author span{
+
+  display:block;
+
+  color:#77707c;
+
+  font-size:11px;
+
+  margin-top:3px;
+
+}
+
+
+.more-btn{
+
+  border:0;
+
+  background:none;
+
+  color:#6f6874;
+
+}
+
+
+.post-content{
+
+  margin:
+    18px 0;
+
+  color:#e9e4ed;
+
+  line-height:1.65;
+
+  white-space:pre-wrap;
+
+}
+
+
+.post-image{
+
+  overflow:hidden;
+
+  border-radius:17px;
+
+  margin-top:15px;
+
+  border:
+    1px solid rgba(255,255,255,.07);
+
+}
+
+
+.post-image img{
+
+  width:100%;
+
+  max-height:550px;
+
+  display:block;
+
+  object-fit:cover;
+
+}
+
+
+.post-actions{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  padding-top:15px;
+
+  margin-top:15px;
+
+  border-top:
+    1px solid rgba(255,255,255,.06);
+
+}
+
+
+.post-action{
+
+  border:0;
+
+  background:none;
+
+  color:#817985;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:7px;
+
+  padding:7px 10px;
+
+  border-radius:10px;
+
+}
+
+
+.post-action:hover{
+
+  color:white;
+
+  background:
+    rgba(255,255,255,.04);
+
+}
+
+
+.post-action.liked{
+
+  color:#ff4665;
+
+}
+
+
+.post-action svg{
+
+  width:17px;
+
+}
+
+
+.comments-area{
+
+  padding-top:15px;
+
+}
+
+
+.comment{
+
+  display:flex;
+
+  gap:9px;
+
+  padding:10px 0;
+
+}
+
+
+.comment-avatar{
+
+  width:29px;
+
+  height:29px;
+
+  flex:none;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:9px;
+
+  font-size:9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #5b21b6,
+      #be123c
+    );
+
+}
+
+
+.comment strong{
+
+  font-size:11px;
+
+}
+
+
+.comment p{
+
+  margin:3px 0 0;
+
+  color:#aaa3ae;
+
+  font-size:12px;
+
+  line-height:1.5;
+
+}
+
+
+.comment-input{
+
+  display:flex;
+
+  gap:7px;
+
+  margin-top:8px;
+
+}
+
+
+.comment-input input{
+
+  padding:11px 13px;
+
+}
+
+
+.comment-input button{
+
+  width:42px;
+
+  border:0;
+
+  border-radius:12px;
+
+  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--purple),
+      var(--red)
+    );
+
+}
+
+
+/* =====================================================
+   DISCOVER
+===================================================== */
+
+.discover-search{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:0 14px;
+
+  height:48px;
+
+  margin-bottom:24px;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  background:
+    rgba(255,255,255,.035);
+
+  border-radius:15px;
+
+}
+
+
+.discover-search input{
+
+  border:0;
+
+  background:none;
+
+  padding:0;
+
+}
+
+
+.founders-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap:17px;
+
+}
+
+
+.founder-card{
+
+  padding:22px;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      150deg,
+      rgba(255,255,255,.06),
+      rgba(255,255,255,.022)
+    );
+
+  transition:
+    transform .2s,
+    border .2s;
+
+}
+
+
+.founder-card:hover{
+
+  transform:translateY(-3px);
+
+  border-color:
+    rgba(168,85,247,.3);
+
+}
+
+
+.founder-card-top{
+
+  position:relative;
+
+  margin-bottom:17px;
+
+}
+
+
+.avatar-xl{
+
+  width:58px;
+
+  height:58px;
+
+  border-radius:19px;
+
+  font-size:18px;
+
+}
+
+
+.online-ring{
+
+  position:absolute;
+
+  width:10px;
+
+  height:10px;
+
+  left:46px;
+
+  bottom:-1px;
+
+  border-radius:50%;
+
+  background:#43e7a4;
+
+  border:2px solid #0b080f;
+
+}
+
+
+.founder-card h3{
+
+  margin:0 0 4px;
+
+  font-family:var(--font-display);
+
+}
+
+
+.founder-card .username{
+
+  color:#967cb6;
+
+  font-size:11px;
+
+}
+
+
+.founder-card p{
+
+  min-height:43px;
+
+  color:#918a96;
+
+  font-size:12px;
+
+  line-height:1.6;
+
+}
+
+
+.founder-card-actions{
+
+  display:flex;
+
+  gap:7px;
+
+  margin-top:17px;
+
+}
+
+
+.founder-card-actions button{
+
+  flex:1;
+
+}
+
+
+/* =====================================================
+   GROUPS
+===================================================== */
+
+.groups-grid{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:13px;
+
+}
+
+
+.group-card{
+
+  display:grid;
+
+  grid-template-columns:auto 1fr auto;
+
+  gap:16px;
+
+  align-items:center;
+
+  padding:20px;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  border-radius:21px;
+
+  background:
+    rgba(255,255,255,.035);
+
+}
+
+
+.group-symbol{
+
+  width:48px;
+
+  height:48px;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:15px;
+
+  color:#bf9bff;
+
+  background:
+    rgba(139,92,246,.12);
+
+}
+
+
+.group-card h3{
+
+  margin:0 0 5px;
+
+  font-family:var(--font-display);
+
+}
+
+
+.group-card p{
+
+  margin:0 0 6px;
+
+  color:#918994;
+
+  font-size:12px;
+
+}
+
+
+.group-card span{
+
+  color:#655f6b;
+
+  font-size:10px;
+
+}
+
+
+/* =====================================================
+   MESSAGES
+===================================================== */
+
+.messages-layout{
+
+  height:650px;
+
+  display:grid;
+
+  grid-template-columns:300px 1fr;
+
+  overflow:hidden;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  border-radius:23px;
+
+  background:
+    rgba(255,255,255,.025);
+
+}
+
+
+.conversation-list{
+
+  border-right:
+    1px solid rgba(255,255,255,.07);
+
+  overflow:auto;
+
+}
+
+
+.chat-panel{
+
+  display:flex;
+
+  flex-direction:column;
+
+  overflow:hidden;
+
+}
+
+
+.empty-state{
+
+  min-height:300px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  align-items:center;
+
+  text-align:center;
+
+  padding:35px;
+
+  color:#817985;
+
+}
+
+
+.empty-state svg{
+
+  width:28px;
+
+  height:28px;
+
+  color:#9b7bd1;
+
+  margin-bottom:15px;
+
+}
+
+
+.empty-state h3{
+
+  margin:0 0 7px;
+
+  color:#e4dfe8;
+
+  font-family:var(--font-display);
+
+}
+
+
+.empty-state p{
+
+  max-width:370px;
+
+  margin:0;
+
+  line-height:1.6;
+
+  font-size:12px;
+
+}
+
+
+.empty-orb{
+
+  width:60px;
+
+  height:60px;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:20px;
+
+  margin-bottom:10px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(168,85,247,.24),
+      rgba(255,49,88,.06)
+    );
+
+  border:
+    1px solid rgba(168,85,247,.16);
+
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+.profile-hero{
+
+  position:relative;
+
+  display:flex;
+
+  gap:28px;
+
+  align-items:center;
+
+  padding:35px;
+
+  overflow:hidden;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  border-radius:27px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(139,92,246,.1),
+      rgba(255,49,88,.045)
+    );
+
+}
+
+
+.profile-glow{
+
+  position:absolute;
+
+  width:260px;
+
+  height:260px;
+
+  border-radius:50%;
+
+  background:#7c3aed;
+
+  opacity:.12;
+
+  filter:blur(80px);
+
+  right:-80px;
+
+  top:-100px;
+
+}
+
+
+.avatar-profile{
+
+  width:120px;
+
+  height:120px;
+
+  border-radius:35px;
+
+  font-size:32px;
+
+}
+
+
+.profile-information{
+
+  position:relative;
+
+}
+
+
+.profile-information h1{
+
+  margin:6px 0;
+
+  font-family:var(--font-display);
+
+  font-size:37px;
+
+  letter-spacing:-.04em;
+
+}
+
+
+.profile-information p{
+
+  max-width:580px;
+
+  color:#9b949f;
+
+  line-height:1.6;
+
+  font-size:13px;
+
+}
+
+
+.profile-handle{
+
+  color:#9c80ca;
+
+  font-size:12px;
+
+}
+
+
+.profile-stats{
+
+  display:flex;
+
+  gap:1px;
+
+  margin:17px 0;
+
+  border:
+    1px solid rgba(255,255,255,.07);
+
+  border-radius:19px;
+
+  overflow:hidden;
+
+}
+
+
+.profile-stats div{
+
+  flex:1;
+
+  padding:18px;
+
+  text-align:center;
+
+  background:
+    rgba(255,255,255,.03);
+
+}
+
+
+.profile-stats strong{
+
+  display:block;
+
+  font-family:var(--font-display);
+
+  font-size:21px;
+
+}
+
+
+.profile-stats span{
+
+  color:#79727e;
+
+  font-size:10px;
+
+}
+
+
+.profile-section{
+
+  margin-top:28px;
+
+}
+
+
+.section-title{
+
+  margin-bottom:14px;
+
+  font-family:var(--font-display);
+
+  font-weight:600;
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:100;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:20px;
+
+  background:
+    rgba(0,0,0,.65);
+
+  backdrop-filter:blur(12px);
+
+}
+
+
+.modal-card{
+
+  width:min(480px,100%);
+
+  position:relative;
+
+  padding:30px;
+
+  border:
+    1px solid rgba(255,255,255,.12);
+
+  border-radius:26px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #110d18,
+      #08060c
+    );
+
+  box-shadow:
+    0 40px 100px rgba(0,0,0,.65);
+
+}
+
+
+.modal-card h2{
+
+  font-family:var(--font-display);
+
+  margin:7px 0;
+
+}
+
+
+.modal-card form{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:8px;
+
+  margin-top:22px;
+
+}
+
+
+.modal-card label{
+
+  color:#b8afb9;
+
+  font-size:12px;
+
+  margin-top:5px;
+
+}
+
+
+.modal-close{
+
+  position:absolute;
+
+  right:18px;
+
+  top:18px;
+
+  width:36px;
+
+  height:36px;
+
+  border:0;
+
+  border-radius:11px;
+
+  background:
+    rgba(255,255,255,.06);
+
+  color:#aaa2ad;
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading-card{
+
+  padding:45px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  gap:12px;
+
+  color:#817985;
+
+  border:
+    1px solid rgba(255,255,255,.07);
+
+  border-radius:22px;
+
+  background:
+    rgba(255,255,255,.025);
+
+}
+
+
+.spinner{
+
+  width:18px;
+
+  height:18px;
+
+  border:
+    2px solid rgba(255,255,255,.1);
+
+  border-top-color:#a855f7;
+
+  border-radius:50%;
+
+  animation:
+    spin .8s linear infinite;
+
+}
+
+
+@keyframes spin{
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+.mobile-nav{
+
+  display:none;
+
+}
+
+
+@media(max-width:900px){
+
+  .top-brand{
+
+    width:auto;
+
+  }
+
+  .top-search{
+
+    max-width:none;
+
+  }
+
+  .sidebar{
+
+    width:210px;
+
+  }
+
+  .main-shell{
+
+    grid-template-columns:210px minmax(0,1fr);
+
+  }
+
+  .founders-grid{
+
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+
+  }
+
+}
+
+
+@media(max-width:720px){
+
+  .topbar{
+
+    height:65px;
+
+    padding:0 14px;
+
+    gap:10px;
+
+  }
+
+  .top-brand{
+
+    font-size:12px;
+
+  }
+
+  .top-search{
+
+    display:none;
+
+  }
+
+  .main-shell{
+
+    display:block;
+
+    padding-top:65px;
+
+    padding-bottom:74px;
+
+  }
+
+  .sidebar{
+
+    display:none;
+
+  }
+
+  .content{
+
+    width:100%;
+
+    padding:25px 15px 40px;
+
+  }
+
+  .page-heading{
+
+    align-items:flex-start;
+
+    flex-direction:column;
+
+    margin-bottom:22px;
+
+  }
+
+  .page-heading h2{
+
+    font-size:29px;
+
+  }
+
+  .create-btn{
+
+    width:100%;
+
+    justify-content:center;
+
+  }
+
+  .founders-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .messages-layout{
+
+    height:560px;
+
+    grid-template-columns:1fr;
+
+  }
+
+  .conversation-list{
+
+    display:none;
+
+  }
+
+  .profile-hero{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    padding:25px;
+
+  }
+
+  .avatar-profile{
+
+    width:85px;
+
+    height:85px;
+
+    font-size:25px;
+
+  }
+
+  .profile-information h1{
+
+    font-size:29px;
+
+  }
+
+  .profile-stats div{
+
+    padding:14px 7px;
+
+  }
+
+  .mobile-nav{
+
+    position:fixed;
+
+    display:flex;
+
+    left:10px;
+
+    right:10px;
+
+    bottom:10px;
+
+    z-index:80;
+
+    height:62px;
+
+    border:
+      1px solid rgba(255,255,255,.1);
+
+    border-radius:20px;
+
+    background:
+      rgba(12,8,16,.82);
+
+    backdrop-filter:blur(25px);
+
+    box-shadow:
+      0 20px 60px rgba(0,0,0,.55);
+
+  }
+
+  .mobile-nav-item{
+
+    flex:1;
+
+    border:0;
+
+    background:none;
+
+    color:#6e6875;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:4px;
+
+    font-size:8px;
+
+  }
+
+  .mobile-nav-item svg{
+
+    width:18px;
+
+  }
+
+  .mobile-nav-item.active{
+
+    color:#bd9aff;
+
+  }
+
+  .auth-card{
+
+    padding:27px 22px;
+
+  }
+
+  .auth-heading h1{
+
+    font-size:36px;
+
+  }
+
+  .group-card{
+
+    grid-template-columns:auto 1fr;
+
+  }
+
+  .group-card > button{
+
+    grid-column:2;
+
+    justify-self:start;
+
+  }
+
+}
+
+
+@media(max-width:400px){
+
+  .auth-heading h1{
+
+    font-size:32px;
+
+  }
+
+  .post-card{
+
+    padding:17px;
+
+  }
+
+}
