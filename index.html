@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
 
   <title>Delta — Founder Network</title>
 
@@ -14,13 +18,15 @@
 
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+    rel="stylesheet"
+  >
 
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="https://unpkg.com/lucide@latest"></script>
+
 </head>
 
 <body>
@@ -29,8 +35,9 @@
 <div class="aurora aurora-two"></div>
 <div class="noise"></div>
 
+
 <!-- =====================================================
-     AUTH SCREEN
+     AUTH
 ===================================================== -->
 
 <section id="authScreen" class="auth-screen">
@@ -41,6 +48,7 @@
   <div class="auth-card">
 
     <div class="brand-lockup">
+
       <div class="delta-mark">
         Δ
       </div>
@@ -49,22 +57,38 @@
         <div class="brand-name">DELTA</div>
         <div class="brand-sub">FOUNDER NETWORK</div>
       </div>
+
     </div>
 
+
     <div class="auth-heading">
-      <span class="eyebrow">BUILD TOGETHER</span>
-      <h1>Where founders<br><span>meet founders.</span></h1>
+
+      <span class="eyebrow">
+        BUILD TOGETHER
+      </span>
+
+      <h1>
+        Where founders<br>
+        <span>meet founders.</span>
+      </h1>
+
       <p>
         Share ideas, build relationships and find the people
         who understand the journey.
       </p>
+
     </div>
 
-    <!-- LOGIN -->
+
+    <!-- =================================================
+         LOGIN
+    ================================================= -->
 
     <form id="loginForm" class="auth-form">
 
-      <label>Founder name</label>
+      <label>
+        Founder name
+      </label>
 
       <input
         id="loginName"
@@ -74,7 +98,9 @@
         required
       >
 
-      <label>Password</label>
+      <label>
+        Password
+      </label>
 
       <input
         id="loginPassword"
@@ -84,37 +110,65 @@
         required
       >
 
-      <button class="primary-btn" type="submit">
-        <span>Enter Delta</span>
+      <button
+        class="primary-btn"
+        type="submit"
+      >
+
+        <span>
+          Enter Delta
+        </span>
+
         <i data-lucide="arrow-up-right"></i>
+
       </button>
+
 
       <button
         type="button"
         class="text-btn"
-        id="showSignup">
+        id="showSignup"
+      >
         Create founder profile
       </button>
+
 
       <button
         type="button"
         class="forgot-btn"
-        id="showForgot">
+        id="showForgot"
+      >
         Forgot password?
       </button>
 
     </form>
 
-    <!-- SIGNUP -->
 
-    <form id="signupForm" class="auth-form hidden">
+    <!-- =================================================
+         SIGNUP
+    ================================================= -->
 
-      <div class="form-back" id="backLogin">
+    <form
+      id="signupForm"
+      class="auth-form hidden"
+    >
+
+      <button
+        type="button"
+        class="form-back"
+        id="backLogin"
+      >
+
         <i data-lucide="arrow-left"></i>
-        Back to login
-      </div>
 
-      <label>Your name</label>
+        Back to login
+
+      </button>
+
+
+      <label>
+        Your name
+      </label>
 
       <input
         id="signupName"
@@ -123,7 +177,10 @@
         required
       >
 
-      <label>Password</label>
+
+      <label>
+        Password
+      </label>
 
       <input
         id="signupPassword"
@@ -133,7 +190,10 @@
         required
       >
 
-      <label>Security question</label>
+
+      <label>
+        Security question
+      </label>
 
       <input
         id="securityQuestion"
@@ -142,7 +202,10 @@
         required
       >
 
-      <label>Security answer</label>
+
+      <label>
+        Security answer
+      </label>
 
       <input
         id="securityAnswer"
@@ -151,33 +214,63 @@
         required
       >
 
-      <button class="primary-btn" type="submit">
-        <span>Create profile</span>
+
+      <button
+        class="primary-btn"
+        type="submit"
+      >
+
+        <span>
+          Create profile
+        </span>
+
         <i data-lucide="sparkles"></i>
+
       </button>
 
     </form>
 
-    <!-- FORGOT -->
 
-    <form id="forgotForm" class="auth-form hidden">
+    <!-- =================================================
+         FORGOT PASSWORD
+    ================================================= -->
 
-      <div class="form-back" id="backForgot">
+    <form
+      id="forgotForm"
+      class="auth-form hidden"
+    >
+
+      <button
+        type="button"
+        class="form-back"
+        id="backForgot"
+      >
+
         <i data-lucide="arrow-left"></i>
-        Back
-      </div>
+
+        Back to login
+
+      </button>
+
 
       <div class="recovery-icon">
         <i data-lucide="shield-check"></i>
       </div>
 
-      <h3>Account recovery</h3>
+
+      <h3>
+        Account recovery
+      </h3>
+
 
       <p class="small-muted">
         Enter your founder name to retrieve your security question.
       </p>
 
-      <label>Founder name</label>
+
+      <label>
+        Founder name
+      </label>
 
       <input
         id="forgotName"
@@ -186,32 +279,129 @@
         required
       >
 
-      <button class="primary-btn" type="submit">
+
+      <button
+        class="primary-btn"
+        type="submit"
+      >
         Continue
       </button>
 
     </form>
 
-    <div id="authMessage" class="auth-message"></div>
+
+    <!-- =================================================
+         SECURITY ANSWER / NEW PASSWORD
+    ================================================= -->
+
+    <form
+      id="resetForm"
+      class="auth-form hidden"
+    >
+
+      <button
+        type="button"
+        class="form-back"
+        id="backReset"
+      >
+
+        <i data-lucide="arrow-left"></i>
+
+        Back
+
+      </button>
+
+
+      <div class="recovery-icon">
+        <i data-lucide="key-round"></i>
+      </div>
+
+
+      <h3>
+        Reset password
+      </h3>
+
+
+      <p
+        id="resetQuestion"
+        class="small-muted"
+      >
+        Security question
+      </p>
+
+
+      <label>
+        Security answer
+      </label>
+
+      <input
+        id="resetAnswer"
+        type="text"
+        placeholder="Your answer"
+        required
+      >
+
+
+      <label>
+        New password
+      </label>
+
+      <input
+        id="newPassword"
+        type="password"
+        minlength="6"
+        placeholder="At least 6 characters"
+        required
+      >
+
+
+      <button
+        class="primary-btn"
+        type="submit"
+      >
+        Update password
+      </button>
+
+    </form>
+
+
+    <div
+      id="authMessage"
+      class="auth-message"
+    ></div>
 
   </div>
+
 </section>
 
 
+
 <!-- =====================================================
-     APP
+     APPLICATION
 ===================================================== -->
 
-<div id="app" class="app hidden">
+<div
+  id="app"
+  class="app hidden"
+>
 
-  <!-- TOP BAR -->
+
+  <!-- TOPBAR -->
 
   <header class="topbar">
 
     <div class="top-brand">
-      <div class="mini-mark">Δ</div>
-      <span>DELTA</span>
+
+      <div class="mini-mark">
+        Δ
+      </div>
+
+      <span>
+        DELTA
+      </span>
+
     </div>
+
 
     <div class="top-search">
 
@@ -225,14 +415,28 @@
 
     </div>
 
+
     <div class="top-actions">
 
-      <button id="newPostTop" class="icon-btn">
+      <button
+        id="newPostTop"
+        class="icon-btn"
+        type="button"
+      >
         <i data-lucide="plus"></i>
       </button>
 
-      <button id="profileTop" class="avatar-btn">
-        <span id="topInitial">D</span>
+
+      <button
+        id="profileTop"
+        class="avatar-btn"
+        type="button"
+      >
+
+        <span id="topInitial">
+          D
+        </span>
+
       </button>
 
     </div>
@@ -240,71 +444,154 @@
   </header>
 
 
+
   <!-- MAIN -->
 
   <main class="main-shell">
 
-    <!-- LEFT NAV -->
+
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
-      <div class="sidebar-profile" id="sidebarProfile">
+
+      <div
+        class="sidebar-profile"
+        id="sidebarProfile"
+      >
 
         <div class="avatar avatar-large">
-          <span id="sideInitial">D</span>
+
+          <span id="sideInitial">
+            D
+          </span>
+
         </div>
 
+
         <div>
-          <strong id="sideName">Founder</strong>
-          <span>Founder</span>
+
+          <strong id="sideName">
+            Founder
+          </strong>
+
+          <span>
+            Founder
+          </span>
+
         </div>
 
       </div>
 
 
+
       <nav class="main-nav">
 
-        <button class="nav-item active" data-view="feed">
+        <button
+          class="nav-item active"
+          data-view="feed"
+        >
+
           <i data-lucide="home"></i>
-          <span>Feed</span>
+
+          <span>
+            Feed
+          </span>
+
         </button>
 
-        <button class="nav-item" data-view="discover">
+
+        <button
+          class="nav-item"
+          data-view="discover"
+        >
+
           <i data-lucide="compass"></i>
-          <span>Discover</span>
+
+          <span>
+            Discover
+          </span>
+
         </button>
 
-        <button class="nav-item" data-view="messages">
+
+        <button
+          class="nav-item"
+          data-view="messages"
+        >
+
           <i data-lucide="message-circle"></i>
-          <span>Messages</span>
+
+          <span>
+            Messages
+          </span>
+
         </button>
 
-        <button class="nav-item" data-view="groups">
+
+        <button
+          class="nav-item"
+          data-view="groups"
+        >
+
           <i data-lucide="users"></i>
-          <span>Groups</span>
+
+          <span>
+            Groups
+          </span>
+
         </button>
 
-        <button class="nav-item" data-view="profile">
+
+        <button
+          class="nav-item"
+          data-view="profile"
+        >
+
           <i data-lucide="user-round"></i>
-          <span>My profile</span>
+
+          <span>
+            My profile
+          </span>
+
         </button>
 
       </nav>
 
 
+
       <div class="sidebar-bottom">
 
+
         <div class="network-status">
+
           <span class="status-dot"></span>
+
           <div>
-            <strong>Delta Network</strong>
-            <small>Founder community</small>
+
+            <strong>
+              Delta Network
+            </strong>
+
+            <small>
+              Founder community
+            </small>
+
           </div>
+
         </div>
 
-        <button id="logoutBtn" class="logout-btn">
+
+        <button
+          id="logoutBtn"
+          class="logout-btn"
+          type="button"
+        >
+
           <i data-lucide="log-out"></i>
+
           Sign out
+
         </button>
 
       </div>
@@ -312,39 +599,69 @@
     </aside>
 
 
+
     <!-- CONTENT -->
 
     <section class="content">
 
+
       <!-- FEED -->
 
-      <div id="feedView" class="view">
+      <div
+        id="feedView"
+        class="view"
+      >
 
         <div class="page-heading">
 
           <div>
-            <span class="eyebrow">FOUNDER FEED</span>
-            <h2>What's being built?</h2>
+
+            <span class="eyebrow">
+              FOUNDER FEED
+            </span>
+
+            <h2>
+              What's being built?
+            </h2>
+
             <p>
               Ideas, progress and conversations from founders.
             </p>
+
           </div>
 
-          <button class="create-btn" id="createPostBtn">
+
+          <button
+            class="create-btn"
+            id="createPostBtn"
+            type="button"
+          >
+
             <i data-lucide="plus"></i>
+
             Share idea
+
           </button>
 
         </div>
 
 
-        <div id="postComposer" class="composer hidden">
+
+        <div
+          id="postComposer"
+          class="composer hidden"
+        >
 
           <div class="composer-top">
 
             <div class="avatar">
-              <span id="composerInitial">D</span>
+
+              <span id="composerInitial">
+                D
+              </span>
+
             </div>
+
 
             <textarea
               id="postText"
@@ -353,24 +670,42 @@
 
           </div>
 
-          <div id="imagePreview" class="image-preview hidden">
+
+
+          <div
+            id="imagePreview"
+            class="image-preview hidden"
+          >
+
             <img id="previewImage">
+
           </div>
+
+
 
           <div class="composer-bottom">
 
             <label class="upload-btn">
+
               <i data-lucide="image"></i>
+
               Add image
+
               <input
                 id="postImage"
                 type="file"
                 accept="image/*"
                 hidden
               >
+
             </label>
 
-            <button id="publishPost" class="primary-small">
+
+            <button
+              id="publishPost"
+              class="primary-small"
+              type="button"
+            >
               Publish
             </button>
 
@@ -379,11 +714,18 @@
         </div>
 
 
-        <div id="feed" class="feed-list">
+
+        <div
+          id="feed"
+          class="feed-list"
+        >
 
           <div class="loading-card">
+
             <div class="spinner"></div>
+
             Loading founder feed...
+
           </div>
 
         </div>
@@ -391,19 +733,34 @@
       </div>
 
 
+
       <!-- DISCOVER -->
 
-      <div id="discoverView" class="view hidden">
+      <div
+        id="discoverView"
+        class="view hidden"
+      >
 
         <div class="page-heading">
 
           <div>
-            <span class="eyebrow">NETWORK</span>
-            <h2>Discover founders</h2>
-            <p>Find people building interesting things.</p>
+
+            <span class="eyebrow">
+              NETWORK
+            </span>
+
+            <h2>
+              Discover founders
+            </h2>
+
+            <p>
+              Find people building interesting things.
+            </p>
+
           </div>
 
         </div>
+
 
         <div class="discover-search">
 
@@ -416,43 +773,85 @@
 
         </div>
 
-        <div id="foundersGrid" class="founders-grid"></div>
+
+        <div
+          id="foundersGrid"
+          class="founders-grid"
+        ></div>
 
       </div>
+
 
 
       <!-- MESSAGES -->
 
-      <div id="messagesView" class="view hidden">
+      <div
+        id="messagesView"
+        class="view hidden"
+      >
 
         <div class="page-heading">
 
           <div>
-            <span class="eyebrow">PRIVATE NETWORK</span>
-            <h2>Messages</h2>
-            <p>Talk directly with founders.</p>
+
+            <span class="eyebrow">
+              PRIVATE NETWORK
+            </span>
+
+            <h2>
+              Messages
+            </h2>
+
+            <p>
+              Talk directly with founders.
+            </p>
+
           </div>
 
         </div>
 
+
         <div class="messages-layout">
 
-          <div class="conversation-list" id="conversationList">
+          <div
+            class="conversation-list"
+            id="conversationList"
+          >
 
             <div class="empty-state">
+
               <i data-lucide="message-circle"></i>
-              <h3>No conversations yet</h3>
-              <p>Open a founder profile and start a conversation.</p>
+
+              <h3>
+                No conversations yet
+              </h3>
+
+              <p>
+                Open a founder profile and start a conversation.
+              </p>
+
             </div>
 
           </div>
 
-          <div class="chat-panel" id="chatPanel">
+
+          <div
+            class="chat-panel"
+            id="chatPanel"
+          >
 
             <div class="empty-state">
+
               <i data-lucide="send"></i>
-              <h3>Select a conversation</h3>
-              <p>Your founder conversations will appear here.</p>
+
+              <h3>
+                Select a conversation
+              </h3>
+
+              <p>
+                Your founder conversations will appear here.
+              </p>
+
             </div>
 
           </div>
@@ -460,35 +859,65 @@
         </div>
 
       </div>
+
 
 
       <!-- GROUPS -->
 
-      <div id="groupsView" class="view hidden">
+      <div
+        id="groupsView"
+        class="view hidden"
+      >
 
         <div class="page-heading">
 
           <div>
-            <span class="eyebrow">FOUNDER ROOMS</span>
-            <h2>Groups</h2>
-            <p>Create focused communities around ideas and industries.</p>
+
+            <span class="eyebrow">
+              FOUNDER ROOMS
+            </span>
+
+            <h2>
+              Groups
+            </h2>
+
+            <p>
+              Create focused communities around ideas and industries.
+            </p>
+
           </div>
 
-          <button id="createGroupBtn" class="create-btn">
+
+          <button
+            id="createGroupBtn"
+            class="create-btn"
+            type="button"
+          >
+
             <i data-lucide="plus"></i>
+
             Create group
+
           </button>
 
         </div>
 
-        <div id="groupsGrid" class="groups-grid"></div>
+
+        <div
+          id="groupsGrid"
+          class="groups-grid"
+        ></div>
 
       </div>
 
 
+
       <!-- PROFILE -->
 
-      <div id="profileView" class="view hidden">
+      <div
+        id="profileView"
+        class="view hidden"
+      >
 
         <div id="profilePage"></div>
 
@@ -499,33 +928,78 @@
   </main>
 
 
+
   <!-- MOBILE NAV -->
 
   <nav class="mobile-nav">
 
-    <button class="mobile-nav-item active" data-view="feed">
+    <button
+      class="mobile-nav-item active"
+      data-view="feed"
+    >
+
       <i data-lucide="home"></i>
-      <span>Feed</span>
+
+      <span>
+        Feed
+      </span>
+
     </button>
 
-    <button class="mobile-nav-item" data-view="discover">
+
+    <button
+      class="mobile-nav-item"
+      data-view="discover"
+    >
+
       <i data-lucide="compass"></i>
-      <span>Discover</span>
+
+      <span>
+        Discover
+      </span>
+
     </button>
 
-    <button class="mobile-nav-item" data-view="messages">
+
+    <button
+      class="mobile-nav-item"
+      data-view="messages"
+    >
+
       <i data-lucide="message-circle"></i>
-      <span>Chat</span>
+
+      <span>
+        Chat
+      </span>
+
     </button>
 
-    <button class="mobile-nav-item" data-view="groups">
+
+    <button
+      class="mobile-nav-item"
+      data-view="groups"
+    >
+
       <i data-lucide="users"></i>
-      <span>Groups</span>
+
+      <span>
+        Groups
+      </span>
+
     </button>
 
-    <button class="mobile-nav-item" data-view="profile">
+
+    <button
+      class="mobile-nav-item"
+      data-view="profile"
+    >
+
       <i data-lucide="user"></i>
-      <span>Profile</span>
+
+      <span>
+        Profile
+      </span>
+
     </button>
 
   </nav>
@@ -533,30 +1007,50 @@
 </div>
 
 
+
 <!-- =====================================================
      GROUP MODAL
 ===================================================== -->
 
-<div id="groupModal" class="modal hidden">
+<div
+  id="groupModal"
+  class="modal hidden"
+>
 
   <div class="modal-card">
 
-    <button class="modal-close" data-close="groupModal">
+    <button
+      class="modal-close"
+      data-close="groupModal"
+      type="button"
+    >
+
       <i data-lucide="x"></i>
+
     </button>
 
-    <span class="eyebrow">NEW COMMUNITY</span>
 
-    <h2>Create a founder group</h2>
+    <span class="eyebrow">
+      NEW COMMUNITY
+    </span>
+
+
+    <h2>
+      Create a founder group
+    </h2>
+
 
     <p class="modal-muted">
-      Start a focused discussion around your idea, industry or
-      founder journey.
+      Start a focused discussion around your idea,
+      industry or founder journey.
     </p>
+
 
     <form id="groupForm">
 
-      <label>Group name</label>
+      <label>
+        Group name
+      </label>
 
       <input
         id="groupName"
@@ -564,14 +1058,21 @@
         required
       >
 
-      <label>Description</label>
+
+      <label>
+        Description
+      </label>
 
       <textarea
         id="groupDescription"
         placeholder="What is this group about?"
       ></textarea>
 
-      <button class="primary-btn">
+
+      <button
+        class="primary-btn"
+        type="submit"
+      >
         Create group
       </button>
 
@@ -582,40 +1083,74 @@
 </div>
 
 
+
 <!-- =====================================================
-     PROFILE EDIT MODAL
+     PROFILE MODAL
 ===================================================== -->
 
-<div id="profileModal" class="modal hidden">
+<div
+  id="profileModal"
+  class="modal hidden"
+>
 
   <div class="modal-card">
 
-    <button class="modal-close" data-close="profileModal">
+    <button
+      class="modal-close"
+      data-close="profileModal"
+      type="button"
+    >
+
       <i data-lucide="x"></i>
+
     </button>
 
-    <span class="eyebrow">YOUR PROFILE</span>
 
-    <h2>Edit profile</h2>
+    <span class="eyebrow">
+      YOUR PROFILE
+    </span>
+
+
+    <h2>
+      Edit profile
+    </h2>
+
 
     <form id="profileForm">
 
-      <label>Name</label>
+      <label>
+        Name
+      </label>
 
-      <input id="editName" required>
+      <input
+        id="editName"
+        required
+      >
 
-      <label>Username</label>
 
-      <input id="editUsername">
+      <label>
+        Username
+      </label>
 
-      <label>Bio</label>
+      <input
+        id="editUsername"
+      >
+
+
+      <label>
+        Bio
+      </label>
 
       <textarea
         id="editBio"
         placeholder="Tell founders what you're building..."
       ></textarea>
 
-      <button class="primary-btn">
+
+      <button
+        class="primary-btn"
+        type="submit"
+      >
         Save changes
       </button>
 
@@ -626,13 +1161,15 @@
 </div>
 
 
+
 <!-- =====================================================
      SCRIPT
 ===================================================== -->
 
 <script>
 
-const SUPABASE_URL = "https://inhxlwsjlddhnpalbocl.supabase.co";
+const SUPABASE_URL =
+  "https://inhxlwsjlddhnpalbocl.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
@@ -645,17 +1182,23 @@ const db = createClient(
 );
 
 
+/* =====================================================
+   STATE
+===================================================== */
 
 let currentUser = null;
 let currentProfile = null;
-let currentConversation = null;
+
+let recoveryProfile = null;
 
 
 /* =====================================================
    HELPERS
 ===================================================== */
 
-const $ = id => document.getElementById(id);
+const $ = id =>
+  document.getElementById(id);
+
 
 function escapeHTML(value = "") {
 
@@ -672,240 +1215,851 @@ function escapeHTML(value = "") {
 function initials(name = "Founder") {
 
   return name
-    .split(" ")
+    .trim()
+    .split(/\s+/)
     .filter(Boolean)
-    .slice(0,2)
+    .slice(0, 2)
     .map(x => x[0])
     .join("")
-    .toUpperCase();
+    .toUpperCase() || "F";
 
 }
 
 
-function showMessage(message, type = "error") {
+async function hashText(value) {
 
-  const box = $("authMessage");
+  const data =
+    new TextEncoder().encode(
+      value
+    );
 
-  box.textContent = message;
+  const hash =
+    await crypto.subtle.digest(
+      "SHA-256",
+      data
+    );
 
-  box.className = "auth-message " + type;
+  return Array
+    .from(new Uint8Array(hash))
+    .map(
+      b => b.toString(16).padStart(2, "0")
+    )
+    .join("");
+
+}
+
+
+function normalizeName(name) {
+
+  return name
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+
+}
+
+
+function normalizeAnswer(answer) {
+
+  return answer
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+
+}
+
+
+function showMessage(
+  message,
+  type = "error"
+) {
+
+  const box =
+    $("authMessage");
+
+  box.textContent =
+    message;
+
+  box.className =
+    "auth-message " + type;
 
 }
 
 
 function openModal(id) {
 
-  $(id).classList.remove("hidden");
+  $(id)
+    .classList
+    .remove("hidden");
 
 }
 
 
 function closeModal(id) {
 
-  $(id).classList.add("hidden");
+  $(id)
+    .classList
+    .add("hidden");
 
 }
 
 
 /* =====================================================
-   AUTH
+   LOCAL SESSION
 ===================================================== */
 
-function founderEmail(name) {
+function saveSession(profile) {
 
-  /*
-    For this prototype the founder name is converted into
-    an internal Auth identity.
-
-    Example:
-    Devang Prajapati
-    ->
-    devang-prajapati@delta-founder.local
-  */
-
-  return (
-    name
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-    + "@delta-founder.local"
+  localStorage.setItem(
+    "delta_founder_id",
+    profile.id
   );
 
 }
 
 
-$("showSignup").onclick = () => {
+function clearSession() {
 
-  $("loginForm").classList.add("hidden");
-  $("signupForm").classList.remove("hidden");
-  $("forgotForm").classList.add("hidden");
+  localStorage.removeItem(
+    "delta_founder_id"
+  );
 
-  $("authMessage").textContent = "";
-
-};
+}
 
 
-$("backLogin").onclick = () => {
+async function restoreSession() {
 
-  $("signupForm").classList.add("hidden");
-  $("loginForm").classList.remove("hidden");
+  const id =
+    localStorage.getItem(
+      "delta_founder_id"
+    );
 
-};
-
-
-$("showForgot").onclick = () => {
-
-  $("loginForm").classList.add("hidden");
-  $("forgotForm").classList.remove("hidden");
-  $("signupForm").classList.add("hidden");
-
-};
+  if(!id) return false;
 
 
-$("backForgot").onclick = () => {
+  const {
+    data,
+    error
+  } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
 
-  $("forgotForm").classList.add("hidden");
-  $("loginForm").classList.remove("hidden");
 
-};
+  if(error || !data){
 
+    clearSession();
 
-$("signupForm").addEventListener("submit", async e => {
-
-  e.preventDefault();
-
-  const name = $("signupName").value.trim();
-  const password = $("signupPassword").value;
-  const question = $("securityQuestion").value.trim();
-  const answer = $("securityAnswer").value.trim();
-
-  if(password.length < 6){
-
-    showMessage("Password must be at least 6 characters.");
-
-    return;
+    return false;
 
   }
 
-  try {
 
-    showMessage("Creating your founder identity...", "loading");
+  currentUser = {
+    id: data.id
+  };
 
-    const email = founderEmail(name);
+  currentProfile =
+    data;
 
-    const { data, error } = await db.auth.signUp({
+  return true;
 
-      email,
-      password,
+}
 
-      options: {
-        data: {
-          name
-        }
+
+/* =====================================================
+   AUTH SCREEN SWITCHING
+===================================================== */
+
+function showLogin() {
+
+  $("loginForm")
+    .classList
+    .remove("hidden");
+
+  $("signupForm")
+    .classList
+    .add("hidden");
+
+  $("forgotForm")
+    .classList
+    .add("hidden");
+
+  $("resetForm")
+    .classList
+    .add("hidden");
+
+  $("authMessage")
+    .textContent = "";
+
+}
+
+
+function showSignup() {
+
+  $("loginForm")
+    .classList
+    .add("hidden");
+
+  $("signupForm")
+    .classList
+    .remove("hidden");
+
+  $("forgotForm")
+    .classList
+    .add("hidden");
+
+  $("resetForm")
+    .classList
+    .add("hidden");
+
+  $("authMessage")
+    .textContent = "";
+
+}
+
+
+function showForgot() {
+
+  $("loginForm")
+    .classList
+    .add("hidden");
+
+  $("signupForm")
+    .classList
+    .add("hidden");
+
+  $("forgotForm")
+    .classList
+    .remove("hidden");
+
+  $("resetForm")
+    .classList
+    .add("hidden");
+
+  $("authMessage")
+    .textContent = "";
+
+}
+
+
+function showReset() {
+
+  $("loginForm")
+    .classList
+    .add("hidden");
+
+  $("signupForm")
+    .classList
+    .add("hidden");
+
+  $("forgotForm")
+    .classList
+    .add("hidden");
+
+  $("resetForm")
+    .classList
+    .remove("hidden");
+
+  $("authMessage")
+    .textContent = "";
+
+}
+
+
+$("showSignup").onclick =
+  showSignup;
+
+
+$("showForgot").onclick =
+  showForgot;
+
+
+$("backLogin").onclick =
+  showLogin;
+
+
+$("backForgot").onclick =
+  showLogin;
+
+
+$("backReset").onclick =
+  showForgot;
+
+
+/* =====================================================
+   CREATE FOUNDER
+===================================================== */
+
+$("signupForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const name =
+        $("signupName")
+          .value
+          .trim();
+
+      const password =
+        $("signupPassword")
+          .value;
+
+      const question =
+        $("securityQuestion")
+          .value
+          .trim();
+
+      const answer =
+        $("securityAnswer")
+          .value
+          .trim();
+
+
+      if(name.length < 2){
+
+        showMessage(
+          "Please enter your founder name."
+        );
+
+        return;
+
       }
 
-    });
 
-    if(error) throw error;
+      if(password.length < 6){
 
-    if(!data.user){
+        showMessage(
+          "Password must be at least 6 characters."
+        );
 
-      throw new Error("Could not create founder.");
+        return;
+
+      }
+
+
+      if(!question){
+
+        showMessage(
+          "Enter a security question."
+        );
+
+        return;
+
+      }
+
+
+      if(!answer){
+
+        showMessage(
+          "Enter your security answer."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        showMessage(
+          "Creating your founder profile...",
+          "loading"
+        );
+
+
+        /*
+          Check duplicate name.
+        */
+
+        const existing =
+          await db
+            .from("profiles")
+            .select("id")
+            .ilike(
+              "name",
+              name
+            )
+            .limit(1);
+
+
+        if(existing.error)
+          throw existing.error;
+
+
+        if(existing.data?.length){
+
+          throw new Error(
+            "A founder with this name already exists."
+          );
+
+        }
+
+
+        const passwordHash =
+          await hashText(password);
+
+
+        const answerHash =
+          await hashText(
+            normalizeAnswer(answer)
+          );
+
+
+        const {
+          data,
+          error
+        } = await db
+          .from("profiles")
+          .insert({
+
+            name,
+
+            password_hash:
+              passwordHash,
+
+            security_question:
+              question,
+
+            security_answer_hash:
+              answerHash
+
+          })
+          .select()
+          .single();
+
+
+        if(error)
+          throw error;
+
+
+        currentUser = {
+          id: data.id
+        };
+
+
+        currentProfile =
+          data;
+
+
+        saveSession(data);
+
+
+        $("signupForm")
+          .reset();
+
+
+        showMessage(
+          "Founder profile created.",
+          "success"
+        );
+
+
+        await loadApplication();
+
+      } catch(error) {
+
+        console.error(error);
+
+        showMessage(
+          error.message ||
+          "Could not create profile."
+        );
+
+      }
 
     }
-
-    /*
-      Security answer is intentionally kept out of the
-      normal UI. For a production implementation this
-      should be hashed server-side / through an Edge Function.
-    */
-
-    const { error: profileError } = await db
-      .from("profiles")
-      .upsert({
-
-        id: data.user.id,
-        name,
-        security_question: question,
-        security_answer_hash: answer
-
-      });
-
-    if(profileError) throw profileError;
-
-    showMessage(
-      "Founder profile created. You can now enter Delta.",
-      "success"
-    );
-
-    $("signupForm").reset();
-
-    $("signupForm").classList.add("hidden");
-    $("loginForm").classList.remove("hidden");
-
-  } catch(error) {
-
-    console.error(error);
-
-    showMessage(error.message || "Signup failed.");
-
-  }
-
-});
+  );
 
 
-$("loginForm").addEventListener("submit", async e => {
+/* =====================================================
+   LOGIN
+===================================================== */
 
-  e.preventDefault();
+$("loginForm")
+  .addEventListener(
+    "submit",
+    async event => {
 
-  const name = $("loginName").value.trim();
-  const password = $("loginPassword").value;
-
-  try {
-
-    showMessage("Entering Delta...", "loading");
-
-    const email = founderEmail(name);
-
-    const { data, error } =
-      await db.auth.signInWithPassword({
-
-        email,
-        password
-
-      });
-
-    if(error) throw error;
-
-    currentUser = data.user;
-
-    await loadApplication();
-
-  } catch(error) {
-
-    console.error(error);
-
-    showMessage(
-      "Could not sign in. Check your founder name and password."
-    );
-
-  }
-
-});
+      event.preventDefault();
 
 
-$("logoutBtn").onclick = async () => {
+      const name =
+        $("loginName")
+          .value
+          .trim();
 
-  await db.auth.signOut();
+      const password =
+        $("loginPassword")
+          .value;
 
-  currentUser = null;
-  currentProfile = null;
 
-  $("app").classList.add("hidden");
-  $("authScreen").classList.remove("hidden");
+      if(!name || !password){
 
-};
+        showMessage(
+          "Enter your founder name and password."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        showMessage(
+          "Entering Delta...",
+          "loading"
+        );
+
+
+        const {
+          data,
+          error
+        } = await db
+          .from("profiles")
+          .select("*")
+          .ilike(
+            "name",
+            name
+          )
+          .limit(1);
+
+
+        if(error)
+          throw error;
+
+
+        if(!data?.length){
+
+          throw new Error(
+            "Founder profile not found."
+          );
+
+        }
+
+
+        const profile =
+          data[0];
+
+
+        const passwordHash =
+          await hashText(password);
+
+
+        if(
+          passwordHash !==
+          profile.password_hash
+        ){
+
+          throw new Error(
+            "Incorrect password."
+          );
+
+        }
+
+
+        currentUser = {
+          id: profile.id
+        };
+
+
+        currentProfile =
+          profile;
+
+
+        saveSession(profile);
+
+
+        $("loginForm")
+          .reset();
+
+
+        await loadApplication();
+
+      } catch(error) {
+
+        console.error(error);
+
+        showMessage(
+          error.message ||
+          "Could not sign in."
+        );
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   FORGOT PASSWORD — FIND ACCOUNT
+===================================================== */
+
+$("forgotForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const name =
+        $("forgotName")
+          .value
+          .trim();
+
+
+      if(!name){
+
+        showMessage(
+          "Enter your founder name."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        showMessage(
+          "Finding your founder profile...",
+          "loading"
+        );
+
+
+        const {
+          data,
+          error
+        } = await db
+          .from("profiles")
+          .select(
+            "id,name,security_question"
+          )
+          .ilike(
+            "name",
+            name
+          )
+          .limit(1);
+
+
+        if(error)
+          throw error;
+
+
+        if(!data?.length){
+
+          throw new Error(
+            "Founder profile not found."
+          );
+
+        }
+
+
+        recoveryProfile =
+          data[0];
+
+
+        $("resetQuestion")
+          .textContent =
+            recoveryProfile.security_question;
+
+
+        $("resetAnswer")
+          .value = "";
+
+        $("newPassword")
+          .value = "";
+
+
+        showReset();
+
+
+      } catch(error) {
+
+        console.error(error);
+
+        showMessage(
+          error.message ||
+          "Could not find profile."
+        );
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   FORGOT PASSWORD — RESET
+===================================================== */
+
+$("resetForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      if(!recoveryProfile){
+
+        showForgot();
+
+        return;
+
+      }
+
+
+      const answer =
+        $("resetAnswer")
+          .value
+          .trim();
+
+      const newPassword =
+        $("newPassword")
+          .value;
+
+
+      if(!answer){
+
+        showMessage(
+          "Enter your security answer."
+        );
+
+        return;
+
+      }
+
+
+      if(newPassword.length < 6){
+
+        showMessage(
+          "New password must be at least 6 characters."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        showMessage(
+          "Checking your answer...",
+          "loading"
+        );
+
+
+        const {
+          data,
+          error
+        } = await db
+          .from("profiles")
+          .select(
+            "id,security_answer_hash"
+          )
+          .eq(
+            "id",
+            recoveryProfile.id
+          )
+          .single();
+
+
+        if(error)
+          throw error;
+
+
+        const answerHash =
+          await hashText(
+            normalizeAnswer(answer)
+          );
+
+
+        if(
+          answerHash !==
+          data.security_answer_hash
+        ){
+
+          throw new Error(
+            "Security answer is incorrect."
+          );
+
+        }
+
+
+        const passwordHash =
+          await hashText(
+            newPassword
+          );
+
+
+        const {
+          data:updated,
+          error:updateError
+        } = await db
+          .from("profiles")
+          .update({
+
+            password_hash:
+              passwordHash,
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "id",
+            recoveryProfile.id
+          )
+          .select()
+          .single();
+
+
+        if(updateError)
+          throw updateError;
+
+
+        recoveryProfile =
+          null;
+
+
+        $("resetForm")
+          .reset();
+
+
+        $("loginName")
+          .value =
+          updated.name;
+
+
+        showLogin();
+
+
+        showMessage(
+          "Password updated. You can now log in.",
+          "success"
+        );
+
+
+      } catch(error) {
+
+        console.error(error);
+
+        showMessage(
+          error.message ||
+          "Could not reset password."
+        );
+
+      }
+
+    }
+  );
 
 
 /* =====================================================
@@ -914,12 +2068,20 @@ $("logoutBtn").onclick = async () => {
 
 async function loadApplication(){
 
-  $("authScreen").classList.add("hidden");
-  $("app").classList.remove("hidden");
+  $("authScreen")
+    .classList
+    .add("hidden");
+
+  $("app")
+    .classList
+    .remove("hidden");
+
 
   await loadProfile();
 
+
   updateIdentity();
+
 
   await loadFeed();
 
@@ -929,6 +2091,7 @@ async function loadApplication(){
 
   renderProfile();
 
+
   lucide.createIcons();
 
 }
@@ -936,13 +2099,22 @@ async function loadApplication(){
 
 async function loadProfile(){
 
-  if(!currentUser) return;
+  if(!currentUser)
+    return;
 
-  let { data, error } = await db
+
+  const {
+    data,
+    error
+  } = await db
     .from("profiles")
     .select("*")
-    .eq("id", currentUser.id)
+    .eq(
+      "id",
+      currentUser.id
+    )
     .maybeSingle();
+
 
   if(error){
 
@@ -952,210 +2124,323 @@ async function loadProfile(){
 
   }
 
-  if(!data){
 
-    const name =
-      currentUser.user_metadata?.name ||
-      currentUser.email?.split("@")[0] ||
-      "Founder";
-
-    const result = await db
-      .from("profiles")
-      .insert({
-        id: currentUser.id,
-        name
-      })
-      .select()
-      .single();
-
-    data = result.data;
-
-  }
-
-  currentProfile = data;
+  currentProfile =
+    data;
 
 }
 
 
 function updateIdentity(){
 
-  if(!currentProfile) return;
+  if(!currentProfile)
+    return;
 
-  const name = currentProfile.name || "Founder";
 
-  $("sideName").textContent = name;
+  const name =
+    currentProfile.name ||
+    "Founder";
 
-  $("sideInitial").textContent = initials(name);
 
-  $("topInitial").textContent = initials(name);
+  $("sideName")
+    .textContent =
+    name;
 
-  $("composerInitial").textContent = initials(name);
+
+  $("sideInitial")
+    .textContent =
+    initials(name);
+
+
+  $("topInitial")
+    .textContent =
+    initials(name);
+
+
+  $("composerInitial")
+    .textContent =
+    initials(name);
 
 }
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+$("logoutBtn")
+  .onclick = () => {
+
+    clearSession();
+
+    currentUser = null;
+
+    currentProfile = null;
+
+    $("app")
+      .classList
+      .add("hidden");
+
+    $("authScreen")
+      .classList
+      .remove("hidden");
+
+    showLogin();
+
+  };
 
 
 /* =====================================================
    NAVIGATION
 ===================================================== */
 
-document.querySelectorAll("[data-view]").forEach(button => {
+document
+  .querySelectorAll("[data-view]")
+  .forEach(button => {
 
-  button.addEventListener("click", async () => {
+    button.addEventListener(
+      "click",
+      async () => {
 
-    const view = button.dataset.view;
+        const view =
+          button.dataset.view;
 
-    document.querySelectorAll(".view").forEach(v => {
 
-      v.classList.add("hidden");
+        document
+          .querySelectorAll(".view")
+          .forEach(v =>
+            v.classList.add("hidden")
+          );
 
-    });
 
-    const target = $(view + "View");
+        const target =
+          $(view + "View");
 
-    if(target){
 
-      target.classList.remove("hidden");
+        if(target){
 
-    }
+          target.classList
+            .remove("hidden");
 
-    document
-      .querySelectorAll("[data-view]")
-      .forEach(x => x.classList.remove("active"));
+        }
 
-    document
-      .querySelectorAll(`[data-view="${view}"]`)
-      .forEach(x => x.classList.add("active"));
 
-    if(view === "feed") await loadFeed();
+        document
+          .querySelectorAll("[data-view]")
+          .forEach(x =>
+            x.classList.remove("active")
+          );
 
-    if(view === "discover") await loadFounders();
 
-    if(view === "groups") await loadGroups();
+        document
+          .querySelectorAll(
+            `[data-view="${view}"]`
+          )
+          .forEach(x =>
+            x.classList.add("active")
+          );
 
-    if(view === "profile") renderProfile();
+
+        if(view === "feed")
+          await loadFeed();
+
+
+        if(view === "discover")
+          await loadFounders();
+
+
+        if(view === "groups")
+          await loadGroups();
+
+
+        if(view === "profile")
+          renderProfile();
+
+      }
+    );
 
   });
-
-});
 
 
 /* =====================================================
    POST COMPOSER
 ===================================================== */
 
-$("createPostBtn").onclick = () => {
+$("createPostBtn")
+  .onclick = () => {
 
-  $("postComposer").classList.toggle("hidden");
+    $("postComposer")
+      .classList
+      .toggle("hidden");
 
-};
-
-
-$("newPostTop").onclick = () => {
-
-  $("postComposer").classList.remove("hidden");
-
-  $("feedView").scrollIntoView({
-    behavior:"smooth"
-  });
-
-};
+  };
 
 
-$("postImage").addEventListener("change", e => {
+$("newPostTop")
+  .onclick = () => {
 
-  const file = e.target.files[0];
-
-  if(!file) return;
-
-  const url = URL.createObjectURL(file);
-
-  $("previewImage").src = url;
-
-  $("imagePreview").classList.remove("hidden");
-
-});
+    $("postComposer")
+      .classList
+      .remove("hidden");
 
 
-$("publishPost").onclick = async () => {
+    $("feedView")
+      .scrollIntoView({
+        behavior: "smooth"
+      });
 
-  const content = $("postText").value.trim();
+  };
 
-  const file = $("postImage").files[0];
 
-  if(!content && !file){
+$("postImage")
+  .addEventListener(
+    "change",
+    event => {
 
-    alert("Write something or attach an image.");
+      const file =
+        event.target.files[0];
 
-    return;
 
-  }
+      if(!file)
+        return;
 
-  try {
 
-    let imageUrl = null;
+      const url =
+        URL.createObjectURL(file);
 
-    /*
-      Image upload requires a public Storage bucket named
-      "delta-images".
-    */
 
-    if(file){
+      $("previewImage")
+        .src = url;
 
-      const filename =
-        currentUser.id +
-        "/" +
-        Date.now() +
-        "-" +
-        file.name.replace(/[^a-zA-Z0-9._-]/g,"-");
 
-      const upload =
-        await db.storage
-          .from("delta-images")
-          .upload(filename, file);
+      $("imagePreview")
+        .classList
+        .remove("hidden");
 
-      if(upload.error) throw upload.error;
+    }
+  );
 
-      const publicUrl =
-        db.storage
-          .from("delta-images")
-          .getPublicUrl(filename);
 
-      imageUrl = publicUrl.data.publicUrl;
+$("publishPost")
+  .onclick = async () => {
+
+    const content =
+      $("postText")
+        .value
+        .trim();
+
+
+    const file =
+      $("postImage")
+        .files[0];
+
+
+    if(!content && !file){
+
+      alert(
+        "Write something or attach an image."
+      );
+
+      return;
 
     }
 
-    const { error } = await db
-      .from("posts")
-      .insert({
 
-        user_id: currentUser.id,
-        content,
-        image_url: imageUrl
+    try {
 
-      });
+      let imageUrl =
+        null;
 
-    if(error) throw error;
 
-    $("postText").value = "";
-    $("postImage").value = "";
-    $("imagePreview").classList.add("hidden");
+      if(file){
 
-    $("postComposer").classList.add("hidden");
+        const filename =
+          currentUser.id +
+          "/" +
+          Date.now() +
+          "-" +
+          file.name.replace(
+            /[^a-zA-Z0-9._-]/g,
+            "-"
+          );
 
-    await loadFeed();
 
-  } catch(error) {
+        const upload =
+          await db.storage
+            .from("delta-images")
+            .upload(
+              filename,
+              file
+            );
 
-    console.error(error);
 
-    alert(
-      "Could not publish post: " +
-      error.message
-    );
+        if(upload.error)
+          throw upload.error;
 
-  }
 
-};
+        imageUrl =
+          db.storage
+            .from("delta-images")
+            .getPublicUrl(
+              filename
+            )
+            .data
+            .publicUrl;
+
+      }
+
+
+      const {
+        error
+      } = await db
+        .from("posts")
+        .insert({
+
+          user_id:
+            currentUser.id,
+
+          content,
+
+          image_url:
+            imageUrl
+
+        });
+
+
+      if(error)
+        throw error;
+
+
+      $("postText")
+        .value = "";
+
+      $("postImage")
+        .value = "";
+
+      $("imagePreview")
+        .classList
+        .add("hidden");
+
+      $("postComposer")
+        .classList
+        .add("hidden");
+
+
+      await loadFeed();
+
+
+    } catch(error) {
+
+      console.error(error);
+
+      alert(
+        "Could not publish post: " +
+        error.message
+      );
+
+    }
+
+  };
 
 
 /* =====================================================
@@ -1164,7 +2449,9 @@ $("publishPost").onclick = async () => {
 
 async function loadFeed(){
 
-  const feed = $("feed");
+  const feed =
+    $("feed");
+
 
   feed.innerHTML = `
     <div class="loading-card">
@@ -1173,27 +2460,37 @@ async function loadFeed(){
     </div>
   `;
 
-  const { data, error } = await db
+
+  const {
+    data,
+    error
+  } = await db
     .from("posts")
     .select(`
       *,
-      profiles (
+      profiles(
         id,
         name,
         username,
         avatar_url
       )
     `)
-    .order("created_at", {
-      ascending:false
-    });
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    );
+
 
   if(error){
 
     feed.innerHTML = `
       <div class="empty-state">
         <h3>Feed unavailable</h3>
-        <p>${escapeHTML(error.message)}</p>
+        <p>
+          ${escapeHTML(error.message)}
+        </p>
       </div>
     `;
 
@@ -1201,15 +2498,19 @@ async function loadFeed(){
 
   }
 
+
   if(!data?.length){
 
     feed.innerHTML = `
       <div class="empty-state feed-empty">
+
         <div class="empty-orb">
           <i data-lucide="sparkles"></i>
         </div>
 
-        <h3>The network is quiet.</h3>
+        <h3>
+          The network is quiet.
+        </h3>
 
         <p>
           Be the first founder to share what you're building.
@@ -1217,11 +2518,22 @@ async function loadFeed(){
 
         <button
           class="primary-small"
-          onclick="document.getElementById('postComposer').classList.remove('hidden')">
+          type="button"
+          id="emptyShareBtn"
+        >
           Share your idea
         </button>
+
       </div>
     `;
+
+
+    $("emptyShareBtn")
+      .onclick = () =>
+        $("postComposer")
+          .classList
+          .remove("hidden");
+
 
     lucide.createIcons();
 
@@ -1229,152 +2541,240 @@ async function loadFeed(){
 
   }
 
-  const postIds = data.map(p => p.id);
+
+  const postIds =
+    data.map(
+      post => post.id
+    );
+
 
   let likes = [];
 
+
   if(postIds.length){
 
-    const result = await db
-      .from("likes")
-      .select("post_id,user_id")
-      .in("post_id",postIds);
+    const result =
+      await db
+        .from("likes")
+        .select(
+          "post_id,user_id"
+        )
+        .in(
+          "post_id",
+          postIds
+        );
 
-    likes = result.data || [];
+
+    likes =
+      result.data || [];
 
   }
 
-  feed.innerHTML = data.map(post => {
 
-    const author = post.profiles || {};
+  feed.innerHTML =
+    data
+      .map(post => {
 
-    const postLikes =
-      likes.filter(x => x.post_id === post.id);
+        const author =
+          post.profiles || {};
 
-    const liked =
-      postLikes.some(x => x.user_id === currentUser.id);
 
-    return `
+        const postLikes =
+          likes.filter(
+            x =>
+              x.post_id ===
+              post.id
+          );
 
-      <article class="post-card">
 
-        <div class="post-header">
+        const liked =
+          postLikes.some(
+            x =>
+              x.user_id ===
+              currentUser.id
+          );
 
-          <div class="avatar">
+
+        return `
+
+          <article class="post-card">
+
+            <div class="post-header">
+
+              <div class="avatar">
+
+                ${
+                  author.avatar_url
+                    ? `
+                      <img
+                        src="${escapeHTML(
+                          author.avatar_url
+                        )}"
+                      >
+                    `
+                    : initials(
+                        author.name
+                      )
+                }
+
+              </div>
+
+
+              <div class="post-author">
+
+                <strong>
+                  ${escapeHTML(
+                    author.name ||
+                    "Founder"
+                  )}
+                </strong>
+
+                <span>
+                  ${formatDate(
+                    post.created_at
+                  )}
+                </span>
+
+              </div>
+
+
+              <button
+                class="more-btn"
+                type="button"
+              >
+
+                <i data-lucide="more-horizontal"></i>
+
+              </button>
+
+            </div>
+
 
             ${
-              author.avatar_url
-              ? `<img src="${escapeHTML(author.avatar_url)}">`
-              : initials(author.name)
+              post.content
+                ? `
+                  <div class="post-content">
+                    ${escapeHTML(
+                      post.content
+                    )}
+                  </div>
+                `
+                : ""
             }
 
-          </div>
 
-          <div class="post-author">
+            ${
+              post.image_url
+                ? `
+                  <div class="post-image">
 
-            <strong>
-              ${escapeHTML(author.name || "Founder")}
-            </strong>
+                    <img
+                      src="${escapeHTML(
+                        post.image_url
+                      )}"
+                      loading="lazy"
+                    >
 
-            <span>
-              ${formatDate(post.created_at)}
-            </span>
+                  </div>
+                `
+                : ""
+            }
 
-          </div>
 
-          <button class="more-btn">
-            <i data-lucide="more-horizontal"></i>
-          </button>
+            <div class="post-actions">
 
-        </div>
-
-        ${
-          post.content
-          ? `
-            <div class="post-content">
-              ${escapeHTML(post.content)}
-            </div>
-          `
-          : ""
-        }
-
-        ${
-          post.image_url
-          ? `
-            <div class="post-image">
-              <img
-                src="${escapeHTML(post.image_url)}"
-                loading="lazy"
+              <button
+                class="post-action ${
+                  liked
+                    ? "liked"
+                    : ""
+                }"
+                onclick="toggleLike(${post.id})"
+                type="button"
               >
+
+                <i data-lucide="heart"></i>
+
+                <span>
+                  ${postLikes.length}
+                </span>
+
+              </button>
+
+
+              <button
+                class="post-action"
+                onclick="openComments(${post.id})"
+                type="button"
+              >
+
+                <i data-lucide="message-circle"></i>
+
+                <span>
+                  Comment
+                </span>
+
+              </button>
+
+
+              <button
+                class="post-action share-action"
+                type="button"
+                onclick="sharePost('${escapeHTML(
+                  post.content || ""
+                )}')"
+              >
+
+                <i data-lucide="send"></i>
+
+                <span>
+                  Share
+                </span>
+
+              </button>
+
             </div>
-          `
-          : ""
-        }
 
-        <div class="post-actions">
 
-          <button
-            class="post-action ${liked ? "liked" : ""}"
-            onclick="toggleLike(${post.id}, this)">
-
-            <i data-lucide="heart"></i>
-
-            <span>
-              ${postLikes.length}
-            </span>
-
-          </button>
-
-          <button
-            class="post-action"
-            onclick="openComments(${post.id})">
-
-            <i data-lucide="message-circle"></i>
-
-            <span>Comment</span>
-
-          </button>
-
-          <button class="post-action share-action">
-
-            <i data-lucide="send"></i>
-
-            <span>Share</span>
-
-          </button>
-
-        </div>
-
-        <div
-          class="comments-area hidden"
-          id="comments-${post.id}">
-
-          <div
-            class="comments-list"
-            id="comment-list-${post.id}">
-          </div>
-
-          <div class="comment-input">
-
-            <input
-              id="comment-input-${post.id}"
-              placeholder="Write a comment..."
+            <div
+              class="comments-area hidden"
+              id="comments-${post.id}"
             >
 
-            <button
-              onclick="addComment(${post.id})">
-              <i data-lucide="arrow-up"></i>
-            </button>
+              <div
+                class="comments-list"
+                id="comment-list-${post.id}"
+              ></div>
 
-          </div>
 
-        </div>
+              <div class="comment-input">
 
-      </article>
+                <input
+                  id="comment-input-${post.id}"
+                  placeholder="Write a comment..."
+                >
 
-    `;
 
-  }).join("");
+                <button
+                  onclick="addComment(${post.id})"
+                  type="button"
+                >
+
+                  <i data-lucide="arrow-up"></i>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        `;
+
+      })
+      .join("");
+
 
   lucide.createIcons();
 
@@ -1383,45 +2783,79 @@ async function loadFeed(){
 
 function formatDate(date){
 
-  const d = new Date(date);
+  const d =
+    new Date(date);
+
 
   const diff =
     Math.floor(
-      (Date.now() - d.getTime()) / 1000
+      (
+        Date.now() -
+        d.getTime()
+      ) / 1000
     );
+
 
   if(diff < 60)
     return "just now";
 
+
   if(diff < 3600)
-    return Math.floor(diff/60) + "m ago";
+    return (
+      Math.floor(
+        diff / 60
+      ) + "m ago"
+    );
+
 
   if(diff < 86400)
-    return Math.floor(diff/3600) + "h ago";
+    return (
+      Math.floor(
+        diff / 3600
+      ) + "h ago"
+    );
+
 
   if(diff < 604800)
-    return Math.floor(diff/86400) + "d ago";
+    return (
+      Math.floor(
+        diff / 86400
+      ) + "d ago"
+    );
+
 
   return d.toLocaleDateString();
 
 }
 
 
-async function toggleLike(postId, button){
+async function toggleLike(postId){
 
-  const { data } = await db
+  const {
+    data
+  } = await db
     .from("likes")
     .select("id")
-    .eq("post_id",postId)
-    .eq("user_id",currentUser.id)
+    .eq(
+      "post_id",
+      postId
+    )
+    .eq(
+      "user_id",
+      currentUser.id
+    )
     .maybeSingle();
+
 
   if(data){
 
     await db
       .from("likes")
       .delete()
-      .eq("id",data.id);
+      .eq(
+        "id",
+        data.id
+      );
 
   }else{
 
@@ -1429,12 +2863,16 @@ async function toggleLike(postId, button){
       .from("likes")
       .insert({
 
-        post_id:postId,
-        user_id:currentUser.id
+        post_id:
+          postId,
+
+        user_id:
+          currentUser.id
 
       });
 
   }
+
 
   await loadFeed();
 
@@ -1443,13 +2881,23 @@ async function toggleLike(postId, button){
 
 async function openComments(postId){
 
-  const box = $(`comments-${postId}`);
+  const box =
+    $(`comments-${postId}`);
 
-  box.classList.toggle("hidden");
 
-  if(!box.classList.contains("hidden")){
+  box.classList
+    .toggle("hidden");
 
-    await loadComments(postId);
+
+  if(
+    !box.classList.contains(
+      "hidden"
+    )
+  ){
+
+    await loadComments(
+      postId
+    );
 
   }
 
@@ -1458,16 +2906,31 @@ async function openComments(postId){
 
 async function loadComments(postId){
 
-  const list = $(`comment-list-${postId}`);
+  const list =
+    $(
+      `comment-list-${postId}`
+    );
 
-  const { data } = await db
+
+  const {
+    data
+  } = await db
     .from("comments")
     .select(`
       *,
       profiles(name)
     `)
-    .eq("post_id",postId)
-    .order("created_at",{ascending:true});
+    .eq(
+      "post_id",
+      postId
+    )
+    .order(
+      "created_at",
+      {
+        ascending: true
+      }
+    );
+
 
   if(!data?.length){
 
@@ -1481,29 +2944,40 @@ async function loadComments(postId){
 
   }
 
-  list.innerHTML = data.map(comment => `
 
-    <div class="comment">
+  list.innerHTML =
+    data.map(
+      comment => `
 
-      <div class="comment-avatar">
-        ${initials(comment.profiles?.name)}
-      </div>
+        <div class="comment">
 
-      <div>
+          <div class="comment-avatar">
+            ${initials(
+              comment.profiles?.name
+            )}
+          </div>
 
-        <strong>
-          ${escapeHTML(comment.profiles?.name || "Founder")}
-        </strong>
+          <div>
 
-        <p>
-          ${escapeHTML(comment.content)}
-        </p>
+            <strong>
+              ${escapeHTML(
+                comment.profiles?.name ||
+                "Founder"
+              )}
+            </strong>
 
-      </div>
+            <p>
+              ${escapeHTML(
+                comment.content
+              )}
+            </p>
 
-    </div>
+          </div>
 
-  `).join("");
+        </div>
+
+      `
+    ).join("");
 
 }
 
@@ -1511,61 +2985,137 @@ async function loadComments(postId){
 async function addComment(postId){
 
   const input =
-    $(`comment-input-${postId}`);
+    $(
+      `comment-input-${postId}`
+    );
+
 
   const content =
     input.value.trim();
 
-  if(!content) return;
 
-  await db
+  if(!content)
+    return;
+
+
+  const {
+    error
+  } = await db
     .from("comments")
     .insert({
 
-      post_id:postId,
-      user_id:currentUser.id,
+      post_id:
+        postId,
+
+      user_id:
+        currentUser.id,
+
       content
 
     });
 
+
+  if(error){
+
+    alert(error.message);
+
+    return;
+
+  }
+
+
   input.value = "";
 
-  await loadComments(postId);
+  await loadComments(
+    postId
+  );
+
+}
+
+
+async function sharePost(text){
+
+  try {
+
+    if(
+      navigator.share
+    ){
+
+      await navigator.share({
+        title: "Delta Founder Network",
+        text
+      });
+
+    }else{
+
+      await navigator.clipboard.writeText(
+        text
+      );
+
+      alert(
+        "Post text copied."
+      );
+
+    }
+
+  }catch(error){
+
+    console.log(error);
+
+  }
 
 }
 
 
 /* =====================================================
-   DISCOVER FOUNDERS
+   DISCOVER
 ===================================================== */
 
-async function loadFounders(search = ""){
+async function loadFounders(
+  search = ""
+){
 
-  const grid = $("foundersGrid");
+  const grid =
+    $("foundersGrid");
+
 
   let query =
     db
       .from("profiles")
       .select("*")
-      .order("created_at",{ascending:false})
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
       .limit(50);
+
 
   if(search){
 
-    query = query.ilike(
-      "name",
-      `%${search}%`
-    );
+    query =
+      query.ilike(
+        "name",
+        `%${search}%`
+      );
 
   }
 
-  const { data, error } = await query;
+
+  const {
+    data,
+    error
+  } = await query;
+
 
   if(error){
 
     grid.innerHTML = `
       <div class="empty-state">
-        ${escapeHTML(error.message)}
+        ${escapeHTML(
+          error.message
+        )}
       </div>
     `;
 
@@ -1573,19 +3123,34 @@ async function loadFounders(search = ""){
 
   }
 
+
   const founders =
     (data || [])
-      .filter(x => x.id !== currentUser.id);
+      .filter(
+        founder =>
+          founder.id !==
+          currentUser.id
+      );
+
 
   if(!founders.length){
 
     grid.innerHTML = `
       <div class="empty-state">
+
         <i data-lucide="users"></i>
-        <h3>No founders found</h3>
-        <p>Try another search.</p>
+
+        <h3>
+          No founders found
+        </h3>
+
+        <p>
+          Try another search.
+        </p>
+
       </div>
     `;
+
 
     lucide.createIcons();
 
@@ -1593,104 +3158,171 @@ async function loadFounders(search = ""){
 
   }
 
-  grid.innerHTML = founders.map(founder => `
 
-    <article class="founder-card">
+  grid.innerHTML =
+    founders.map(
+      founder => `
 
-      <div class="founder-card-top">
+        <article class="founder-card">
 
-        <div class="avatar avatar-xl">
+          <div class="founder-card-top">
+
+            <div class="avatar avatar-xl">
+
+              ${
+                founder.avatar_url
+                  ? `
+                    <img
+                      src="${escapeHTML(
+                        founder.avatar_url
+                      )}"
+                    >
+                  `
+                  : initials(
+                      founder.name
+                    )
+              }
+
+            </div>
+
+            <div class="online-ring"></div>
+
+          </div>
+
+
+          <h3>
+            ${escapeHTML(
+              founder.name
+            )}
+          </h3>
+
 
           ${
-            founder.avatar_url
-            ? `<img src="${escapeHTML(founder.avatar_url)}">`
-            : initials(founder.name)
+            founder.username
+              ? `
+                <span class="username">
+                  @${escapeHTML(
+                    founder.username
+                  )}
+                </span>
+              `
+              : ""
           }
 
-        </div>
 
-        <div class="online-ring"></div>
+          <p>
+            ${escapeHTML(
+              founder.bio ||
+              "Founder building something interesting."
+            )}
+          </p>
 
-      </div>
 
-      <h3>
-        ${escapeHTML(founder.name)}
-      </h3>
+          <div class="founder-card-actions">
 
-      ${
-        founder.username
-        ? `<span class="username">@${escapeHTML(founder.username)}</span>`
-        : ""
-      }
+            <button
+              class="secondary-btn"
+              type="button"
+              onclick="viewFounder('${founder.id}')"
+            >
+              View
+            </button>
 
-      <p>
-        ${escapeHTML(
-          founder.bio ||
-          "Founder building something interesting."
-        )}
-      </p>
 
-      <div class="founder-card-actions">
+            <button
+              class="primary-small"
+              type="button"
+              onclick="followFounder('${founder.id}',this)"
+            >
+              Follow
+            </button>
 
-        <button
-          class="secondary-btn"
-          onclick="viewFounder('${founder.id}')">
-          View
-        </button>
+          </div>
 
-        <button
-          class="primary-small"
-          onclick="followFounder('${founder.id}', this)">
-          Follow
-        </button>
+        </article>
 
-      </div>
+      `
+    ).join("");
 
-    </article>
-
-  `).join("");
 
   lucide.createIcons();
 
 }
 
 
-$("founderSearch").addEventListener(
-  "input",
-  e => loadFounders(e.target.value.trim())
-);
+$("founderSearch")
+  .addEventListener(
+    "input",
+    event =>
+      loadFounders(
+        event.target.value.trim()
+      )
+  );
 
 
-async function followFounder(id,button){
+async function followFounder(
+  id,
+  button
+){
 
-  const { data } = await db
+  const {
+    data
+  } = await db
     .from("follows")
     .select("id")
-    .eq("follower_id",currentUser.id)
-    .eq("following_id",id)
+    .eq(
+      "follower_id",
+      currentUser.id
+    )
+    .eq(
+      "following_id",
+      id
+    )
     .maybeSingle();
+
 
   if(data){
 
     await db
       .from("follows")
       .delete()
-      .eq("id",data.id);
+      .eq(
+        "id",
+        data.id
+      );
 
-    button.textContent = "Follow";
+
+    button.textContent =
+      "Follow";
 
   }else{
 
-    await db
+    const {
+      error
+    } = await db
       .from("follows")
       .insert({
 
-        follower_id:currentUser.id,
-        following_id:id
+        follower_id:
+          currentUser.id,
+
+        following_id:
+          id
 
       });
 
-    button.textContent = "Following";
+
+    if(error){
+
+      alert(error.message);
+
+      return;
+
+    }
+
+
+    button.textContent =
+      "Following";
 
   }
 
@@ -1699,18 +3331,29 @@ async function followFounder(id,button){
 
 async function viewFounder(id){
 
-  const { data } = await db
+  const {
+    data
+  } = await db
     .from("profiles")
     .select("*")
-    .eq("id",id)
+    .eq(
+      "id",
+      id
+    )
     .single();
 
-  if(!data) return;
+
+  if(!data)
+    return;
+
 
   alert(
     data.name +
     "\n\n" +
-    (data.bio || "Founder")
+    (
+      data.bio ||
+      "Founder"
+    )
   );
 
 }
@@ -1722,21 +3365,34 @@ async function viewFounder(id){
 
 async function loadGroups(){
 
-  const grid = $("groupsGrid");
+  const grid =
+    $("groupsGrid");
 
-  const { data, error } = await db
+
+  const {
+    data,
+    error
+  } = await db
     .from("groups")
     .select(`
       *,
       profiles:created_by(name)
     `)
-    .order("created_at",{ascending:false});
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    );
+
 
   if(error){
 
     grid.innerHTML = `
       <div class="empty-state">
-        ${escapeHTML(error.message)}
+        ${escapeHTML(
+          error.message
+        )}
       </div>
     `;
 
@@ -1744,15 +3400,21 @@ async function loadGroups(){
 
   }
 
+
   if(!data?.length){
 
     grid.innerHTML = `
       <div class="empty-state">
+
         <div class="empty-orb">
+
           <i data-lucide="users"></i>
+
         </div>
 
-        <h3>No founder rooms yet.</h3>
+        <h3>
+          No founder rooms yet.
+        </h3>
 
         <p>
           Create the first group around an idea.
@@ -1760,11 +3422,15 @@ async function loadGroups(){
 
         <button
           class="primary-small"
-          onclick="openModal('groupModal')">
+          type="button"
+          onclick="openModal('groupModal')"
+        >
           Create group
         </button>
+
       </div>
     `;
+
 
     lucide.createIcons();
 
@@ -1772,125 +3438,186 @@ async function loadGroups(){
 
   }
 
-  grid.innerHTML = data.map(group => `
 
-    <article class="group-card">
+  grid.innerHTML =
+    data.map(
+      group => `
 
-      <div class="group-symbol">
-        <i data-lucide="users"></i>
-      </div>
+        <article class="group-card">
 
-      <div>
+          <div class="group-symbol">
 
-        <h3>
-          ${escapeHTML(group.name)}
-        </h3>
+            <i data-lucide="users"></i>
 
-        <p>
-          ${escapeHTML(
-            group.description ||
-            "Founder discussion room."
-          )}
-        </p>
+          </div>
 
-        <span>
-          Created by
-          ${escapeHTML(group.profiles?.name || "Founder")}
-        </span>
 
-      </div>
+          <div>
 
-      <button
-        class="secondary-btn"
-        onclick="joinGroup(${group.id})">
-        Join
-      </button>
+            <h3>
+              ${escapeHTML(
+                group.name
+              )}
+            </h3>
 
-    </article>
+            <p>
+              ${escapeHTML(
+                group.description ||
+                "Founder discussion room."
+              )}
+            </p>
 
-  `).join("");
+            <span>
+              Created by
+              ${escapeHTML(
+                group.profiles?.name ||
+                "Founder"
+              )}
+            </span>
+
+          </div>
+
+
+          <button
+            class="secondary-btn"
+            type="button"
+            onclick="joinGroup(${group.id})"
+          >
+            Join
+          </button>
+
+        </article>
+
+      `
+    ).join("");
+
 
   lucide.createIcons();
 
 }
 
 
-$("createGroupBtn").onclick = () => {
+$("createGroupBtn")
+  .onclick = () =>
+    openModal(
+      "groupModal"
+    );
 
-  openModal("groupModal");
 
-};
+$("groupForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
 
 
-$("groupForm").addEventListener("submit",async e => {
+      const name =
+        $("groupName")
+          .value
+          .trim();
 
-  e.preventDefault();
 
-  const name =
-    $("groupName").value.trim();
+      const description =
+        $("groupDescription")
+          .value
+          .trim();
 
-  const description =
-    $("groupDescription").value.trim();
 
-  const { data, error } = await db
-    .from("groups")
-    .insert({
+      const {
+        data,
+        error
+      } = await db
+        .from("groups")
+        .insert({
 
-      name,
-      description,
-      created_by:currentUser.id
+          name,
 
-    })
-    .select()
-    .single();
+          description,
 
-  if(error){
+          created_by:
+            currentUser.id
 
-    alert(error.message);
+        })
+        .select()
+        .single();
 
-    return;
 
-  }
+      if(error){
 
-  await db
-    .from("group_members")
-    .insert({
+        alert(
+          error.message
+        );
 
-      group_id:data.id,
-      user_id:currentUser.id,
-      role:"owner"
+        return;
 
-    });
+      }
 
-  $("groupForm").reset();
 
-  closeModal("groupModal");
+      await db
+        .from("group_members")
+        .insert({
 
-  await loadGroups();
+          group_id:
+            data.id,
 
-});
+          user_id:
+            currentUser.id,
+
+          role:
+            "owner"
+
+        });
+
+
+      $("groupForm")
+        .reset();
+
+
+      closeModal(
+        "groupModal"
+      );
+
+
+      await loadGroups();
+
+    }
+  );
 
 
 async function joinGroup(id){
 
-  const { error } = await db
+  const {
+    error
+  } = await db
     .from("group_members")
     .insert({
 
-      group_id:id,
-      user_id:currentUser.id
+      group_id:
+        id,
+
+      user_id:
+        currentUser.id
 
     });
 
+
   if(error){
 
-    if(error.code === "23505"){
+    if(
+      error.code ===
+      "23505"
+    ){
 
-      alert("You are already in this group.");
+      alert(
+        "You are already in this group."
+      );
 
     }else{
 
-      alert(error.message);
+      alert(
+        error.message
+      );
 
     }
 
@@ -1898,7 +3625,10 @@ async function joinGroup(id){
 
   }
 
-  alert("Joined the group.");
+
+  alert(
+    "Joined the group."
+  );
 
 }
 
@@ -1909,9 +3639,13 @@ async function joinGroup(id){
 
 function renderProfile(){
 
-  if(!currentProfile) return;
+  if(!currentProfile)
+    return;
 
-  const profilePage = $("profilePage");
+
+  const profilePage =
+    $("profilePage");
+
 
   profilePage.innerHTML = `
 
@@ -1919,13 +3653,25 @@ function renderProfile(){
 
       <div class="profile-glow"></div>
 
+
       <div class="profile-avatar avatar avatar-profile">
+
         ${
           currentProfile.avatar_url
-          ? `<img src="${escapeHTML(currentProfile.avatar_url)}">`
-          : initials(currentProfile.name)
+            ? `
+              <img
+                src="${escapeHTML(
+                  currentProfile.avatar_url
+                )}"
+              >
+            `
+            : initials(
+                currentProfile.name
+              )
         }
+
       </div>
+
 
       <div class="profile-information">
 
@@ -1933,19 +3679,26 @@ function renderProfile(){
           FOUNDER
         </span>
 
+
         <h1>
-          ${escapeHTML(currentProfile.name)}
+          ${escapeHTML(
+            currentProfile.name
+          )}
         </h1>
+
 
         ${
           currentProfile.username
-          ? `
-            <div class="profile-handle">
-              @${escapeHTML(currentProfile.username)}
-            </div>
-          `
-          : ""
+            ? `
+              <div class="profile-handle">
+                @${escapeHTML(
+                  currentProfile.username
+                )}
+              </div>
+            `
+            : ""
         }
+
 
         <p>
           ${escapeHTML(
@@ -1954,45 +3707,88 @@ function renderProfile(){
           )}
         </p>
 
+
         <button
           class="secondary-btn"
-          onclick="openProfileEditor()">
+          type="button"
+          onclick="openProfileEditor()"
+        >
+
           <i data-lucide="edit-3"></i>
+
           Edit profile
+
         </button>
 
       </div>
 
     </div>
 
+
     <div class="profile-stats">
 
       <div>
-        <strong id="profilePostsCount">—</strong>
-        <span>Posts</span>
+
+        <strong
+          id="profilePostsCount"
+        >
+          —
+        </strong>
+
+        <span>
+          Posts
+        </span>
+
       </div>
 
-      <div>
-        <strong id="profileFollowersCount">—</strong>
-        <span>Followers</span>
-      </div>
 
       <div>
-        <strong id="profileFollowingCount">—</strong>
-        <span>Following</span>
+
+        <strong
+          id="profileFollowersCount"
+        >
+          —
+        </strong>
+
+        <span>
+          Followers
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <strong
+          id="profileFollowingCount"
+        >
+          —
+        </strong>
+
+        <span>
+          Following
+        </span>
+
       </div>
 
     </div>
 
+
     <div class="profile-section">
 
       <div class="section-title">
+
         <span>
           Your ideas
         </span>
+
       </div>
 
-      <div id="myPosts" class="feed-list">
+
+      <div
+        id="myPosts"
+        class="feed-list"
+      >
         Loading...
       </div>
 
@@ -2000,7 +3796,9 @@ function renderProfile(){
 
   `;
 
+
   lucide.createIcons();
+
 
   loadProfileStats();
 
@@ -2012,48 +3810,103 @@ async function loadProfileStats(){
   const posts =
     await db
       .from("posts")
-      .select("id",{count:"exact",head:true})
-      .eq("user_id",currentUser.id);
+      .select(
+        "id",
+        {
+          count: "exact",
+          head: true
+        }
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
 
   const followers =
     await db
       .from("follows")
-      .select("id",{count:"exact",head:true})
-      .eq("following_id",currentUser.id);
+      .select(
+        "id",
+        {
+          count: "exact",
+          head: true
+        }
+      )
+      .eq(
+        "following_id",
+        currentUser.id
+      );
+
 
   const following =
     await db
       .from("follows")
-      .select("id",{count:"exact",head:true})
-      .eq("follower_id",currentUser.id);
+      .select(
+        "id",
+        {
+          count: "exact",
+          head: true
+        }
+      )
+      .eq(
+        "follower_id",
+        currentUser.id
+      );
 
-  $("profilePostsCount").textContent =
-    posts.count || 0;
 
-  $("profileFollowersCount").textContent =
-    followers.count || 0;
+  $("profilePostsCount")
+    .textContent =
+      posts.count || 0;
 
-  $("profileFollowingCount").textContent =
-    following.count || 0;
 
-  const { data } =
-    await db
-      .from("posts")
-      .select(`
-        *,
-        profiles(name)
-      `)
-      .eq("user_id",currentUser.id)
-      .order("created_at",{ascending:false});
+  $("profileFollowersCount")
+    .textContent =
+      followers.count || 0;
 
-  const container = $("myPosts");
+
+  $("profileFollowingCount")
+    .textContent =
+      following.count || 0;
+
+
+  const {
+    data
+  } = await db
+    .from("posts")
+    .select(`
+      *,
+      profiles(name)
+    `)
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    );
+
+
+  const container =
+    $("myPosts");
+
 
   if(!data?.length){
 
     container.innerHTML = `
       <div class="empty-state">
-        <h3>No posts yet.</h3>
-        <p>Share your first idea with Delta.</p>
+
+        <h3>
+          No posts yet.
+        </h3>
+
+        <p>
+          Share your first idea with Delta.
+        </p>
+
       </div>
     `;
 
@@ -2061,127 +3914,195 @@ async function loadProfileStats(){
 
   }
 
-  container.innerHTML = data.map(post => `
 
-    <article class="post-card">
+  container.innerHTML =
+    data.map(
+      post => `
 
-      <div class="post-header">
+        <article class="post-card">
 
-        <div class="avatar">
-          ${initials(currentProfile.name)}
-        </div>
+          <div class="post-header">
 
-        <div class="post-author">
+            <div class="avatar">
+              ${initials(
+                currentProfile.name
+              )}
+            </div>
 
-          <strong>
-            ${escapeHTML(currentProfile.name)}
-          </strong>
 
-          <span>
-            ${formatDate(post.created_at)}
-          </span>
+            <div class="post-author">
 
-        </div>
+              <strong>
+                ${escapeHTML(
+                  currentProfile.name
+                )}
+              </strong>
 
-      </div>
+              <span>
+                ${formatDate(
+                  post.created_at
+                )}
+              </span>
 
-      ${
-        post.content
-        ? `<div class="post-content">
-            ${escapeHTML(post.content)}
-           </div>`
-        : ""
-      }
+            </div>
 
-      ${
-        post.image_url
-        ? `<div class="post-image">
-            <img src="${escapeHTML(post.image_url)}">
-           </div>`
-        : ""
-      }
+          </div>
 
-    </article>
 
-  `).join("");
+          ${
+            post.content
+              ? `
+                <div class="post-content">
+                  ${escapeHTML(
+                    post.content
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+
+          ${
+            post.image_url
+              ? `
+                <div class="post-image">
+
+                  <img
+                    src="${escapeHTML(
+                      post.image_url
+                    )}
+                  >
+
+                </div>
+              `
+              : ""
+          }
+
+        </article>
+
+      `
+    ).join("");
 
 }
 
 
 function openProfileEditor(){
 
-  $("editName").value =
-    currentProfile.name || "";
+  $("editName")
+    .value =
+      currentProfile.name ||
+      "";
 
-  $("editUsername").value =
-    currentProfile.username || "";
 
-  $("editBio").value =
-    currentProfile.bio || "";
+  $("editUsername")
+    .value =
+      currentProfile.username ||
+      "";
 
-  openModal("profileModal");
+
+  $("editBio")
+    .value =
+      currentProfile.bio ||
+      "";
+
+
+  openModal(
+    "profileModal"
+  );
 
 }
 
 
-$("profileForm").addEventListener("submit",async e => {
+$("profileForm")
+  .addEventListener(
+    "submit",
+    async event => {
 
-  e.preventDefault();
+      event.preventDefault();
 
-  const updates = {
 
-    name:$("editName").value.trim(),
+      const updates = {
 
-    username:
-      $("editUsername").value.trim() || null,
+        name:
+          $("editName")
+            .value
+            .trim(),
 
-    bio:
-      $("editBio").value.trim()
+        username:
+          $("editUsername")
+            .value
+            .trim() ||
+          null,
+
+        bio:
+          $("editBio")
+            .value
+            .trim()
+
+      };
+
+
+      const {
+        data,
+        error
+      } = await db
+        .from("profiles")
+        .update(updates)
+        .eq(
+          "id",
+          currentUser.id
+        )
+        .select()
+        .single();
+
+
+      if(error){
+
+        alert(
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      currentProfile =
+        data;
+
+
+      updateIdentity();
+
+      renderProfile();
+
+      closeModal(
+        "profileModal"
+      );
+
+    }
+  );
+
+
+$("profileTop")
+  .onclick = () => {
+
+    document
+      .querySelector(
+        '[data-view="profile"]'
+      )
+      .click();
 
   };
 
-  const { data,error } =
-    await db
-      .from("profiles")
-      .update(updates)
-      .eq("id",currentUser.id)
-      .select()
-      .single();
-
-  if(error){
-
-    alert(error.message);
-
-    return;
-
-  }
-
-  currentProfile = data;
-
-  updateIdentity();
-
-  renderProfile();
-
-  closeModal("profileModal");
-
-});
-
-
-$("profileTop").onclick = () => {
-
-  document
-    .querySelector('[data-view="profile"]')
-    .click();
-
-};
-
 
 /* =====================================================
-   MODAL CLOSE
+   MODALS
 ===================================================== */
 
 document
-  .querySelectorAll("[data-close]")
+  .querySelectorAll(
+    "[data-close]"
+  )
   .forEach(button => {
 
     button.onclick = () => {
@@ -2195,53 +4116,60 @@ document
   });
 
 
-document.querySelectorAll(".modal").forEach(modal => {
+document
+  .querySelectorAll(
+    ".modal"
+  )
+  .forEach(modal => {
 
-  modal.addEventListener("click",e => {
+    modal.addEventListener(
+      "click",
+      event => {
 
-    if(e.target === modal){
+        if(
+          event.target ===
+          modal
+        ){
 
-      modal.classList.add("hidden");
+          modal.classList
+            .add("hidden");
 
-    }
+        }
+
+      }
+    );
 
   });
 
-});
-
 
 /* =====================================================
-   SESSION
+   START
 ===================================================== */
 
 async function boot(){
 
-  const {
-    data
-  } = await db.auth.getSession();
+  try {
 
-  if(data.session){
+    const restored =
+      await restoreSession();
 
-    currentUser = data.session.user;
 
-    await loadApplication();
+    if(restored){
+
+      await loadApplication();
+
+    }
+
+  } catch(error) {
+
+    console.error(
+      "Delta boot error:",
+      error
+    );
 
   }
 
 }
-
-
-db.auth.onAuthStateChange(
-  async (event,session) => {
-
-    if(session){
-
-      currentUser = session.user;
-
-    }
-
-  }
-);
 
 
 lucide.createIcons();
