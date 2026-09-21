@@ -1,103 +1,197 @@
 <!DOCTYPE html>
+
 <html lang="en" data-theme="dark">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  <title>Ract — Founder Network</title>
+<meta charset="UTF-8">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,viewport-fit=cover"
+>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+<title>Delta — Founder Network</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 
-  <link rel="stylesheet" href="style.css">
+<link
+  rel="preconnect"
+  href="https://fonts.gstatic.com"
+  crossorigin
+>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
+
+<!-- =====================================================
+     BACKGROUND
+===================================================== -->
+
 <div class="aurora">
+
   <i></i>
   <i></i>
   <i></i>
+
 </div>
+
 
 <div class="float">
 
   <span
     class="fi"
-    style="--fc:#A78BFA;--t:6s;--d:-1s;--r:-8deg;width:58px;height:58px;top:12%;left:7%"
-  >
-    💡
-  </span>
-
-  <span
-    class="fi"
-    style="--fc:#F472B6;--t:7s;--d:-3s;--r:8deg;width:52px;height:52px;top:28%;right:6%"
-  >
-    🚀
-  </span>
-
-  <span
-    class="fi"
-    style="--fc:#2DD4BF;--t:8s;--d:-5s;--r:-7deg;width:48px;height:48px;bottom:25%;left:5%"
+    style="
+      --fc:#60A5FA;
+      --t:6s;
+      --d:-1s;
+      --r:-8deg;
+      width:58px;
+      height:58px;
+      top:12%;
+      left:7%
+    "
   >
     ✦
   </span>
 
+
   <span
     class="fi"
-    style="--fc:#F5C15C;--t:9s;--d:-2s;--r:7deg;width:50px;height:50px;bottom:12%;right:8%"
+    style="
+      --fc:#A78BFA;
+      --t:7s;
+      --d:-3s;
+      --r:8deg;
+      width:52px;
+      height:52px;
+      top:28%;
+      right:6%
+    "
   >
     ◇
   </span>
 
+
+  <span
+    class="fi"
+    style="
+      --fc:#F87171;
+      --t:8s;
+      --d:-5s;
+      --r:-7deg;
+      width:48px;
+      height:48px;
+      bottom:25%;
+      left:5%
+    "
+  >
+    ↗
+  </span>
+
+
+  <span
+    class="fi"
+    style="
+      --fc:#93C5FD;
+      --t:9s;
+      --d:-2s;
+      --r:7deg;
+      width:50px;
+      height:50px;
+      bottom:12%;
+      right:8%
+    "
+  >
+    +
+  </span>
+
 </div>
+
 
 <button
   class="iconbtn"
   id="themeBtn"
   onclick="toggleTheme()"
 >
-  ☾
+  ☀
 </button>
+
 
 <div id="app"></div>
 
 
 <script>
 
-/* =========================================================
-   RACT — FOUNDER NETWORK
-   Single-file MVP
-   Supabase = database / storage / realtime
-   ========================================================= */
+/* ============================================================
+   DELTA — FOUNDER NETWORK
+   ============================================================
+
+   Frontend:
+     HTML
+     CSS
+     JavaScript
+
+   Backend:
+     Supabase Auth
+     Supabase PostgreSQL
+     Supabase Storage
+     Supabase Realtime
+
+   No service_role key belongs here.
+   ============================================================ */
 
 
-/* -------------------- SUPABASE -------------------- */
+/* ============================================================
+   SUPABASE
+============================================================ */
+
 
 const SUPABASE_URL =
   "https://inhxlwsjlddhnpalbocl.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_OabgwonALx7wgEU5jySfFA_eR6R3w_B";
 
-const { createClient } = supabase;
 
-const db = createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const { createClient } =
+  supabase;
 
 
-/* -------------------- OPTIONS -------------------- */
+const db =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY,
+    {
+      auth:{
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:true
+      }
+    }
+  );
+
+
+/* ============================================================
+   OPTIONS
+============================================================ */
+
 
 const industries = [
+
   "AI",
   "SaaS",
   "Fintech",
@@ -106,21 +200,31 @@ const industries = [
   "E-commerce",
   "Climate",
   "Consumer",
+  "Deep Tech",
+  "Developer Tools",
+  "Robotics",
   "Other"
+
 ];
 
+
 const stages = [
+
   "Idea",
   "Building MVP",
   "Launched",
   "Growing",
   "Scaling"
+
 ];
 
 
-/* -------------------- STATE -------------------- */
+/* ============================================================
+   STATE
+============================================================ */
 
-let me = localStorage.getItem("ract_founder_id");
+
+let me = null;
 
 let profile = null;
 
@@ -132,19 +236,32 @@ let activeConversation = null;
 
 let realtimeChannel = null;
 
+let groupRealtimeChannel = null;
 
-/* -------------------- HELPERS -------------------- */
+let authMode = "signup";
 
-const $ = id => document.getElementById(id);
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+
+const $ = id =>
+  document.getElementById(id);
 
 
 function esc(value = ""){
 
   return String(value)
+
     .replaceAll("&","&amp;")
+
     .replaceAll("<","&lt;")
+
     .replaceAll(">","&gt;")
+
     .replaceAll('"',"&quot;")
+
     .replaceAll("'","&#039;");
 
 }
@@ -152,31 +269,55 @@ function esc(value = ""){
 
 function ago(date){
 
+  if(!date)
+    return "";
+
+
   const sec =
     Math.floor(
-      (Date.now() - new Date(date).getTime()) / 1000
+      (
+        Date.now() -
+        new Date(date).getTime()
+      ) / 1000
     );
 
-  if(sec < 60) return "now";
+
+  if(sec < 60)
+    return "now";
+
 
   if(sec < 3600)
     return Math.floor(sec / 60) + "m";
 
+
   if(sec < 86400)
     return Math.floor(sec / 3600) + "h";
+
 
   if(sec < 604800)
     return Math.floor(sec / 86400) + "d";
 
-  return new Date(date).toLocaleDateString();
+
+  return new Date(date)
+    .toLocaleDateString();
 
 }
 
 
 function initials(name = "Founder"){
 
-  return name
-    .split(" ")
+  const parts =
+    name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+
+  if(!parts.length)
+    return "F";
+
+
+  return parts
     .map(x => x[0])
     .slice(0,2)
     .join("")
@@ -185,50 +326,68 @@ function initials(name = "Founder"){
 }
 
 
-function avatar(p, size = ""){
+function avatar(p,size = ""){
 
   if(p?.avatar_url){
 
     return `
+
       <img
         class="avatar ${size}"
         src="${esc(p.avatar_url)}"
         alt=""
+        loading="lazy"
       >
+
     `;
 
   }
 
+
   return `
-    <div class="avatar ${size} avatarText">
+
+    <div
+      class="avatar ${size} avatarText"
+    >
       ${esc(initials(p?.full_name))}
     </div>
+
   `;
 
 }
 
 
-function toast(message, type = ""){
+function toast(message,type = ""){
 
   const old =
     document.querySelector(".toast");
 
-  if(old) old.remove();
+
+  if(old)
+    old.remove();
+
 
   const t =
     document.createElement("div");
 
+
   t.className =
     "toast " + type;
+
 
   t.textContent =
     message;
 
+
   document.body.appendChild(t);
 
+
   setTimeout(() => {
-    t.remove();
-  },2600);
+
+    if(t.isConnected)
+      t.remove();
+
+  },2800);
 
 }
 
@@ -236,13 +395,18 @@ function toast(message, type = ""){
 function themeInit(){
 
   const saved =
-    localStorage.getItem("ract-theme") || "dark";
+    localStorage.getItem(
+      "delta-theme"
+    ) || "dark";
+
 
   document.documentElement.dataset.theme =
     saved;
 
+
   const btn =
     $("themeBtn");
+
 
   if(btn){
 
@@ -263,13 +427,16 @@ function toggleTheme(){
       ? "light"
       : "dark";
 
+
   document.documentElement.dataset.theme =
     next;
 
+
   localStorage.setItem(
-    "ract-theme",
+    "delta-theme",
     next
   );
+
 
   $("themeBtn").textContent =
     next === "dark"
@@ -283,12 +450,14 @@ function industryOptions(selected = ""){
 
   return industries
     .map(x => `
+
       <option
         value="${esc(x)}"
         ${x === selected ? "selected" : ""}
       >
         ${esc(x)}
       </option>
+
     `)
     .join("");
 
@@ -299,34 +468,98 @@ function stageOptions(selected = ""){
 
   return stages
     .map(x => `
+
       <option
         value="${esc(x)}"
         ${x === selected ? "selected" : ""}
       >
         ${esc(x)}
       </option>
+
     `)
     .join("");
 
 }
 
 
-/* =========================================================
-   START / BOOT
-   ========================================================= */
+function requireLogin(){
+
+  if(!me){
+
+    showAuth("login");
+
+    toast(
+      "Sign in to continue.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+  return true;
+
+}
+
+
+/* ============================================================
+   BOOT
+============================================================ */
+
 
 async function boot(){
 
   themeInit();
 
-  if(!me){
 
-    showWelcome();
+  const {
+    data
+  } =
+    await db.auth.getSession();
 
-    return;
+
+  me =
+    data.session?.user?.id || null;
+
+
+  if(me){
+
+    await loadCurrentProfile();
+
+  }else{
+
+    showAuth("signup");
 
   }
 
+
+  db.auth.onAuthStateChange(
+    async (_event,session) => {
+
+      me =
+        session?.user?.id || null;
+
+
+      if(!me){
+
+        profile = null;
+
+        showAuth("login");
+
+        return;
+
+      }
+
+
+      await loadCurrentProfile();
+
+    }
+  );
+
+}
+
+
+async function loadCurrentProfile(){
 
   const {
     data,
@@ -343,37 +576,55 @@ async function boot(){
 
     console.error(error);
 
-    localStorage.removeItem("ract_founder_id");
-
-    me = null;
-
-    showWelcome();
+    toast(
+      error.message,
+      "error"
+    );
 
     return;
 
   }
 
 
-  if(!data){
+  profile =
+    data;
 
-    showProfile();
 
-  }else{
+  if(!profile){
 
-    profile = data;
+    showProfile(true);
 
-    renderShell();
+    return;
 
   }
+
+
+  if(
+    !profile.full_name ||
+    !profile.full_name.trim()
+  ){
+
+    showProfile(true);
+
+    return;
+
+  }
+
+
+  renderShell();
 
 }
 
 
-/* =========================================================
-   WELCOME
-   ========================================================= */
+/* ============================================================
+   AUTH
+============================================================ */
 
-function showWelcome(){
+
+function showAuth(mode = "signup"){
+
+  authMode = mode;
+
 
   $("app").innerHTML = `
 
@@ -384,7 +635,7 @@ function showWelcome(){
         <div class="authBrand">
 
           <div class="brand">
-            ract
+            delta
           </div>
 
           <div class="eyebrow">
@@ -395,48 +646,164 @@ function showWelcome(){
 
 
         <h1>
-          From <em>connect</em><br>
-          to create.
+          Build with the<br>
+          <em>right people.</em>
         </h1>
 
 
         <p class="authIntro">
-          A private-feeling space for founders
-          to share ideas, meet builders and turn
-          conversations into companies.
+
+          A founder network for sharing ideas,
+          meeting builders and turning conversations
+          into companies.
+
         </p>
 
 
         <div class="featurePills">
 
-          <span>
-            ✦ Share ideas
-          </span>
+          <span>✦ Share ideas</span>
 
-          <span>
-            ◎ Meet founders
-          </span>
+          <span>◎ Meet founders</span>
 
-          <span>
-            ↗ Build together
-          </span>
+          <span>↗ Build together</span>
 
         </div>
 
 
-        <button
-          class="primary full"
-          onclick="createFounder()"
+        <div class="authSwitch">
+
+          <button
+            id="signupTab"
+            class="${mode === "signup" ? "active" : ""}"
+            onclick="setAuthMode('signup')"
+          >
+            Create account
+          </button>
+
+
+          <button
+            id="loginTab"
+            class="${mode === "login" ? "active" : ""}"
+            onclick="setAuthMode('login')"
+          >
+            Sign in
+          </button>
+
+        </div>
+
+
+        <form
+          class="authForm"
+          onsubmit="submitAuth(event)"
         >
-          Enter Ract
-          <span>→</span>
-        </button>
+
+
+          ${
+            mode === "signup"
+
+              ? `
+
+                <label>
+                  Full name
+                </label>
+
+                <input
+                  id="authName"
+                  required
+                  autocomplete="name"
+                  placeholder="Your name"
+                >
+
+              `
+
+              : ""
+
+          }
+
+
+          <label>
+            Email
+          </label>
+
+          <input
+            id="authEmail"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="you@example.com"
+          >
+
+
+          <label>
+            Password
+          </label>
+
+          <input
+            id="authPassword"
+            type="password"
+            required
+            minlength="6"
+            autocomplete="${
+              mode === "signup"
+                ? "new-password"
+                : "current-password"
+            }"
+            placeholder="At least 6 characters"
+          >
+
+
+          <button
+            class="primary full"
+            style="margin-top:18px"
+            type="submit"
+          >
+
+            ${
+              mode === "signup"
+                ? "Create my founder account"
+                : "Enter Delta"
+            }
+
+            <span>→</span>
+
+          </button>
+
+
+          ${
+            mode === "login"
+
+              ? `
+
+                <div class="authFooter">
+
+                  <span></span>
+
+                  <button
+                    type="button"
+                    class="authLink"
+                    onclick="forgotPassword()"
+                  >
+                    Forgot password?
+                  </button>
+
+                </div>
+
+              `
+
+              : ""
+
+          }
+
+        </form>
 
 
         <p class="tiny">
-          No complicated signup for this MVP.
-          Your founder profile is created directly
-          in this browser.
+
+          No phone verification.
+          No OTP.
+          Create your account and start building.
+
         </p>
 
       </section>
@@ -448,30 +815,267 @@ function showWelcome(){
 }
 
 
-/* =========================================================
-   CREATE FOUNDER
-   ========================================================= */
+function setAuthMode(mode){
 
-async function createFounder(){
+  showAuth(mode);
 
-  const id =
-    crypto.randomUUID();
+}
+
+
+async function submitAuth(e){
+
+  e.preventDefault();
+
+
+  const email =
+    $("authEmail")
+      .value
+      .trim();
+
+
+  const password =
+    $("authPassword")
+      .value;
+
+
+  if(
+    !email ||
+    !password
+  )
+    return;
+
+
+  try{
+
+    if(authMode === "signup"){
+
+      const fullName =
+        $("authName")
+          .value
+          .trim();
+
+
+      if(!fullName){
+
+        toast(
+          "Enter your name.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await db.auth.signUp({
+
+          email,
+
+          password,
+
+          options:{
+            data:{
+              full_name:fullName
+            }
+          }
+
+        });
+
+
+      if(error)
+        throw error;
+
+
+      if(data.session){
+
+        toast(
+          "Welcome to Delta ✦",
+          "success"
+        );
+
+      }else{
+
+        toast(
+          "Account created. If email confirmation is enabled in Supabase, confirm your email first.",
+          "success"
+        );
+
+      }
+
+    }else{
+
+      const {
+        error
+      } =
+        await db.auth.signInWithPassword({
+
+          email,
+
+          password
+
+        });
+
+
+      if(error)
+        throw error;
+
+
+      toast(
+        "Welcome back.",
+        "success"
+      );
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    toast(
+      err.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+async function forgotPassword(){
+
+  const email =
+    $("authEmail")?.value.trim();
+
+
+  if(!email){
+
+    toast(
+      "Enter your email first.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    const {
+      error
+    } =
+      await db.auth
+        .resetPasswordForEmail(
+          email,
+          {
+            redirectTo:
+              window.location.origin
+              +
+              window.location.pathname
+          }
+        );
+
+
+    if(error)
+      throw error;
+
+
+    toast(
+      "Password reset email sent.",
+      "success"
+    );
+
+  }catch(err){
+
+    toast(
+      err.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+async function showResetPassword(){
+
+  $("app").innerHTML = `
+
+    <main class="authPage">
+
+      <section class="authCard">
+
+        <div class="brand">
+          delta
+        </div>
+
+        <div class="eyebrow">
+          PASSWORD RECOVERY
+        </div>
+
+        <h1>
+          Set a new<br>
+          <em>password.</em>
+        </h1>
+
+        <form
+          class="authForm"
+          onsubmit="updatePassword(event)"
+        >
+
+          <label>
+            New password
+          </label>
+
+          <input
+            id="newPassword"
+            type="password"
+            minlength="6"
+            required
+            placeholder="New password"
+          >
+
+          <button
+            class="primary full"
+            style="margin-top:18px"
+          >
+            Update password →
+          </button>
+
+        </form>
+
+      </section>
+
+    </main>
+
+  `;
+
+}
+
+
+async function updatePassword(e){
+
+  e.preventDefault();
+
+
+  const password =
+    $("newPassword")
+      .value;
 
 
   const {
     error
   } =
-    await db
-      .from("profiles")
-      .insert({
-        id,
-        full_name:""
-      });
+    await db.auth.updateUser({
+      password
+    });
 
 
   if(error){
-
-    console.error(error);
 
     toast(
       error.message,
@@ -483,22 +1087,23 @@ async function createFounder(){
   }
 
 
-  me = id;
-
-  localStorage.setItem(
-    "ract_founder_id",
-    id
+  toast(
+    "Password updated.",
+    "success"
   );
 
 
-  showProfile(true);
+  await db.auth.signOut();
+
+  showAuth("login");
 
 }
 
 
-/* =========================================================
-   PROFILE SETUP
-   ========================================================= */
+/* ============================================================
+   PROFILE
+============================================================ */
+
 
 function showProfile(first = false){
 
@@ -511,7 +1116,11 @@ function showProfile(first = false){
         <div class="setupTop">
 
           <span class="eyebrow">
-            ${first ? "WELCOME TO RACT" : "YOUR PROFILE"}
+            ${
+              first
+                ? "WELCOME TO DELTA"
+                : "YOUR PROFILE"
+            }
           </span>
 
           <h1>
@@ -524,8 +1133,8 @@ function showProfile(first = false){
 
           <p>
             Tell other founders who you are,
-            what you're building and what kind
-            of people you want to meet.
+            what you're building and what you want
+            to find.
           </p>
 
         </div>
@@ -541,11 +1150,32 @@ function showProfile(first = false){
 
             <div id="avatarPreview">
 
-              <div class="avatar huge avatarText">
-                +
-              </div>
+              ${
+                profile?.avatar_url
+
+                  ? `
+
+                    <img
+                      class="avatar huge"
+                      src="${esc(profile.avatar_url)}"
+                      alt=""
+                    >
+
+                  `
+
+                  : `
+
+                    <div
+                      class="avatar huge avatarText"
+                    >
+                      +
+                    </div>
+
+                  `
+              }
 
             </div>
+
 
             <div>
 
@@ -554,7 +1184,7 @@ function showProfile(first = false){
               </b>
 
               <span>
-                PNG, JPG or WEBP
+                JPG, PNG or WEBP
               </span>
 
             </div>
@@ -565,7 +1195,7 @@ function showProfile(first = false){
           <input
             id="avatarInput"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             hidden
             onchange="previewAvatar(event)"
           >
@@ -578,6 +1208,7 @@ function showProfile(first = false){
           <input
             id="fullName"
             required
+            value="${esc(profile?.full_name || "")}"
             placeholder="Your name"
           >
 
@@ -588,6 +1219,7 @@ function showProfile(first = false){
 
           <input
             id="startup"
+            value="${esc(profile?.startup_name || "")}"
             placeholder="What are you building?"
           >
 
@@ -598,6 +1230,7 @@ function showProfile(first = false){
 
           <input
             id="headline"
+            value="${esc(profile?.headline || "")}"
             placeholder="Founder · AI · Product · etc."
           >
 
@@ -616,7 +1249,9 @@ function showProfile(first = false){
                   Select industry
                 </option>
 
-                ${industryOptions()}
+                ${industryOptions(
+                  profile?.industry || ""
+                )}
 
               </select>
 
@@ -635,7 +1270,9 @@ function showProfile(first = false){
                   Select stage
                 </option>
 
-                ${stageOptions()}
+                ${stageOptions(
+                  profile?.stage || ""
+                )}
 
               </select>
 
@@ -652,7 +1289,7 @@ function showProfile(first = false){
             id="bio"
             rows="5"
             placeholder="What are you building? What are you looking for?"
-          ></textarea>
+          >${esc(profile?.bio || "")}</textarea>
 
 
           <label>
@@ -661,6 +1298,8 @@ function showProfile(first = false){
 
           <input
             id="website"
+            type="url"
+            value="${esc(profile?.website_url || "")}"
             placeholder="https://yourstartup.com"
           >
 
@@ -668,9 +1307,13 @@ function showProfile(first = false){
           <button
             class="primary full"
             type="submit"
+            style="margin-top:20px"
           >
+
             Save profile
+
             <span>→</span>
+
           </button>
 
 
@@ -685,14 +1328,14 @@ function showProfile(first = false){
 }
 
 
-/* -------------------- AVATAR -------------------- */
-
 function previewAvatar(e){
 
   const file =
-    e.target.files[0];
+    e.target.files?.[0];
 
-  if(!file) return;
+
+  if(!file)
+    return;
 
 
   const url =
@@ -700,17 +1343,22 @@ function previewAvatar(e){
 
 
   $("avatarPreview").innerHTML = `
+
     <img
       class="avatar huge"
       src="${url}"
       alt=""
     >
+
   `;
 
 }
 
 
-/* -------------------- UPLOAD -------------------- */
+/* ============================================================
+   STORAGE
+============================================================ */
+
 
 async function upload(file,bucket){
 
@@ -718,10 +1366,23 @@ async function upload(file,bucket){
     return null;
 
 
+  if(file.size > 8 * 1024 * 1024){
+
+    throw new Error(
+      "Maximum image size is 8 MB."
+    );
+
+  }
+
+
   const ext =
-    file.name
-      .split(".")
-      .pop();
+    (
+      file.name
+        .split(".")
+        .pop()
+        || "jpg"
+    )
+    .toLowerCase();
 
 
   const path =
@@ -737,7 +1398,8 @@ async function upload(file,bucket){
         path,
         file,
         {
-          upsert:false
+          upsert:false,
+          cacheControl:"3600"
         }
       );
 
@@ -759,17 +1421,25 @@ async function upload(file,bucket){
 }
 
 
-/* -------------------- SAVE PROFILE -------------------- */
+/* ============================================================
+   SAVE PROFILE
+============================================================ */
+
 
 async function saveProfile(e){
 
   e.preventDefault();
 
 
+  if(!requireLogin())
+    return;
+
+
   try{
 
     const file =
-      $("avatarInput").files[0];
+      $("avatarInput")
+        ?.files?.[0];
 
 
     let avatarUrl =
@@ -797,28 +1467,30 @@ async function saveProfile(e){
       startup_name:
         $("startup")
           .value
-          .trim(),
+          .trim() || null,
 
       headline:
         $("headline")
           .value
-          .trim(),
+          .trim() || null,
 
       industry:
-        $("industry").value,
+        $("industry")
+          .value || null,
 
       stage:
-        $("stage").value,
+        $("stage")
+          .value || null,
 
       bio:
         $("bio")
           .value
-          .trim(),
+          .trim() || null,
 
       website_url:
         $("website")
           .value
-          .trim(),
+          .trim() || null,
 
       avatar_url:
         avatarUrl
@@ -868,9 +1540,10 @@ async function saveProfile(e){
 }
 
 
-/* =========================================================
-   MAIN SHELL
-   ========================================================= */
+/* ============================================================
+   SHELL
+============================================================ */
+
 
 function renderShell(){
 
@@ -884,7 +1557,7 @@ function renderShell(){
         <div>
 
           <div class="logo">
-            ract
+            delta
           </div>
 
           <div class="topSub">
@@ -898,7 +1571,12 @@ function renderShell(){
           class="miniProfile"
           onclick="openMyProfile()"
         >
-          ${avatar(profile,"small")}
+
+          ${avatar(
+            profile,
+            "small"
+          )}
+
         </button>
 
       </header>
@@ -911,47 +1589,72 @@ function renderShell(){
 
 
         <button
-          class="${tab==="feed" ? "active feed" : ""}"
+          class="${tab === "feed" ? "active feed" : ""}"
           onclick="switchTab('feed')"
         >
+
           <span>⌂</span>
-          <small>Feed</small>
+
+          <small>
+            Feed
+          </small>
+
         </button>
 
 
         <button
-          class="${tab==="discover" ? "active discover" : ""}"
+          class="${tab === "discover" ? "active discover" : ""}"
           onclick="switchTab('discover')"
         >
+
           <span>⌕</span>
-          <small>Discover</small>
+
+          <small>
+            Discover
+          </small>
+
         </button>
 
 
         <button
-          class="${tab==="messages" ? "active messages" : ""}"
+          class="${tab === "messages" ? "active messages" : ""}"
           onclick="switchTab('messages')"
         >
+
           <span>◌</span>
-          <small>Messages</small>
+
+          <small>
+            Messages
+          </small>
+
         </button>
 
 
         <button
-          class="${tab==="groups" ? "active groups" : ""}"
+          class="${tab === "groups" ? "active groups" : ""}"
           onclick="switchTab('groups')"
         >
+
           <span>◇</span>
-          <small>Groups</small>
+
+          <small>
+            Groups
+          </small>
+
         </button>
 
 
         <button
-          class="${tab==="me" ? "active me" : ""}"
+          class="${tab === "me" ? "active me" : ""}"
           onclick="switchTab('me')"
         >
+
           <span>◎</span>
-          <small>Profile</small>
+
+          <small>
+            Profile
+          </small>
+
         </button>
 
 
@@ -967,20 +1670,28 @@ function renderShell(){
 }
 
 
-/* =========================================================
-   TAB SWITCHING
-   ========================================================= */
+/* ============================================================
+   TAB SWITCH
+============================================================ */
+
 
 function switchTab(t){
 
   tab = t;
 
 
-  document
-    .querySelectorAll(".bottomNav button")
-    .forEach(x =>
-      x.classList.remove("active")
+  if(
+    realtimeChannel &&
+    t !== "messages"
+  ){
+
+    db.removeChannel(
+      realtimeChannel
     );
+
+    realtimeChannel = null;
+
+  }
 
 
   const buttons =
@@ -989,22 +1700,40 @@ function switchTab(t){
     );
 
 
+  buttons.forEach(x =>
+    x.classList.remove(
+      "active",
+      "feed",
+      "discover",
+      "messages",
+      "groups",
+      "me"
+    )
+  );
+
+
   const index = {
+
     feed:0,
+
     discover:1,
+
     messages:2,
+
     groups:3,
+
     me:4
+
   }[t];
 
 
   if(buttons[index]){
 
     buttons[index]
-      .classList.add("active");
-
-    buttons[index]
-      .classList.add(t);
+      .classList.add(
+        "active",
+        t
+      );
 
   }
 
@@ -1012,14 +1741,18 @@ function switchTab(t){
   if(t === "feed")
     loadFeed();
 
+
   if(t === "discover")
     loadDiscover();
+
 
   if(t === "messages")
     loadMessages();
 
+
   if(t === "groups")
     loadGroups();
+
 
   if(t === "me")
     loadMyProfile();
@@ -1027,9 +1760,10 @@ function switchTab(t){
 }
 
 
-/* =========================================================
+/* ============================================================
    FEED
-   ========================================================= */
+============================================================ */
+
 
 async function loadFeed(){
 
@@ -1040,21 +1774,17 @@ async function loadFeed(){
 
       <div class="pageHead">
 
-        <div>
+        <span class="eyebrow">
+          THE NETWORK
+        </span>
 
-          <span class="eyebrow">
-            THE NETWORK
-          </span>
+        <h2>
+          Founder feed
+        </h2>
 
-          <h2>
-            Founder feed
-          </h2>
-
-          <p>
-            Ideas, progress and conversations.
-          </p>
-
-        </div>
+        <p>
+          Ideas, progress and conversations.
+        </p>
 
       </div>
 
@@ -1064,12 +1794,19 @@ async function loadFeed(){
 
         <div class="composerHead">
 
-          ${avatar(profile,"small")}
+          ${avatar(
+            profile,
+            "small"
+          )}
+
 
           <div>
 
             <b>
-              ${esc(profile.full_name)}
+              ${esc(
+                profile?.full_name ||
+                "Founder"
+              )}
             </b>
 
             <span>
@@ -1099,7 +1836,7 @@ async function loadFeed(){
             <input
               id="postImage"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               hidden
               onchange="previewPostImage(event)"
             >
@@ -1162,9 +1899,13 @@ async function loadFeed(){
     console.error(error);
 
     $("feedList").innerHTML = `
+
       <div class="empty card">
+
         ${esc(error.message)}
+
       </div>
+
     `;
 
     return;
@@ -1201,19 +1942,21 @@ async function loadFeed(){
 
 
   $("feedList").innerHTML =
-    data
-      .map(postHtml)
-      .join("");
+    data.map(postHtml).join("");
 
 }
 
 
-/* -------------------- POST IMAGE -------------------- */
+/* ============================================================
+   CREATE POST
+============================================================ */
+
 
 function previewPostImage(e){
 
   const file =
-    e.target.files[0];
+    e.target.files?.[0];
+
 
   if(!file)
     return;
@@ -1236,269 +1979,11 @@ function previewPostImage(e){
 }
 
 
-/* -------------------- POST HTML -------------------- */
+async function createPost(){
 
-function postHtml(post){
-
-  const p =
-    post.profiles || {};
-
-
-  const liked =
-    (post.likes || [])
-      .some(x =>
-        x.user_id === me
-      );
-
-
-  return `
-
-    <article
-      class="post card"
-      id="post-${post.id}"
-    >
-
-
-      <div class="postAuthor">
-
-
-        ${avatar(p,"small")}
-
-
-        <div class="authorInfo">
-
-          <b>
-
-            ${esc(
-              p.full_name ||
-              "Founder"
-            )}
-
-            ${
-              p.verified
-                ? `<span class="verified">✓</span>`
-                : ""
-            }
-
-          </b>
-
-
-          <span>
-
-            ${esc(
-              p.startup_name ||
-              p.headline ||
-              "Founder"
-            )}
-
-            ·
-
-            ${ago(post.created_at)}
-
-          </span>
-
-
-        </div>
-
-
-        ${
-          p.id === me
-
-            ? `
-
-              <button
-                class="dots deletePostBtn"
-                onclick="deletePost('${post.id}')"
-                title="Delete post"
-              >
-                🗑
-              </button>
-
-            `
-
-            : `
-
-              <button
-                class="dots"
-                onclick="openFounder('${p.id}')"
-              >
-                •••
-              </button>
-
-            `
-        }
-
-
-      </div>
-
-
-      ${
-        post.content
-
-          ? `
-
-            <div class="postText">
-              ${esc(post.content)
-                .replace(/\n/g,"<br>")}
-            </div>
-
-          `
-
-          : ""
-      }
-
-
-      ${
-        post.image_url
-
-          ? `
-
-            <img
-              class="postImage"
-              src="${esc(post.image_url)}"
-              alt=""
-            >
-
-          `
-
-          : ""
-      }
-
-
-      <div class="postActions">
-
-
-        <button
-          class="${liked ? "liked" : ""}"
-          onclick="toggleLike('${post.id}',${liked})"
-        >
-
-          ${liked ? "♥" : "♡"}
-
-          <span>
-            ${post.likes?.length || 0}
-          </span>
-
-        </button>
-
-
-        <button
-          onclick="toggleComments('${post.id}')"
-        >
-
-          ◌
-
-          <span>
-            ${post.comments?.length || 0}
-          </span>
-
-        </button>
-
-
-        <button
-          onclick="openFounder('${p.id}')"
-        >
-          ◎
-        </button>
-
-
-      </div>
-
-
-      <div
-        id="comments-${post.id}"
-        class="comments hidden"
-      >
-
-
-        <div
-          class="commentsList"
-          id="commentList-${post.id}"
-        ></div>
-
-
-        <div class="commentComposer">
-
-          <input
-            id="commentInput-${post.id}"
-            placeholder="Write a comment..."
-          >
-
-          <button
-            onclick="addComment('${post.id}')"
-          >
-            →
-          </button>
-
-        </div>
-
-
-      </div>
-
-
-    </article>
-
-  `;
-
-}
-
-
-/* -------------------- DELETE POST -------------------- */
-
-async function deletePost(postId){
-
-  const confirmed =
-    confirm(
-      "Delete this post?\n\nThis cannot be undone."
-    );
-
-
-  if(!confirmed)
+  if(!requireLogin())
     return;
 
-
-  try{
-
-    const {
-      error
-    } =
-      await db
-        .from("posts")
-        .delete()
-        .eq("id",postId)
-        .eq("user_id",me);
-
-
-    if(error)
-      throw error;
-
-
-    toast(
-      "Post deleted",
-      "success"
-    );
-
-
-    loadFeed();
-
-
-  }catch(err){
-
-    console.error(err);
-
-    toast(
-      err.message,
-      "error"
-    );
-
-  }
-
-}
-
-
-/* -------------------- CREATE POST -------------------- */
-
-async function createPost(){
 
   const content =
     $("postText")
@@ -1508,7 +1993,7 @@ async function createPost(){
 
   const file =
     $("postImage")
-      ?.files[0];
+      ?.files?.[0];
 
 
   if(!content && !file){
@@ -1584,39 +2069,366 @@ async function createPost(){
 }
 
 
-/* -------------------- LIKE -------------------- */
-
-async function toggleLike(postId,liked){
-
-  if(liked){
-
-    await db
-      .from("likes")
-      .delete()
-      .eq("post_id",postId)
-      .eq("user_id",me);
-
-  }else{
-
-    await db
-      .from("likes")
-      .insert({
-
-        post_id:postId,
-
-        user_id:me
-
-      });
-
-  }
+/* ============================================================
+   POST HTML
+============================================================ */
 
 
-  loadFeed();
+function postHtml(post){
+
+  const p =
+    post.profiles || {};
+
+
+  const liked =
+    (post.likes || [])
+      .some(
+        x => x.user_id === me
+      );
+
+
+  return `
+
+    <article
+      class="post card"
+      id="post-${post.id}"
+    >
+
+
+      <div class="postAuthor">
+
+
+        ${avatar(
+          p,
+          "small"
+        )}
+
+
+        <div class="authorInfo">
+
+          <b>
+
+            ${esc(
+              p.full_name ||
+              "Founder"
+            )}
+
+            ${
+              p.verified
+
+                ? `<span class="verified">✓</span>`
+
+                : ""
+            }
+
+          </b>
+
+
+          <span>
+
+            ${esc(
+              p.startup_name ||
+              p.headline ||
+              "Founder"
+            )}
+
+            ·
+
+            ${ago(
+              post.created_at
+            )}
+
+          </span>
+
+        </div>
+
+
+        ${
+          p.id === me
+
+            ? `
+
+              <button
+                class="dots"
+                onclick="deletePost('${post.id}')"
+                title="Delete post"
+              >
+                🗑
+              </button>
+
+            `
+
+            : `
+
+              <button
+                class="dots"
+                onclick="openFounder('${p.id}')"
+              >
+                •••
+              </button>
+
+            `
+        }
+
+      </div>
+
+
+      ${
+        post.content
+
+          ? `
+
+            <div class="postText">
+
+              ${esc(post.content)
+                .replace(/\n/g,"<br>")}
+
+            </div>
+
+          `
+
+          : ""
+      }
+
+
+      ${
+        post.image_url
+
+          ? `
+
+            <img
+              class="postImage"
+              src="${esc(post.image_url)}"
+              alt="Founder post image"
+              loading="lazy"
+            >
+
+          `
+
+          : ""
+      }
+
+
+      <div class="postActions">
+
+
+        <button
+          class="${liked ? "liked" : ""}"
+          onclick="
+            toggleLike(
+              '${post.id}',
+              ${liked}
+            )
+          "
+        >
+
+          ${liked ? "♥" : "♡"}
+
+          <span>
+            ${post.likes?.length || 0}
+          </span>
+
+        </button>
+
+
+        <button
+          onclick="
+            toggleComments(
+              '${post.id}'
+            )
+          "
+        >
+
+          ◌
+
+          <span>
+            ${post.comments?.length || 0}
+          </span>
+
+        </button>
+
+
+        <button
+          onclick="
+            openFounder(
+              '${p.id}'
+            )
+          "
+        >
+          ◎
+        </button>
+
+
+      </div>
+
+
+      <div
+        id="comments-${post.id}"
+        class="comments hidden"
+      >
+
+        <div
+          class="commentsList"
+          id="commentList-${post.id}"
+        ></div>
+
+
+        <div class="commentComposer">
+
+          <input
+            id="commentInput-${post.id}"
+            placeholder="Write a comment..."
+          >
+
+          <button
+            onclick="
+              addComment(
+                '${post.id}'
+              )
+            "
+          >
+            →
+          </button>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  `;
 
 }
 
 
-/* -------------------- COMMENTS -------------------- */
+/* ============================================================
+   DELETE POST
+============================================================ */
+
+
+async function deletePost(postId){
+
+  if(!requireLogin())
+    return;
+
+
+  if(
+    !confirm(
+      "Delete this post?\n\nThis cannot be undone."
+    )
+  )
+    return;
+
+
+  try{
+
+    const {
+      error
+    } =
+      await db
+        .from("posts")
+        .delete()
+        .eq("id",postId)
+        .eq("user_id",me);
+
+
+    if(error)
+      throw error;
+
+
+    toast(
+      "Post deleted.",
+      "success"
+    );
+
+
+    loadFeed();
+
+
+  }catch(err){
+
+    toast(
+      err.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   LIKES
+============================================================ */
+
+
+async function toggleLike(
+  postId,
+  liked
+){
+
+  if(!requireLogin())
+    return;
+
+
+  try{
+
+    if(liked){
+
+      const {
+        error
+      } =
+        await db
+          .from("likes")
+          .delete()
+          .eq("post_id",postId)
+          .eq("user_id",me);
+
+
+      if(error)
+        throw error;
+
+    }else{
+
+      const {
+        error
+      } =
+        await db
+          .from("likes")
+          .insert({
+
+            post_id:postId,
+
+            user_id:me
+
+          });
+
+
+      if(error)
+        throw error;
+
+    }
+
+
+    loadFeed();
+
+
+  }catch(err){
+
+    toast(
+      err.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   COMMENTS
+============================================================ */
+
 
 async function toggleComments(postId){
 
@@ -1633,95 +2445,115 @@ async function toggleComments(postId){
   );
 
 
-  if(!box.classList.contains("hidden")){
-
-    const {
-      data,
-      error
-    } =
-      await db
-        .from("comments")
-        .select(
-          `*,profiles!comments_user_id_fkey(*)`
-        )
-        .eq(
-          "post_id",
-          postId
-        )
-        .order(
-          "created_at",
-          {
-            ascending:true
-          }
-        );
+  if(
+    box.classList.contains(
+      "hidden"
+    )
+  )
+    return;
 
 
-    if(error){
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("comments")
+      .select(`
+        *,
+        profiles!comments_user_id_fkey(*)
+      `)
+      .eq(
+        "post_id",
+        postId
+      )
+      .order(
+        "created_at",
+        {
+          ascending:true
+        }
+      );
 
-      console.error(error);
 
-      return;
+  if(error){
 
-    }
+    toast(
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
 
 
-    $("commentList-" + postId)
-      .innerHTML =
+  const list =
+    $("commentList-" + postId);
 
-      (data || [])
-        .map(c => `
 
-          <div class="comment">
+  list.innerHTML =
 
-            ${avatar(c.profiles,"xs")}
+    (data || [])
+      .map(c => `
 
-            <div>
+        <div class="comment">
 
-              <b>
-                ${esc(
-                  c.profiles?.full_name ||
-                  "Founder"
-                )}
-              </b>
+          ${avatar(
+            c.profiles,
+            "xs"
+          )}
 
-              <p>
-                ${esc(c.content)}
-              </p>
+          <div>
 
-              <small>
-                ${ago(c.created_at)}
-              </small>
+            <b>
+              ${esc(
+                c.profiles?.full_name ||
+                "Founder"
+              )}
+            </b>
 
-            </div>
+            <p>
+              ${esc(c.content)}
+            </p>
+
+            <small>
+              ${ago(c.created_at)}
+            </small>
 
           </div>
 
-        `)
-        .join("")
+        </div>
 
-      ||
+      `)
+      .join("")
 
-      `<div class="noComments">
+    ||
+
+    `
+
+      <div class="noComments">
         Start the conversation.
-      </div>`;
+      </div>
 
-  }
+    `;
 
 }
 
 
 async function addComment(postId){
 
+  if(!requireLogin())
+    return;
+
+
   const input =
     $("commentInput-" + postId);
 
 
-  if(!input)
-    return;
-
-
   const content =
-    input.value.trim();
+    input
+      ?.value
+      .trim();
 
 
   if(!content)
@@ -1746,8 +2578,6 @@ async function addComment(postId){
 
   if(error){
 
-    console.error(error);
-
     toast(
       error.message,
       "error"
@@ -1765,25 +2595,25 @@ async function addComment(postId){
     $("comments-" + postId);
 
 
-  if(box)
-    box.classList.add("hidden");
+  if(box){
 
+    box.classList.remove(
+      "hidden"
+    );
 
-  setTimeout(() => {
+    await toggleComments(
+      postId
+    );
 
-    if(box)
-      box.classList.remove("hidden");
-
-    toggleComments(postId);
-
-  },50);
+  }
 
 }
 
 
-/* =========================================================
+/* ============================================================
    DISCOVER
-   ========================================================= */
+============================================================ */
+
 
 async function loadDiscover(){
 
@@ -1859,8 +2689,6 @@ async function loadDiscover(){
 
   if(error){
 
-    console.error(error);
-
     $("founderList").innerHTML = `
 
       <div class="empty card">
@@ -1874,18 +2702,16 @@ async function loadDiscover(){
   }
 
 
-  window.ractFounders =
+  window.deltaFounders =
     data || [];
 
 
   renderFounders(
-    window.ractFounders
+    window.deltaFounders
   );
 
 }
 
-
-/* -------------------- RENDER FOUNDERS -------------------- */
 
 async function renderFounders(list){
 
@@ -1904,15 +2730,10 @@ async function renderFounders(list){
 
   if(error){
 
-    console.error(error);
-
-    $("founderList").innerHTML = `
-
-      <div class="empty card">
-        ${esc(error.message)}
-      </div>
-
-    `;
+    toast(
+      error.message,
+      "error"
+    );
 
     return;
 
@@ -1939,8 +2760,10 @@ async function renderFounders(list){
 
           <div class="founderTop">
 
-
-            ${avatar(p,"medium")}
+            ${avatar(
+              p,
+              "medium"
+            )}
 
 
             <button
@@ -1949,20 +2772,21 @@ async function renderFounders(list){
                   ? "following"
                   : ""
               }"
-              onclick="toggleFollow(
-                '${p.id}',
-                ${following.has(p.id)}
-              )"
+              onclick="
+                toggleFollow(
+                  '${p.id}',
+                  ${following.has(p.id)}
+                )
+              "
             >
 
               ${
                 following.has(p.id)
-                  ? "Following"
+                  ? "Connected"
                   : "Connect"
               }
 
             </button>
-
 
           </div>
 
@@ -2000,13 +2824,26 @@ async function renderFounders(list){
 
             ${
               p.industry
-                ? `<span>${esc(p.industry)}</span>`
+
+                ? `
+                  <span>
+                    ${esc(p.industry)}
+                  </span>
+                `
+
                 : ""
             }
 
+
             ${
               p.stage
-                ? `<span>${esc(p.stage)}</span>`
+
+                ? `
+                  <span>
+                    ${esc(p.stage)}
+                  </span>
+                `
+
                 : ""
             }
 
@@ -2018,7 +2855,11 @@ async function renderFounders(list){
 
             <button
               class="textLink"
-              onclick="openFounder('${p.id}')"
+              onclick="
+                openFounder(
+                  '${p.id}'
+                )
+              "
             >
               View profile →
             </button>
@@ -2026,7 +2867,11 @@ async function renderFounders(list){
 
             <button
               class="chatCardBtn"
-              onclick="startMessage('${p.id}')"
+              onclick="
+                startMessage(
+                  '${p.id}'
+                )
+              "
             >
               💬 Message
             </button>
@@ -2054,8 +2899,7 @@ async function renderFounders(list){
           </h3>
 
           <p>
-            Try another search or invite
-            another founder to Ract.
+            Invite another founder to Delta.
           </p>
 
         </div>
@@ -2065,26 +2909,21 @@ async function renderFounders(list){
 }
 
 
-/* -------------------- SEARCH FOUNDERS -------------------- */
-
 function filterFounders(){
 
   const input =
     $("founderSearch");
 
 
-  if(!input)
-    return;
-
-
   const q =
-    input.value
+    input
+      ?.value
       .toLowerCase()
-      .trim();
+      .trim() || "";
 
 
   const list =
-    (window.ractFounders || [])
+    (window.deltaFounders || [])
       .filter(p =>
 
         [
@@ -2102,8 +2941,11 @@ function filterFounders(){
           p.stage
 
         ]
+
         .join(" ")
+
         .toLowerCase()
+
         .includes(q)
 
       );
@@ -2114,65 +2956,84 @@ function filterFounders(){
 }
 
 
-/* -------------------- FOLLOW -------------------- */
+/* ============================================================
+   FOLLOW / CONNECT
+============================================================ */
+
 
 async function toggleFollow(
   id,
   isFollowing
 ){
 
-  if(isFollowing){
-
-    await db
-      .from("follows")
-      .delete()
-      .eq(
-        "follower_id",
-        me
-      )
-      .eq(
-        "following_id",
-        id
-      );
-
-  }else{
-
-    const {
-      error
-    } =
-      await db
-        .from("follows")
-        .insert({
-
-          follower_id:me,
-
-          following_id:id
-
-        });
+  if(!requireLogin())
+    return;
 
 
-    if(error){
+  try{
 
-      toast(
-        error.message,
-        "error"
-      );
+    if(isFollowing){
 
-      return;
+      const {
+        error
+      } =
+        await db
+          .from("follows")
+          .delete()
+          .eq(
+            "follower_id",
+            me
+          )
+          .eq(
+            "following_id",
+            id
+          );
+
+
+      if(error)
+        throw error;
+
+    }else{
+
+      const {
+        error
+      } =
+        await db
+          .from("follows")
+          .insert({
+
+            follower_id:me,
+
+            following_id:id
+
+          });
+
+
+      if(error)
+        throw error;
 
     }
 
+
+    loadDiscover();
+
+
+  }catch(err){
+
+    toast(
+      err.message,
+      "error"
+    );
+
   }
-
-
-  loadDiscover();
 
 }
 
 
-/* =========================================================
-   FOUNDER PROFILE
-   ========================================================= */
+/* ============================================================
+   PUBLIC FOUNDER PROFILE
+============================================================ */
+
 
 async function openFounder(id){
 
@@ -2199,8 +3060,7 @@ async function openFounder(id){
   }
 
 
-  activeFounder =
-    p;
+  activeFounder = p;
 
 
   const backTab =
@@ -2216,7 +3076,9 @@ async function openFounder(id){
 
       <button
         class="back"
-        onclick="switchTab('${backTab}')"
+        onclick="
+          switchTab('${backTab}')
+        "
       >
         ← Back
       </button>
@@ -2241,11 +3103,22 @@ async function openFounder(id){
 
             <h1>
 
-              ${esc(p.full_name)}
+              ${esc(
+                p.full_name ||
+                "Founder"
+              )}
 
               ${
                 p.verified
-                  ? `<span class="verified big">✓</span>`
+
+                  ? `
+                    <span
+                      class="verified big"
+                    >
+                      ✓
+                    </span>
+                  `
+
                   : ""
               }
 
@@ -2306,9 +3179,12 @@ async function openFounder(id){
 
 
           <button
-            type="button"
-            class="primary chatStartBtn"
-            onclick="startMessage('${p.id}')"
+            class="primary"
+            onclick="
+              startMessage(
+                '${p.id}'
+              )
+            "
           >
             💬 Start Chat
           </button>
@@ -2323,7 +3199,7 @@ async function openFounder(id){
                   class="ghost"
                   href="${esc(p.website_url)}"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Website ↗
                 </a>
@@ -2419,9 +3295,10 @@ async function openFounder(id){
 }
 
 
-/* =========================================================
+/* ============================================================
    MESSAGES
-   ========================================================= */
+============================================================ */
+
 
 async function loadMessages(){
 
@@ -2488,8 +3365,6 @@ async function loadMessages(){
 
   if(error){
 
-    console.error(error);
-
     $("messagePeople").innerHTML = `
 
       <div class="empty card">
@@ -2538,57 +3413,64 @@ async function loadMessages(){
     people.size
 
       ? [...people.values()]
-          .map(x => `
+        .map(x => `
 
-            <button
-              class="messagePerson card"
-              onclick="startMessage('${x.profile.id}')"
-            >
+          <button
+            class="messagePerson card"
+            onclick="
+              startMessage(
+                '${x.profile.id}'
+              )
+            "
+          >
 
-              ${avatar(
-                x.profile,
-                "medium"
-              )}
-
-
-              <div>
-
-                <b>
-                  ${esc(
-                    x.profile.full_name ||
-                    "Founder"
-                  )}
-                </b>
-
-                <span>
-                  ${esc(
-                    x.profile.startup_name ||
-                    "Founder"
-                  )}
-                </span>
-
-                <small>
-                  ${esc(
-                    x.last.content
-                  )}
-                  ·
-                  ${ago(
-                    x.last.created_at
-                  )}
-                </small>
-
-              </div>
+            ${avatar(
+              x.profile,
+              "medium"
+            )}
 
 
-              <strong>
-                →
-              </strong>
+            <div>
+
+              <b>
+                ${esc(
+                  x.profile.full_name ||
+                  "Founder"
+                )}
+              </b>
+
+              <span>
+                ${esc(
+                  x.profile.startup_name ||
+                  "Founder"
+                )}
+              </span>
+
+              <small>
+
+                ${esc(
+                  x.last.content
+                )}
+
+                ·
+
+                ${ago(
+                  x.last.created_at
+                )}
+
+              </small>
+
+            </div>
 
 
-            </button>
+            <strong>
+              →
+            </strong>
 
-          `)
-          .join("")
+          </button>
+
+        `)
+        .join("")
 
       :
 
@@ -2611,7 +3493,9 @@ async function loadMessages(){
 
           <button
             class="primary"
-            onclick="switchTab('discover')"
+            onclick="
+              switchTab('discover')
+            "
           >
             Discover founders →
           </button>
@@ -2623,9 +3507,28 @@ async function loadMessages(){
 }
 
 
-/* -------------------- START MESSAGE -------------------- */
+/* ============================================================
+   START MESSAGE
+============================================================ */
+
 
 async function startMessage(id){
+
+  if(!requireLogin())
+    return;
+
+
+  if(id === me){
+
+    toast(
+      "You cannot message yourself.",
+      "error"
+    );
+
+    return;
+
+  }
+
 
   const {
     data:p,
@@ -2653,6 +3556,7 @@ async function startMessage(id){
   activeFounder =
     p;
 
+
   activeConversation =
     id;
 
@@ -2660,12 +3564,15 @@ async function startMessage(id){
   renderChat(p);
 
 
-  loadChatMessages(id);
+  await loadChatMessages(id);
 
 }
 
 
-/* -------------------- CHAT UI -------------------- */
+/* ============================================================
+   CHAT
+============================================================ */
+
 
 function renderChat(p){
 
@@ -2679,13 +3586,18 @@ function renderChat(p){
 
         <button
           class="back"
-          onclick="switchTab('messages')"
+          onclick="
+            switchTab('messages')
+          "
         >
           ←
         </button>
 
 
-        ${avatar(p,"small")}
+        ${avatar(
+          p,
+          "small"
+        )}
 
 
         <div>
@@ -2728,7 +3640,13 @@ function renderChat(p){
         <input
           id="messageInput"
           placeholder="Write a message..."
-          onkeydown="if(event.key==='Enter')sendMessage()"
+          autocomplete="off"
+          onkeydown="
+            if(event.key === 'Enter'){
+              event.preventDefault();
+              sendMessage();
+            }
+          "
         >
 
 
@@ -2752,9 +3670,14 @@ function renderChat(p){
 }
 
 
-/* -------------------- LOAD CHAT -------------------- */
+/* ============================================================
+   LOAD CHAT
+============================================================ */
 
-async function loadChatMessages(otherId){
+
+async function loadChatMessages(
+  otherId
+){
 
   const {
     data,
@@ -2786,7 +3709,9 @@ async function loadChatMessages(otherId){
       $("chatMessages").innerHTML = `
 
         <div class="empty">
+
           ${esc(error.message)}
+
         </div>
 
       `;
@@ -2859,9 +3784,16 @@ async function loadChatMessages(otherId){
 }
 
 
-/* -------------------- SEND MESSAGE -------------------- */
+/* ============================================================
+   SEND MESSAGE
+============================================================ */
+
 
 async function sendMessage(){
+
+  if(!requireLogin())
+    return;
+
 
   const input =
     $("messageInput");
@@ -2901,8 +3833,6 @@ async function sendMessage(){
 
   if(error){
 
-    console.error(error);
-
     toast(
       error.message,
       "error"
@@ -2916,14 +3846,17 @@ async function sendMessage(){
   input.value = "";
 
 
-  loadChatMessages(
+  await loadChatMessages(
     activeConversation
   );
 
 }
 
 
-/* -------------------- REALTIME MESSAGES -------------------- */
+/* ============================================================
+   REALTIME DIRECT MESSAGES
+============================================================ */
+
 
 function subscribeMessages(){
 
@@ -2933,8 +3866,7 @@ function subscribeMessages(){
       realtimeChannel
     );
 
-    realtimeChannel =
-      null;
+    realtimeChannel = null;
 
   }
 
@@ -2943,7 +3875,7 @@ function subscribeMessages(){
 
     db
       .channel(
-        "ract-direct-messages-" + me
+        "delta-direct-" + me
       )
       .on(
 
@@ -2958,26 +3890,31 @@ function subscribeMessages(){
         payload => {
 
           if(
+            !activeConversation
+          )
+            return;
 
-            activeConversation &&
+
+          const m =
+            payload.new;
+
+
+          const relevant =
 
             (
-
-              (
-                payload.new.sender_id === me &&
-                payload.new.receiver_id === activeConversation
-              )
-
-              ||
-
-              (
-                payload.new.sender_id === activeConversation &&
-                payload.new.receiver_id === me
-              )
-
+              m.sender_id === me &&
+              m.receiver_id === activeConversation
             )
 
-          ){
+            ||
+
+            (
+              m.sender_id === activeConversation &&
+              m.receiver_id === me
+            );
+
+
+          if(relevant){
 
             loadChatMessages(
               activeConversation
@@ -2993,9 +3930,10 @@ function subscribeMessages(){
 }
 
 
-/* =========================================================
+/* ============================================================
    GROUPS
-   ========================================================= */
+============================================================ */
+
 
 async function loadGroups(){
 
@@ -3035,8 +3973,8 @@ async function loadGroups(){
 
 
       <div
-        class="groupGrid"
         id="groupList"
+        class="groupGrid"
       >
 
         <div class="loading">
@@ -3051,15 +3989,37 @@ async function loadGroups(){
   `;
 
 
-  const groups =
-    JSON.parse(
-      localStorage.getItem(
-        "ract-groups"
-      ) || "[]"
-    );
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("groups")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
 
 
-  if(!groups.length){
+  if(error){
+
+    $("groupList").innerHTML = `
+
+      <div class="empty card">
+        ${esc(error.message)}
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  if(!data?.length){
 
     $("groupList").innerHTML = `
 
@@ -3096,16 +4056,20 @@ async function loadGroups(){
 
   $("groupList").innerHTML =
 
-    groups
+    data
       .map(g => `
 
         <button
           class="groupCard card"
-          onclick="openGroup('${g.id}')"
+          onclick="
+            openGroup(
+              '${g.id}'
+            )
+          "
         >
 
           <div class="groupIcon">
-            ${g.icon || "◇"}
+            ${esc(g.icon || "◇")}
           </div>
 
 
@@ -3129,7 +4093,6 @@ async function loadGroups(){
             →
           </span>
 
-
         </button>
 
       `)
@@ -3138,12 +4101,16 @@ async function loadGroups(){
 }
 
 
-/* -------------------- CREATE GROUP -------------------- */
+async function createGroup(){
 
-function createGroup(){
+  if(!requireLogin())
+    return;
+
 
   const name =
-    prompt("Room name");
+    prompt(
+      "Room name"
+    );
 
 
   if(!name?.trim())
@@ -3153,38 +4120,40 @@ function createGroup(){
   const description =
     prompt(
       "What is this room about?"
-    ) ||
+    )
+    ||
     "Founder community";
 
 
-  const groups =
-    JSON.parse(
-      localStorage.getItem(
-        "ract-groups"
-      ) || "[]"
+  const {
+    error
+  } =
+    await db
+      .from("groups")
+      .insert({
+
+        owner_id:me,
+
+        name:name.trim(),
+
+        description:
+          description.trim(),
+
+        icon:"✦"
+
+      });
+
+
+  if(error){
+
+    toast(
+      error.message,
+      "error"
     );
 
+    return;
 
-  groups.push({
-
-    id:
-      crypto.randomUUID(),
-
-    name:
-      name.trim(),
-
-    description,
-
-    icon:
-      "✦"
-
-  });
-
-
-  localStorage.setItem(
-    "ract-groups",
-    JSON.stringify(groups)
-  );
+  }
 
 
   loadGroups();
@@ -3192,38 +4161,80 @@ function createGroup(){
 }
 
 
-/* -------------------- OPEN GROUP -------------------- */
+async function openGroup(id){
 
-function openGroup(id){
-
-  const groups =
-    JSON.parse(
-      localStorage.getItem(
-        "ract-groups"
-      ) || "[]"
-    );
-
-
-  const group =
-    groups.find(
-      x => x.id === id
-    );
-
-
-  if(!group)
+  if(!requireLogin())
     return;
 
 
-  const key =
-    "ract-group-chat-" + id;
+  const {
+    data:group,
+    error
+  } =
+    await db
+      .from("groups")
+      .select("*")
+      .eq("id",id)
+      .single();
 
 
-  const messages =
-    JSON.parse(
-      localStorage.getItem(
-        key
-      ) || "[]"
+  if(error){
+
+    toast(
+      error.message,
+      "error"
     );
+
+    return;
+
+  }
+
+
+  const {
+    data:membership
+  } =
+    await db
+      .from("group_members")
+      .select("*")
+      .eq(
+        "group_id",
+        id
+      )
+      .eq(
+        "user_id",
+        me
+      )
+      .maybeSingle();
+
+
+  if(!membership){
+
+    const {
+      error:joinError
+    } =
+      await db
+        .from("group_members")
+        .insert({
+
+          group_id:id,
+
+          user_id:me
+
+        });
+
+
+    if(joinError){
+
+      toast(
+        joinError.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+  }
 
 
   $("view").innerHTML = `
@@ -3233,17 +4244,20 @@ function openGroup(id){
 
       <header class="chatHeader">
 
-
         <button
           class="back"
-          onclick="switchTab('groups')"
+          onclick="
+            switchTab('groups')
+          "
         >
           ←
         </button>
 
 
         <div class="groupIcon smallIcon">
-          ${group.icon}
+          ${esc(
+            group.icon || "✦"
+          )}
         </div>
 
 
@@ -3255,12 +4269,12 @@ function openGroup(id){
 
           <span>
             ${esc(
-              group.description
+              group.description ||
+              "Founder community"
             )}
           </span>
 
         </div>
-
 
       </header>
 
@@ -3270,53 +4284,34 @@ function openGroup(id){
         class="chatMessages"
       >
 
-        ${
-          messages
-            .map(m => `
-
-              <div
-                class="bubbleRow ${
-                  m.user === me
-                    ? "mine"
-                    : ""
-                }"
-              >
-
-                <div class="bubble">
-
-                  ${esc(m.text)}
-
-                  <small>
-                    ${ago(m.time)}
-                  </small>
-
-                </div>
-
-              </div>
-
-            `)
-            .join("")
-        }
+        <div class="loading">
+          Loading...
+        </div>
 
       </div>
 
 
       <div class="chatComposer">
 
-
         <input
           id="groupInput"
           placeholder="Message the room..."
-          onkeydown="if(event.key==='Enter')sendGroupMessage('${id}')"
+          onkeydown="
+            if(event.key === 'Enter'){
+              event.preventDefault();
+              sendGroupMessage('${id}');
+            }
+          "
         >
 
 
         <button
-          onclick="sendGroupMessage('${id}')"
+          onclick="
+            sendGroupMessage('${id}')
+          "
         >
           ↑
         </button>
-
 
       </div>
 
@@ -3326,116 +4321,263 @@ function openGroup(id){
   `;
 
 
-  setTimeout(() => {
+  await loadGroupMessages(id);
 
-    const c =
-      $("groupChat");
-
-    if(c)
-      c.scrollTop =
-        c.scrollHeight;
-
-  },50);
+  subscribeGroupMessages(id);
 
 }
 
 
-/* -------------------- SEND GROUP MESSAGE -------------------- */
+async function loadGroupMessages(id){
 
-function sendGroupMessage(id){
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("group_messages")
+      .select(`
+        *,
+        profiles!group_messages_user_id_fkey(*)
+      `)
+      .eq(
+        "group_id",
+        id
+      )
+      .order(
+        "created_at",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    toast(
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const box =
+    $("groupChat");
+
+
+  if(!box)
+    return;
+
+
+  box.innerHTML =
+
+    (data || [])
+      .map(m => `
+
+        <div
+          class="bubbleRow ${
+            m.user_id === me
+              ? "mine"
+              : ""
+          }"
+        >
+
+          <div class="bubble">
+
+            ${
+              m.user_id !== me
+
+                ? `
+                  <small style="opacity:.75">
+                    ${esc(
+                      m.profiles?.full_name ||
+                      "Founder"
+                    )}
+                  </small>
+                `
+
+                : ""
+            }
+
+            ${esc(m.content)}
+
+            <small>
+              ${ago(m.created_at)}
+            </small>
+
+          </div>
+
+        </div>
+
+      `)
+      .join("")
+
+    ||
+
+    `
+
+      <div class="chatEmpty">
+
+        <div>
+          ◇
+        </div>
+
+        <p>
+          Start the room conversation.
+        </p>
+
+      </div>
+
+    `;
+
+
+  box.scrollTop =
+    box.scrollHeight;
+
+}
+
+
+async function sendGroupMessage(id){
+
+  if(!requireLogin())
+    return;
+
 
   const input =
     $("groupInput");
 
 
-  if(!input)
+  const content =
+    input
+      ?.value
+      .trim();
+
+
+  if(!content)
     return;
 
 
-  const text =
-    input.value.trim();
+  const {
+    error
+  } =
+    await db
+      .from("group_messages")
+      .insert({
+
+        group_id:id,
+
+        user_id:me,
+
+        content
+
+      });
 
 
-  if(!text)
-    return;
+  if(error){
 
-
-  const key =
-    "ract-group-chat-" + id;
-
-
-  const messages =
-    JSON.parse(
-      localStorage.getItem(
-        key
-      ) || "[]"
+    toast(
+      error.message,
+      "error"
     );
 
+    return;
 
-  messages.push({
-
-    user:
-      me,
-
-    text,
-
-    time:
-      new Date().toISOString()
-
-  });
+  }
 
 
-  localStorage.setItem(
-    key,
-    JSON.stringify(messages)
-  );
+  input.value = "";
 
 
-  openGroup(id);
+  loadGroupMessages(id);
 
 }
 
 
-/* =========================================================
+function subscribeGroupMessages(id){
+
+  if(groupRealtimeChannel){
+
+    db.removeChannel(
+      groupRealtimeChannel
+    );
+
+    groupRealtimeChannel = null;
+
+  }
+
+
+  groupRealtimeChannel =
+
+    db
+      .channel(
+        "delta-group-" + id
+      )
+      .on(
+
+        "postgres_changes",
+
+        {
+          event:"INSERT",
+          schema:"public",
+          table:"group_messages",
+          filter:
+            `group_id=eq.${id}`
+        },
+
+        () => {
+
+          loadGroupMessages(id);
+
+        }
+
+      )
+      .subscribe();
+
+}
+
+
+/* ============================================================
    MY PROFILE
-   ========================================================= */
+============================================================ */
+
 
 async function loadMyProfile(){
 
-  const {
-    data:posts
-  } =
-    await db
-      .from("posts")
-      .select("id")
-      .eq(
-        "user_id",
-        me
-      );
+  const [
+    postsResult,
+    followersResult,
+    followingResult
+  ] =
+    await Promise.all([
 
+      db
+        .from("posts")
+        .select("id")
+        .eq(
+          "user_id",
+          me
+        ),
 
-  const {
-    data:followers
-  } =
-    await db
-      .from("follows")
-      .select("follower_id")
-      .eq(
-        "following_id",
-        me
-      );
+      db
+        .from("follows")
+        .select("follower_id")
+        .eq(
+          "following_id",
+          me
+        ),
 
+      db
+        .from("follows")
+        .select("following_id")
+        .eq(
+          "follower_id",
+          me
+        )
 
-  const {
-    data:following
-  } =
-    await db
-      .from("follows")
-      .select("following_id")
-      .eq(
-        "follower_id",
-        me
-      );
+    ]);
 
 
   $("view").innerHTML = `
@@ -3473,7 +4615,9 @@ async function loadMyProfile(){
 
 
         <h1>
-          ${esc(profile.full_name)}
+          ${esc(
+            profile.full_name
+          )}
         </h1>
 
 
@@ -3496,7 +4640,9 @@ async function loadMyProfile(){
 
           ${
             profile.verified
+
               ? `<span class="verified">✓</span>`
+
               : ""
           }
 
@@ -3517,13 +4663,26 @@ async function loadMyProfile(){
 
           ${
             profile.industry
-              ? `<span>${esc(profile.industry)}</span>`
+
+              ? `
+                <span>
+                  ${esc(profile.industry)}
+                </span>
+              `
+
               : ""
           }
 
+
           ${
             profile.stage
-              ? `<span>${esc(profile.stage)}</span>`
+
+              ? `
+                <span>
+                  ${esc(profile.stage)}
+                </span>
+              `
+
               : ""
           }
 
@@ -3536,7 +4695,7 @@ async function loadMyProfile(){
           <div>
 
             <b>
-              ${posts?.length || 0}
+              ${postsResult.data?.length || 0}
             </b>
 
             <span>
@@ -3549,7 +4708,7 @@ async function loadMyProfile(){
           <div>
 
             <b>
-              ${followers?.length || 0}
+              ${followersResult.data?.length || 0}
             </b>
 
             <span>
@@ -3562,7 +4721,7 @@ async function loadMyProfile(){
           <div>
 
             <b>
-              ${following?.length || 0}
+              ${followingResult.data?.length || 0}
             </b>
 
             <span>
@@ -3584,7 +4743,7 @@ async function loadMyProfile(){
                 class="website"
                 href="${esc(profile.website_url)}"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
               >
                 ↗ ${esc(profile.website_url)}
               </a>
@@ -3598,13 +4757,13 @@ async function loadMyProfile(){
       </section>
 
 
-      <div class="profileActions">
+      <div style="margin-top:14px">
 
         <button
           class="ghost full"
           onclick="signOut()"
         >
-          Leave Ract
+          Sign out
         </button>
 
       </div>
@@ -3617,8 +4776,6 @@ async function loadMyProfile(){
 }
 
 
-/* -------------------- OPEN MY PROFILE -------------------- */
-
 function openMyProfile(){
 
   switchTab("me");
@@ -3626,190 +4783,115 @@ function openMyProfile(){
 }
 
 
-/* -------------------- EDIT PROFILE -------------------- */
-
 function showEditProfile(){
 
   showProfile(false);
 
-
-  setTimeout(() => {
-
-    $("fullName").value =
-      profile.full_name || "";
-
-    $("startup").value =
-      profile.startup_name || "";
-
-    $("headline").value =
-      profile.headline || "";
-
-    $("industry").value =
-      profile.industry || "";
-
-    $("stage").value =
-      profile.stage || "";
-
-    $("bio").value =
-      profile.bio || "";
-
-    $("website").value =
-      profile.website_url || "";
-
-
-    if(profile.avatar_url){
-
-      $("avatarPreview").innerHTML = `
-
-        <img
-          class="avatar huge"
-          src="${esc(profile.avatar_url)}"
-          alt=""
-        >
-
-      `;
-
-    }
-
-  },0);
-
 }
 
 
-/* =========================================================
-   LEAVE RACT
-   ========================================================= */
+/* ============================================================
+   SIGN OUT
+============================================================ */
+
 
 async function signOut(){
 
-  const confirmed =
-    confirm(
-
-      "Are you sure you want to leave Ract?\n\n" +
-
-      "This will remove your Ract profile and " +
-      "all database data connected to it, including " +
-      "your posts, comments, likes, follows and messages.\n\n" +
-
-      "This action cannot be undone."
-
-    );
-
-
-  if(!confirmed)
+  if(
+    !confirm(
+      "Sign out of Delta?"
+    )
+  )
     return;
 
 
-  try{
+  if(realtimeChannel){
 
-    /*
-      Delete the profile first.
-
-      Your Supabase schema should have
-      ON DELETE CASCADE on related tables.
-    */
-
-    if(me){
-
-      const {
-        error
-      } =
-        await db
-          .from("profiles")
-          .delete()
-          .eq(
-            "id",
-            me
-          );
-
-
-      if(error)
-        throw error;
-
-    }
-
-
-    /* Stop realtime */
-
-    if(realtimeChannel){
-
-      await db.removeChannel(
-        realtimeChannel
-      );
-
-      realtimeChannel =
-        null;
-
-    }
-
-
-    /* Clear local identity */
-
-    localStorage.removeItem(
-      "ract_founder_id"
+    await db.removeChannel(
+      realtimeChannel
     );
 
-
-    /* Clear groups for this browser */
-
-    localStorage.removeItem(
-      "ract-groups"
-    );
-
-
-    me = null;
-
-    profile = null;
-
-    activeFounder = null;
-
-    activeConversation = null;
-
-
-    showWelcome();
-
-
-    toast(
-      "You have left Ract.",
-      "success"
-    );
-
-
-  }catch(err){
-
-    console.error(err);
-
-    toast(
-      "Could not leave Ract: " +
-      err.message,
-      "error"
-    );
+    realtimeChannel = null;
 
   }
+
+
+  if(groupRealtimeChannel){
+
+    await db.removeChannel(
+      groupRealtimeChannel
+    );
+
+    groupRealtimeChannel = null;
+
+  }
+
+
+  await db.auth.signOut();
+
+
+  me = null;
+
+  profile = null;
+
+  activeFounder = null;
+
+  activeConversation = null;
+
+  tab = "feed";
+
+
+  showAuth("login");
 
 }
 
 
-/* =========================================================
-   GLOBAL ERROR PROTECTION
-   ========================================================= */
+/* ============================================================
+   PASSWORD RECOVERY EVENT
+============================================================ */
+
+
+db.auth.onAuthStateChange(
+  event => {
+
+    if(
+      event === "PASSWORD_RECOVERY"
+    ){
+
+      setTimeout(
+        showResetPassword,
+        100
+      );
+
+    }
+
+  }
+);
+
+
+/* ============================================================
+   ERROR PROTECTION
+============================================================ */
+
 
 window.addEventListener(
   "error",
   event => {
 
     console.error(
-      "Ract error:",
-      event.error || event.message
+      "Delta error:",
+      event.error ||
+      event.message
     );
 
   }
 );
 
 
-/* =========================================================
-   INIT
-   ========================================================= */
+/* ============================================================
+   START
+============================================================ */
+
 
 boot();
 
