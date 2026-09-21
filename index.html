@@ -27,6 +27,85 @@
 
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <style>
+
+    /* =====================================================
+       PROFILE PHOTO UPLOAD
+    ===================================================== */
+
+    .profile-upload-row{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      margin:8px 0 22px;
+    }
+
+    .avatar-upload-preview{
+      width:82px;
+      height:82px;
+      min-width:82px;
+      border-radius:50%;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        radial-gradient(
+          circle at 30% 20%,
+          rgba(255,45,85,.30),
+          transparent 55%
+        ),
+        linear-gradient(
+          135deg,
+          rgba(139,92,246,.42),
+          rgba(255,255,255,.08)
+        );
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:
+        0 0 35px rgba(139,92,246,.16);
+      color:#fff;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:25px;
+      font-weight:700;
+    }
+
+    .avatar-upload-preview img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .profile-upload-btn{
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .profile-upload-btn svg{
+      width:17px;
+      height:17px;
+    }
+
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      border-radius:inherit;
+    }
+
+    .avatar-btn img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      border-radius:inherit;
+    }
+
+  </style>
+
 </head>
 
 <body>
@@ -490,6 +569,7 @@
         <button
           class="nav-item active"
           data-view="feed"
+          type="button"
         >
 
           <i data-lucide="home"></i>
@@ -504,6 +584,7 @@
         <button
           class="nav-item"
           data-view="discover"
+          type="button"
         >
 
           <i data-lucide="compass"></i>
@@ -518,6 +599,7 @@
         <button
           class="nav-item"
           data-view="messages"
+          type="button"
         >
 
           <i data-lucide="message-circle"></i>
@@ -532,6 +614,7 @@
         <button
           class="nav-item"
           data-view="groups"
+          type="button"
         >
 
           <i data-lucide="users"></i>
@@ -546,6 +629,7 @@
         <button
           class="nav-item"
           data-view="profile"
+          type="button"
         >
 
           <i data-lucide="user-round"></i>
@@ -936,6 +1020,7 @@
     <button
       class="mobile-nav-item active"
       data-view="feed"
+      type="button"
     >
 
       <i data-lucide="home"></i>
@@ -950,6 +1035,7 @@
     <button
       class="mobile-nav-item"
       data-view="discover"
+      type="button"
     >
 
       <i data-lucide="compass"></i>
@@ -964,6 +1050,7 @@
     <button
       class="mobile-nav-item"
       data-view="messages"
+      type="button"
     >
 
       <i data-lucide="message-circle"></i>
@@ -978,6 +1065,7 @@
     <button
       class="mobile-nav-item"
       data-view="groups"
+      type="button"
     >
 
       <i data-lucide="users"></i>
@@ -992,6 +1080,7 @@
     <button
       class="mobile-nav-item"
       data-view="profile"
+      type="button"
     >
 
       <i data-lucide="user"></i>
@@ -1118,6 +1207,44 @@
 
     <form id="profileForm">
 
+      <!-- PROFILE PHOTO -->
+
+      <label>
+        Profile photo
+      </label>
+
+      <div class="profile-upload-row">
+
+        <div
+          class="avatar avatar-upload-preview"
+          id="profilePhotoPreview"
+        >
+
+          <span id="profilePhotoInitial">
+            F
+          </span>
+
+        </div>
+
+
+        <label class="upload-btn profile-upload-btn">
+
+          <i data-lucide="image-plus"></i>
+
+          Choose photo
+
+          <input
+            id="profilePhoto"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            hidden
+          >
+
+        </label>
+
+      </div>
+
+
       <label>
         Name
       </label>
@@ -1176,10 +1303,11 @@ const SUPABASE_KEY =
 
 const { createClient } = supabase;
 
-const db = createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const db =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
 /* =====================================================
@@ -1187,6 +1315,7 @@ const db = createClient(
 ===================================================== */
 
 let currentUser = null;
+
 let currentProfile = null;
 
 let recoveryProfile = null;
@@ -1212,14 +1341,18 @@ function escapeHTML(value = "") {
 }
 
 
-function initials(name = "Founder") {
+function initials(
+  name = "Founder"
+) {
 
   return name
     .trim()
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map(x => x[0])
+    .map(
+      x => x[0]
+    )
     .join("")
     .toUpperCase() || "F";
 
@@ -1229,9 +1362,9 @@ function initials(name = "Founder") {
 async function hashText(value) {
 
   const data =
-    new TextEncoder().encode(
-      value
-    );
+    new TextEncoder()
+      .encode(value);
+
 
   const hash =
     await crypto.subtle.digest(
@@ -1239,10 +1372,16 @@ async function hashText(value) {
       data
     );
 
+
   return Array
-    .from(new Uint8Array(hash))
+    .from(
+      new Uint8Array(hash)
+    )
     .map(
-      b => b.toString(16).padStart(2, "0")
+      b =>
+        b
+          .toString(16)
+          .padStart(2, "0")
     )
     .join("");
 
@@ -1277,11 +1416,14 @@ function showMessage(
   const box =
     $("authMessage");
 
+
   box.textContent =
     message;
 
+
   box.className =
-    "auth-message " + type;
+    "auth-message " +
+    type;
 
 }
 
@@ -1300,6 +1442,46 @@ function closeModal(id) {
   $(id)
     .classList
     .add("hidden");
+
+}
+
+
+/* =====================================================
+   AVATAR HTML
+===================================================== */
+
+function avatarHTML(
+  profile,
+  extraClass = ""
+) {
+
+  if(
+    profile &&
+    profile.avatar_url
+  ){
+
+    return `
+      <img
+        src="${escapeHTML(
+          profile.avatar_url
+        )}"
+        alt="${escapeHTML(
+          profile.name || "Founder"
+        )}"
+        loading="lazy"
+      >
+    `;
+
+  }
+
+
+  return `
+    <span>
+      ${initials(
+        profile?.name || "Founder"
+      )}
+    </span>
+  `;
 
 }
 
@@ -1334,7 +1516,9 @@ async function restoreSession() {
       "delta_founder_id"
     );
 
-  if(!id) return false;
+
+  if(!id)
+    return false;
 
 
   const {
@@ -1343,7 +1527,10 @@ async function restoreSession() {
   } = await db
     .from("profiles")
     .select("*")
-    .eq("id", id)
+    .eq(
+      "id",
+      id
+    )
     .maybeSingle();
 
 
@@ -1360,8 +1547,10 @@ async function restoreSession() {
     id: data.id
   };
 
+
   currentProfile =
     data;
+
 
   return true;
 
@@ -1369,7 +1558,7 @@ async function restoreSession() {
 
 
 /* =====================================================
-   AUTH SCREEN SWITCHING
+   AUTH SCREEN
 ===================================================== */
 
 function showLogin() {
@@ -1489,7 +1678,7 @@ $("backReset").onclick =
 
 
 /* =====================================================
-   CREATE FOUNDER
+   SIGNUP
 ===================================================== */
 
 $("signupForm")
@@ -1505,14 +1694,17 @@ $("signupForm")
           .value
           .trim();
 
+
       const password =
         $("signupPassword")
           .value;
+
 
       const question =
         $("securityQuestion")
           .value
           .trim();
+
 
       const answer =
         $("securityAnswer")
@@ -1572,10 +1764,6 @@ $("signupForm")
         );
 
 
-        /*
-          Check duplicate name.
-        */
-
         const existing =
           await db
             .from("profiles")
@@ -1601,7 +1789,9 @@ $("signupForm")
 
 
         const passwordHash =
-          await hashText(password);
+          await hashText(
+            password
+          );
 
 
         const answerHash =
@@ -1653,17 +1843,16 @@ $("signupForm")
           .reset();
 
 
-        showMessage(
-          "Founder profile created.",
-          "success"
-        );
-
-
         await loadApplication();
+
 
       } catch(error) {
 
-        console.error(error);
+        console.error(
+          "Signup error:",
+          error
+        );
+
 
         showMessage(
           error.message ||
@@ -1692,6 +1881,7 @@ $("loginForm")
         $("loginName")
           .value
           .trim();
+
 
       const password =
         $("loginPassword")
@@ -1748,7 +1938,9 @@ $("loginForm")
 
 
         const passwordHash =
-          await hashText(password);
+          await hashText(
+            password
+          );
 
 
         if(
@@ -1781,9 +1973,14 @@ $("loginForm")
 
         await loadApplication();
 
+
       } catch(error) {
 
-        console.error(error);
+        console.error(
+          "Login error:",
+          error
+        );
+
 
         showMessage(
           error.message ||
@@ -1797,7 +1994,7 @@ $("loginForm")
 
 
 /* =====================================================
-   FORGOT PASSWORD — FIND ACCOUNT
+   FORGOT PASSWORD
 ===================================================== */
 
 $("forgotForm")
@@ -1867,11 +2064,12 @@ $("forgotForm")
 
         $("resetQuestion")
           .textContent =
-            recoveryProfile.security_question;
+          recoveryProfile.security_question;
 
 
         $("resetAnswer")
           .value = "";
+
 
         $("newPassword")
           .value = "";
@@ -1882,7 +2080,11 @@ $("forgotForm")
 
       } catch(error) {
 
-        console.error(error);
+        console.error(
+          "Recovery lookup error:",
+          error
+        );
+
 
         showMessage(
           error.message ||
@@ -1896,7 +2098,7 @@ $("forgotForm")
 
 
 /* =====================================================
-   FORGOT PASSWORD — RESET
+   RESET PASSWORD
 ===================================================== */
 
 $("resetForm")
@@ -1920,6 +2122,7 @@ $("resetForm")
         $("resetAnswer")
           .value
           .trim();
+
 
       const newPassword =
         $("newPassword")
@@ -2049,7 +2252,11 @@ $("resetForm")
 
       } catch(error) {
 
-        console.error(error);
+        console.error(
+          "Password reset error:",
+          error
+        );
+
 
         showMessage(
           error.message ||
@@ -2063,7 +2270,7 @@ $("resetForm")
 
 
 /* =====================================================
-   APPLICATION START
+   APPLICATION
 ===================================================== */
 
 async function loadApplication(){
@@ -2071,6 +2278,7 @@ async function loadApplication(){
   $("authScreen")
     .classList
     .add("hidden");
+
 
   $("app")
     .classList
@@ -2088,6 +2296,7 @@ async function loadApplication(){
   await loadFounders();
 
   await loadGroups();
+
 
   renderProfile();
 
@@ -2118,7 +2327,10 @@ async function loadProfile(){
 
   if(error){
 
-    console.error(error);
+    console.error(
+      "Profile loading error:",
+      error
+    );
 
     return;
 
@@ -2130,6 +2342,10 @@ async function loadProfile(){
 
 }
 
+
+/* =====================================================
+   IDENTITY + AVATARS
+===================================================== */
 
 function updateIdentity(){
 
@@ -2147,19 +2363,62 @@ function updateIdentity(){
     name;
 
 
-  $("sideInitial")
-    .textContent =
-    initials(name);
+  /*
+    Sidebar avatar
+  */
+
+  const sideAvatar =
+    document.querySelector(
+      ".sidebar-profile .avatar"
+    );
 
 
-  $("topInitial")
-    .textContent =
-    initials(name);
+  if(sideAvatar){
+
+    sideAvatar.innerHTML =
+      avatarHTML(
+        currentProfile
+      );
+
+  }
 
 
-  $("composerInitial")
-    .textContent =
-    initials(name);
+  /*
+    Top avatar
+  */
+
+  const topAvatar =
+    $("profileTop");
+
+
+  if(topAvatar){
+
+    topAvatar.innerHTML =
+      avatarHTML(
+        currentProfile
+      );
+
+  }
+
+
+  /*
+    Composer avatar
+  */
+
+  const composerAvatar =
+    document.querySelector(
+      ".composer-top .avatar"
+    );
+
+
+  if(composerAvatar){
+
+    composerAvatar.innerHTML =
+      avatarHTML(
+        currentProfile
+      );
+
+  }
 
 }
 
@@ -2173,17 +2432,24 @@ $("logoutBtn")
 
     clearSession();
 
-    currentUser = null;
 
-    currentProfile = null;
+    currentUser =
+      null;
+
+
+    currentProfile =
+      null;
+
 
     $("app")
       .classList
       .add("hidden");
 
+
     $("authScreen")
       .classList
       .remove("hidden");
+
 
     showLogin();
 
@@ -2305,8 +2571,27 @@ $("postImage")
         return;
 
 
+      if(
+        !file.type.startsWith(
+          "image/"
+        )
+      ){
+
+        alert(
+          "Please select an image."
+        );
+
+        event.target.value = "";
+
+        return;
+
+      }
+
+
       const url =
-        URL.createObjectURL(file);
+        URL.createObjectURL(
+          file
+        );
 
 
       $("previewImage")
@@ -2354,15 +2639,20 @@ $("publishPost")
 
       if(file){
 
-        const filename =
-          currentUser.id +
-          "/" +
-          Date.now() +
-          "-" +
+        const safeName =
           file.name.replace(
             /[^a-zA-Z0-9._-]/g,
             "-"
           );
+
+
+        const filename =
+          "posts/" +
+          currentUser.id +
+          "/" +
+          Date.now() +
+          "-" +
+          safeName;
 
 
         const upload =
@@ -2370,7 +2660,12 @@ $("publishPost")
             .from("delta-images")
             .upload(
               filename,
-              file
+              file,
+              {
+                upsert: false,
+                contentType:
+                  file.type
+              }
             );
 
 
@@ -2414,12 +2709,15 @@ $("publishPost")
       $("postText")
         .value = "";
 
+
       $("postImage")
         .value = "";
+
 
       $("imagePreview")
         .classList
         .add("hidden");
+
 
       $("postComposer")
         .classList
@@ -2431,7 +2729,11 @@ $("publishPost")
 
     } catch(error) {
 
-      console.error(error);
+      console.error(
+        "Post error:",
+        error
+      );
+
 
       alert(
         "Could not publish post: " +
@@ -2489,7 +2791,9 @@ async function loadFeed(){
       <div class="empty-state">
         <h3>Feed unavailable</h3>
         <p>
-          ${escapeHTML(error.message)}
+          ${escapeHTML(
+            error.message
+          )}
         </p>
       </div>
     `;
@@ -2610,11 +2914,19 @@ async function loadFeed(){
                         src="${escapeHTML(
                           author.avatar_url
                         )}"
+                        alt="${escapeHTML(
+                          author.name ||
+                          "Founder"
+                        )}"
                       >
                     `
-                    : initials(
-                        author.name
-                      )
+                    : `
+                      <span>
+                        ${initials(
+                          author.name
+                        )}
+                      </span>
+                    `
                 }
 
               </div>
@@ -2673,6 +2985,7 @@ async function loadFeed(){
                         post.image_url
                       )}"
                       loading="lazy"
+                      alt="Post image"
                     >
 
                   </div>
@@ -2918,7 +3231,7 @@ async function loadComments(postId){
     .from("comments")
     .select(`
       *,
-      profiles(name)
+      profiles(name,avatar_url)
     `)
     .eq(
       "post_id",
@@ -2952,9 +3265,22 @@ async function loadComments(postId){
         <div class="comment">
 
           <div class="comment-avatar">
-            ${initials(
-              comment.profiles?.name
-            )}
+
+            ${
+              comment.profiles?.avatar_url
+                ? `
+                  <img
+                    src="${escapeHTML(
+                      comment.profiles.avatar_url
+                    )}"
+                    alt=""
+                  >
+                `
+                : initials(
+                    comment.profiles?.name
+                  )
+            }
+
           </div>
 
           <div>
@@ -3017,7 +3343,9 @@ async function addComment(postId){
 
   if(error){
 
-    alert(error.message);
+    alert(
+      error.message
+    );
 
     return;
 
@@ -3025,6 +3353,7 @@ async function addComment(postId){
 
 
   input.value = "";
+
 
   await loadComments(
     postId
@@ -3042,7 +3371,8 @@ async function sharePost(text){
     ){
 
       await navigator.share({
-        title: "Delta Founder Network",
+        title:
+          "Delta Founder Network",
         text
       });
 
@@ -3051,6 +3381,7 @@ async function sharePost(text){
       await navigator.clipboard.writeText(
         text
       );
+
 
       alert(
         "Post text copied."
@@ -3176,11 +3507,18 @@ async function loadFounders(
                       src="${escapeHTML(
                         founder.avatar_url
                       )}"
+                      alt="${escapeHTML(
+                        founder.name
+                      )}"
                     >
                   `
-                  : initials(
-                      founder.name
-                    )
+                  : `
+                    <span>
+                      ${initials(
+                        founder.name
+                      )}
+                    </span>
+                  `
               }
 
             </div>
@@ -3314,7 +3652,9 @@ async function followFounder(
 
     if(error){
 
-      alert(error.message);
+      alert(
+        error.message
+      );
 
       return;
 
@@ -3332,7 +3672,8 @@ async function followFounder(
 async function viewFounder(id){
 
   const {
-    data
+    data,
+    error
   } = await db
     .from("profiles")
     .select("*")
@@ -3341,6 +3682,17 @@ async function viewFounder(id){
       id
     )
     .single();
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
 
 
   if(!data)
@@ -3524,6 +3876,17 @@ $("groupForm")
           .trim();
 
 
+      if(!name){
+
+        alert(
+          "Enter a group name."
+        );
+
+        return;
+
+      }
+
+
       const {
         data,
         error
@@ -3634,7 +3997,7 @@ async function joinGroup(id){
 
 
 /* =====================================================
-   PROFILE
+   PROFILE PAGE
 ===================================================== */
 
 function renderProfile(){
@@ -3663,11 +4026,18 @@ function renderProfile(){
                 src="${escapeHTML(
                   currentProfile.avatar_url
                 )}"
+                alt="${escapeHTML(
+                  currentProfile.name
+                )}"
               >
             `
-            : initials(
-                currentProfile.name
-              )
+            : `
+              <span>
+                ${initials(
+                  currentProfile.name
+                )}
+              </span>
+            `
         }
 
       </div>
@@ -3805,6 +4175,10 @@ function renderProfile(){
 }
 
 
+/* =====================================================
+   PROFILE STATS
+===================================================== */
+
 async function loadProfileStats(){
 
   const posts =
@@ -3855,19 +4229,40 @@ async function loadProfileStats(){
       );
 
 
-  $("profilePostsCount")
-    .textContent =
+  const postsCount =
+    $("profilePostsCount");
+
+
+  const followersCount =
+    $("profileFollowersCount");
+
+
+  const followingCount =
+    $("profileFollowingCount");
+
+
+  if(postsCount){
+
+    postsCount.textContent =
       posts.count || 0;
 
+  }
 
-  $("profileFollowersCount")
-    .textContent =
+
+  if(followersCount){
+
+    followersCount.textContent =
       followers.count || 0;
 
+  }
 
-  $("profileFollowingCount")
-    .textContent =
+
+  if(followingCount){
+
+    followingCount.textContent =
       following.count || 0;
+
+  }
 
 
   const {
@@ -3876,7 +4271,10 @@ async function loadProfileStats(){
     .from("posts")
     .select(`
       *,
-      profiles(name)
+      profiles(
+        name,
+        avatar_url
+      )
     `)
     .eq(
       "user_id",
@@ -3892,6 +4290,10 @@ async function loadProfileStats(){
 
   const container =
     $("myPosts");
+
+
+  if(!container)
+    return;
 
 
   if(!data?.length){
@@ -3924,9 +4326,11 @@ async function loadProfileStats(){
           <div class="post-header">
 
             <div class="avatar">
-              ${initials(
-                currentProfile.name
+
+              ${avatarHTML(
+                currentProfile
               )}
+
             </div>
 
 
@@ -3970,7 +4374,9 @@ async function loadProfileStats(){
                   <img
                     src="${escapeHTML(
                       post.image_url
-                    )}
+                    )}"
+                    alt="Post image"
+                    loading="lazy"
                   >
 
                 </div>
@@ -3985,6 +4391,10 @@ async function loadProfileStats(){
 
 }
 
+
+/* =====================================================
+   PROFILE EDITOR
+===================================================== */
 
 function openProfileEditor(){
 
@@ -4006,12 +4416,129 @@ function openProfileEditor(){
       "";
 
 
+  const preview =
+    $("profilePhotoPreview");
+
+
+  if(
+    currentProfile.avatar_url
+  ){
+
+    preview.innerHTML = `
+      <img
+        src="${escapeHTML(
+          currentProfile.avatar_url
+        )}"
+        alt="Current profile photo"
+      >
+    `;
+
+  }else{
+
+    preview.innerHTML = `
+      <span id="profilePhotoInitial">
+        ${initials(
+          currentProfile.name
+        )}
+      </span>
+    `;
+
+  }
+
+
+  $("profilePhoto")
+    .value = "";
+
+
   openModal(
     "profileModal"
   );
 
+
+  lucide.createIcons();
+
 }
 
+
+/* =====================================================
+   PROFILE PHOTO PREVIEW
+===================================================== */
+
+$("profilePhoto")
+  .addEventListener(
+    "change",
+    event => {
+
+      const file =
+        event.target.files[0];
+
+
+      if(!file)
+        return;
+
+
+      if(
+        !file.type.startsWith(
+          "image/"
+        )
+      ){
+
+        alert(
+          "Please choose a valid image."
+        );
+
+
+        event.target.value = "";
+
+
+        return;
+
+      }
+
+
+      /*
+        5 MB prototype limit.
+      */
+
+      if(
+        file.size >
+        5 * 1024 * 1024
+      ){
+
+        alert(
+          "Profile photo must be smaller than 5 MB."
+        );
+
+
+        event.target.value = "";
+
+
+        return;
+
+      }
+
+
+      const url =
+        URL.createObjectURL(
+          file
+        );
+
+
+      $("profilePhotoPreview")
+        .innerHTML = `
+          <img
+            src="${url}"
+            alt="Profile preview"
+          >
+        `;
+
+    }
+  );
+
+
+/* =====================================================
+   SAVE PROFILE + UPLOAD PHOTO
+===================================================== */
 
 $("profileForm")
   .addEventListener(
@@ -4021,67 +4548,224 @@ $("profileForm")
       event.preventDefault();
 
 
-      const updates = {
+      try {
 
-        name:
+        const name =
           $("editName")
             .value
-            .trim(),
+            .trim();
 
-        username:
+
+        const username =
           $("editUsername")
             .value
             .trim() ||
-          null,
+          null;
 
-        bio:
+
+        const bio =
           $("editBio")
             .value
-            .trim()
-
-      };
+            .trim();
 
 
-      const {
-        data,
-        error
-      } = await db
-        .from("profiles")
-        .update(updates)
-        .eq(
-          "id",
-          currentUser.id
-        )
-        .select()
-        .single();
+        const file =
+          $("profilePhoto")
+            .files[0];
 
 
-      if(error){
+        if(!name){
+
+          alert(
+            "Name cannot be empty."
+          );
+
+          return;
+
+        }
+
+
+        let avatarUrl =
+          currentProfile.avatar_url ||
+          null;
+
+
+        /* ---------------------------------------------
+           UPLOAD PROFILE PHOTO
+        --------------------------------------------- */
+
+        if(file){
+
+          if(
+            !file.type.startsWith(
+              "image/"
+            )
+          ){
+
+            alert(
+              "Please select a valid image."
+            );
+
+            return;
+
+          }
+
+
+          if(
+            file.size >
+            5 * 1024 * 1024
+          ){
+
+            alert(
+              "Profile photo must be smaller than 5 MB."
+            );
+
+            return;
+
+          }
+
+
+          const extension =
+            (
+              file.name
+                .split(".")
+                .pop() ||
+              "jpg"
+            )
+              .toLowerCase()
+              .replace(
+                /[^a-z0-9]/g,
+                ""
+              );
+
+
+          const filename =
+            "profiles/" +
+            currentUser.id +
+            "-" +
+            Date.now() +
+            "." +
+            extension;
+
+
+          const upload =
+            await db.storage
+              .from("delta-images")
+              .upload(
+                filename,
+                file,
+                {
+                  upsert: true,
+                  contentType:
+                    file.type,
+                  cacheControl:
+                    "3600"
+                }
+              );
+
+
+          if(upload.error){
+
+            throw new Error(
+              "Profile photo upload failed: " +
+              upload.error.message
+            );
+
+          }
+
+
+          const publicUrl =
+            db.storage
+              .from("delta-images")
+              .getPublicUrl(
+                filename
+              );
+
+
+          avatarUrl =
+            publicUrl
+              .data
+              .publicUrl;
+
+        }
+
+
+        /* ---------------------------------------------
+           UPDATE PROFILE
+        --------------------------------------------- */
+
+        const {
+          data,
+          error
+        } = await db
+          .from("profiles")
+          .update({
+
+            name,
+
+            username,
+
+            bio,
+
+            avatar_url:
+              avatarUrl,
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "id",
+            currentUser.id
+          )
+          .select()
+          .single();
+
+
+        if(error)
+          throw error;
+
+
+        currentProfile =
+          data;
+
+
+        updateIdentity();
+
+
+        renderProfile();
+
+
+        closeModal(
+          "profileModal"
+        );
+
+
+        lucide.createIcons();
+
+
+      } catch(error) {
+
+        console.error(
+          "Profile update error:",
+          error
+        );
+
 
         alert(
+          "Could not update profile: " +
           error.message
         );
 
-        return;
-
       }
-
-
-      currentProfile =
-        data;
-
-
-      updateIdentity();
-
-      renderProfile();
-
-      closeModal(
-        "profileModal"
-      );
 
     }
   );
 
+
+/* =====================================================
+   PROFILE TOP BUTTON
+===================================================== */
 
 $("profileTop")
   .onclick = () => {
@@ -4093,6 +4777,47 @@ $("profileTop")
       .click();
 
   };
+
+
+/* =====================================================
+   GLOBAL SEARCH
+===================================================== */
+
+$("globalSearch")
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(
+        event.key !==
+        "Enter"
+      )
+        return;
+
+
+      const search =
+        event.target.value
+          .trim();
+
+
+      document
+        .querySelector(
+          '[data-view="discover"]'
+        )
+        .click();
+
+
+      $("founderSearch")
+        .value =
+        search;
+
+
+      loadFounders(
+        search
+      );
+
+    }
+  );
 
 
 /* =====================================================
