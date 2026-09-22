@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delta — From Ideas to Guidance and Incubation</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="float-field" id="floatField"></div>
+
+<header>
+  <div class="logo" onclick="go('home')">
+    <svg class="logo-mark" viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="deltaGrad" x1="0" y1="36" x2="40" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#C8C9CD"/>
+          <stop offset="1" stop-color="#E0293F"/>
+        </linearGradient>
+      </defs>
+      <path d="M20 2 L38 33 L2 33 Z" stroke="url(#deltaGrad)" stroke-width="2.4" stroke-linejoin="round"/>
+    </svg>
+    <span>DELTA</span>
+  </div>
+  <nav class="sans" id="navArea"></nav>
+</header>
+
+<main id="app"></main>
+
+<footer class="sans">Delta © 2026 — Applications are reviewed on a rolling basis.</footer>
+
+<script>
+/* ========== Supabase ========== */
+const sb = supabase.createClient(
+  'https://rnmnjkgtrddcbkorfqkx.supabase.co',
+  'sb_publishable_RSilk_dRwPUxU0tB-MJUqg_34DDbHRA'
+);
+
+let route = 'home';
+let step = 1;
+const TOTAL_STEPS = 4;
+
+function go(r) { route = r; step = 1; render(); window.scrollTo(0,0); }
+
+function render() {
+  renderNav();
+  const app = document.getElementById('app');
+  if (route === 'home') { app.innerHTML = homeView(); return; }
+  if (route === 'apply') { app.innerHTML = applyView(); bindApplyForm(); showStep(step); return; }
+  if (route === 'success') { app.innerHTML = successView(); return; }
+  route = 'home'; app.innerHTML = homeView();
+}
+
+function renderNav() {
+  const nav = document.getElementById('navArea');
+  nav.innerHTML = `
+    <span onclick="go('home')">How it works</span>
+    <a class="nav-pill" onclick="go('apply')">Apply now</a>
+  `;
+}
+
+/* ---------------- views ---------------- */
+function homeView() {
+  return `
+    <section class="view hero">
+      <div class="eyebrow sans">DELTA — EARLY-STAGE GUIDANCE</div>
+      <h1>From Ideas to Guidance and Incubation — All It Takes Is an Application.</h1>
+      <p class="sans">Delta works with founders at the very first stage — before there's a deck everyone loves or a metric worth bragging about. Tell us what you're building and why, and we'll help you find the next right step.</p>
+      <div class="hero-actions sans">
+        <a class="btn btn-primary" onclick="go('apply')">Start your application</a>
+      </div>
+      <div class="stat-row sans">
+        <div class="stat"><div class="num">4</div><div class="label">Short sections, no fluff</div></div>
+        <div class="stat"><div class="num">1</div><div class="label">Application, fully reviewed</div></div>
+        <div class="stat"><div class="num">0</div><div class="label">Cost to apply</div></div>
+      </div>
+    </section>
+    <section class="view sans" style="padding-top:0">
+      <div class="card">
+        <h2>What we're actually looking for</h2>
+        <p class="sub">Not pedigree. Not polish.</p>
+        <p style="margin-bottom:14px"><strong>The problem.</strong> What you're solving, for whom, and why it actually matters — a pitch deck helps if you have one, but it's not required at this stage.</p>
+        <p><strong>You.</strong> How you think about failure, commitment, and the next 10-20 years tells us more than a resume line ever could.</p>
+      </div>
+    </section>
+  `;
+}
+
+function applyView() {
+  return `
+    <section class="view narrow-form">
+      <div class="progress sans" id="progressBar"></div>
+
+      <form id="applyForm" class="card sans">
+
+        <div class="step" data-step="1">
+          <h2>Section 1 — Profile</h2>
+          <p class="sub">Who you are.</p>
+          <label for="s1_name">Full name</label>
+          <input id="s1_name" required>
+          <label for="s1_email">Email</label>
+          <input id="s1_email" type="email" required>
+          <label for="s1_contact">Contact number</label>
+          <input id="s1_contact" type="tel" required>
+          <label for="s1_linkedin">LinkedIn (if any)</label>
+          <input id="s1_linkedin" type="url" placeholder="https://linkedin.com/in/...">
+          <label for="s1_education">Educational background <span class="note">(not a deciding factor for your startup)</span></label>
+          <input id="s1_education" placeholder="e.g. B.Tech CSE, 2nd year">
+          <label for="s1_studying">Currently attending university?</label>
+          <select id="s1_studying">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+          <div id="s1_university_wrap" class="hidden">
+            <label for="s1_university">Name of university</label>
+            <input id="s1_university">
+          </div>
+          <label for="s1_dob">Date of birth</label>
+          <input id="s1_dob" type="date" required>
+        </div>
+
+        <div class="step hidden" data-step="2">
+          <h2>Section 2 — The Project</h2>
+          <p class="sub">What you're building.</p>
+          <label for="s2_problem">What specific problem are you working on?</label>
+          <textarea id="s2_problem" required></textarea>
+          <label for="s2_project_url">Link / URL of your project work</label>
+          <input id="s2_project_url" type="url" placeholder="https://...">
+          <label for="s2_why_necessary">Why is this problem necessary to solve? What changes after solving it?</label>
+          <textarea id="s2_why_necessary" required></textarea>
+          <label for="s2_one_liner">Define your company in one line</label>
+          <input id="s2_one_liner" required>
+          <label for="s2_pitch_deck">Pitch deck upload (if any)</label>
+          <input id="s2_pitch_deck" type="file" accept=".pdf,.ppt,.pptx">
+          <div class="error hidden" id="deckError"></div>
+          <label for="s2_why_capable">Why do you think you are capable of solving it?</label>
+          <textarea id="s2_why_capable" required></textarea>
+          <label for="s2_prior_exp">Do you have prior knowledge or have you worked for a startup?</label>
+          <select id="s2_prior_exp">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+          <div id="s2_prior_exp_url_wrap" class="hidden">
+            <label for="s2_prior_exp_url">URL / link</label>
+            <input id="s2_prior_exp_url" type="url">
+          </div>
+          <label for="s2_sector">Which sector do you describe your project as?</label>
+          <select id="s2_sector">
+            <option value="Fintech">Fintech</option>
+            <option value="Healthtech">Healthtech</option>
+            <option value="Edtech">Edtech</option>
+            <option value="Ecommerce/D2C">Ecommerce / D2C</option>
+            <option value="SaaS/Enterprise">SaaS / Enterprise</option>
+            <option value="AI/ML">AI / ML</option>
+            <option value="Climate/Sustainability">Climate / Sustainability</option>
+            <option value="Others">Others</option>
+          </select>
+          <div id="s2_sector_other_wrap" class="hidden">
+            <label for="s2_sector_other">Please specify</label>
+            <input id="s2_sector_other">
+          </div>
+          <label for="s2_next_step">What is your next step in this project?</label>
+          <textarea id="s2_next_step" required></textarea>
+          <label for="s2_team_size">How many people are working with you on the project?</label>
+          <input id="s2_team_size" type="number" min="1" value="1" required>
+          <label for="s2_cofounder">Do you have any co-founder?</label>
+          <select id="s2_cofounder">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+          <div id="s2_cofounder_name_wrap" class="hidden">
+            <label for="s2_cofounder_name">Co-founder name</label>
+            <input id="s2_cofounder_name">
+          </div>
+        </div>
+
+        <div class="step hidden" data-step="3">
+          <h2>Section 3 — Mindset</h2>
+          <p class="sub">How you think.</p>
+          <label for="s3_failure">What do you think about life and failures?</label>
+          <textarea id="s3_failure" required></textarea>
+          <label for="s3_backup">If you will not get selected, what will be your next step?</label>
+          <textarea id="s3_backup" required></textarea>
+          <label for="s3_fulltime">Are you willing to step out of your daily routine to work on it full time if selected?</label>
+          <select id="s3_fulltime">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          <label for="s3_money">What do you think money is, and how valuable is it for the work?</label>
+          <textarea id="s3_money" required></textarea>
+          <label for="s3_skills">What specific skills do you have, and how does that make you special?</label>
+          <textarea id="s3_skills" required></textarea>
+          <label for="s3_vision">Where do you want to see yourself in the upcoming 10 to 20 years?</label>
+          <textarea id="s3_vision" required></textarea>
+        </div>
+
+        <div class="step hidden" data-step="4">
+          <h2>Section 4 — Requirements</h2>
+          <p class="sub">What you need from us.</p>
+          <label for="s4_needs">What do you need from Delta?</label>
+          <textarea id="s4_needs" required></textarea>
+          <label for="s4_questions">Any specific questions do you have?</label>
+          <textarea id="s4_questions"></textarea>
+          <label for="s4_duration">Since how long have you been working on the project?</label>
+          <input id="s4_duration" placeholder="e.g. 6 months" required>
+          <label for="s4_problem_now">What is the thing / problem you are facing right now?</label>
+          <textarea id="s4_problem_now" required></textarea>
+          <label for="s4_solution">How do you think it can be solved?</label>
+          <textarea id="s4_solution" required></textarea>
+          <label for="s4_funding">Funding amount, if you needed any (USD)</label>
+          <input id="s4_funding" type="number" min="0" placeholder="Leave blank if not applicable">
+        </div>
+
+        <div class="error hidden" id="submitError"></div>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-secondary" id="backBtn">Back</button>
+          <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+          <button type="submit" class="btn btn-primary hidden" id="submitBtn">Submit application</button>
+        </div>
+      </form>
+    </section>
+  `;
+}
+
+function successView() {
+  return `
+    <section class="view narrow-form">
+      <div class="card sans" style="text-align:center">
+        <div class="success-mark">
+          <svg viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2 L38 33 L2 33 Z" stroke="url(#deltaGrad)" stroke-width="2.4" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>Application received</h2>
+        <p class="sub" style="margin-bottom:0">We review every application personally. If it's a fit, we'll reach out at the email you gave us.</p>
+        <a class="btn btn-secondary" style="margin-top:26px" onclick="go('home')">Back to home</a>
+      </div>
+    </section>
+  `;
+}
+
+/* ---------------- step logic ---------------- */
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(el => {
+    el.classList.toggle('hidden', parseInt(el.dataset.step) !== n);
+  });
+  document.getElementById('backBtn').classList.toggle('hidden', n === 1);
+  document.getElementById('nextBtn').classList.toggle('hidden', n === TOTAL_STEPS);
+  document.getElementById('submitBtn').classList.toggle('hidden', n !== TOTAL_STEPS);
+  renderProgress(n);
+}
+
+function renderProgress(n) {
+  const bar = document.getElementById('progressBar');
+  const labels = ['Profile', 'Project', 'Mindset', 'Requirements'];
+  bar.innerHTML = labels.map((l, i) => {
+    const idx = i + 1;
+    const state = idx < n ? 'done' : idx === n ? 'active' : '';
+    return `<div class="progress-step ${state}"><span class="dot">${idx < n ? '✓' : idx}</span><span class="plabel">${l}</span></div>`;
+  }).join('<div class="progress-line"></div>');
+}
+
+function validateStep(n) {
+  const stepEl = document.querySelector(`.step[data-step="${n}"]`);
+  const fields = stepEl.querySelectorAll('input, select, textarea');
+  for (const f of fields) {
+    if (f.closest('.hidden')) continue; // skip conditional fields that aren't shown
+    if (!f.checkValidity()) { f.reportValidity(); return false; }
+  }
+  return true;
+}
+
+/* ---------------- bindings ---------------- */
+function bindApplyForm() {
+  document.getElementById('s1_studying').addEventListener('change', function() {
+    document.getElementById('s1_university_wrap').classList.toggle('hidden', this.value !== 'yes');
+  });
+  document.getElementById('s2_prior_exp').addEventListener('change', function() {
+    document.getElementById('s2_prior_exp_url_wrap').classList.toggle('hidden', this.value !== 'yes');
+  });
+  document.getElementById('s2_sector').addEventListener('change', function() {
+    document.getElementById('s2_sector_other_wrap').classList.toggle('hidden', this.value !== 'Others');
+  });
+  document.getElementById('s2_cofounder').addEventListener('change', function() {
+    document.getElementById('s2_cofounder_name_wrap').classList.toggle('hidden', this.value !== 'yes');
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', function() {
+    if (!validateStep(step)) return;
+    step++;
+    showStep(step);
+    document.querySelector('.narrow-form').scrollIntoView({ behavior: 'smooth' });
+  });
+  document.getElementById('backBtn').addEventListener('click', function() {
+    step--;
+    showStep(step);
+  });
+
+  document.getElementById('applyForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!validateStep(step)) return;
+
+    const submitBtn = document.getElementById('submitBtn');
+    const errEl = document.getElementById('submitError');
+    const deckErrEl = document.getElementById('deckError');
+    errEl.classList.add('hidden');
+    deckErrEl.classList.add('hidden');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const deckFile = document.getElementById('s2_pitch_deck').files[0];
+    let pitchDeckUrl = null;
+
+    if (deckFile) {
+      if (deckFile.size > 10 * 1024 * 1024) {
+        deckErrEl.textContent = 'Pitch deck must be under 10MB.';
+        deckErrEl.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit application';
+        return;
+      }
+      const safeName = `${Date.now()}-${deckFile.name.replace(/[^a-zA-Z0-9.\-]/g, '_')}`;
+      const { data: uploadData, error: uploadError } = await sb.storage
+        .from('pitch-decks')
+        .upload(safeName, deckFile);
+
+      if (uploadError) {
+        deckErrEl.textContent = 'Could not upload pitch deck — please try again.';
+        deckErrEl.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit application';
+        return;
+      }
+      pitchDeckUrl = uploadData.path;
+    }
+
+    const val = id => document.getElementById(id).value.trim();
+
+    const payload = {
+      name: val('s1_name'),
+      email: val('s1_email'),
+      contact: val('s1_contact'),
+      linkedin_url: val('s1_linkedin') || null,
+      education_background: val('s1_education') || null,
+      currently_studying: document.getElementById('s1_studying').value === 'yes',
+      university_name: document.getElementById('s1_studying').value === 'yes' ? val('s1_university') : null,
+      date_of_birth: val('s1_dob'),
+
+      problem_statement: val('s2_problem'),
+      project_url: val('s2_project_url') || null,
+      why_necessary: val('s2_why_necessary'),
+      one_liner: val('s2_one_liner'),
+      pitch_deck_url: pitchDeckUrl,
+      why_capable: val('s2_why_capable'),
+      prior_experience: document.getElementById('s2_prior_exp').value === 'yes',
+      prior_experience_url: document.getElementById('s2_prior_exp').value === 'yes' ? (val('s2_prior_exp_url') || null) : null,
+      sector: document.getElementById('s2_sector').value,
+      sector_other: document.getElementById('s2_sector').value === 'Others' ? (val('s2_sector_other') || null) : null,
+      next_step: val('s2_next_step'),
+      team_size: parseInt(val('s2_team_size')) || 1,
+      has_cofounder: document.getElementById('s2_cofounder').value === 'yes',
+      cofounder_name: document.getElementById('s2_cofounder').value === 'yes' ? (val('s2_cofounder_name') || null) : null,
+
+      mindset_failure: val('s3_failure'),
+      backup_plan: val('s3_backup'),
+      full_time_commitment: document.getElementById('s3_fulltime').value === 'yes',
+      money_perspective: val('s3_money'),
+      unique_skills: val('s3_skills'),
+      long_term_vision: val('s3_vision'),
+
+      needs_from_delta: val('s4_needs'),
+      specific_questions: val('s4_questions') || null,
+      duration_working: val('s4_duration'),
+      current_problem: val('s4_problem_now'),
+      problem_solution: val('s4_solution'),
+      funding_needed: val('s4_funding') ? parseFloat(val('s4_funding')) : null
+    };
+
+    const { error } = await sb.from('applications').insert(payload);
+
+    if (error) {
+      errEl.textContent = 'Something went wrong submitting your application — please try again.';
+      errEl.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit application';
+      return;
+    }
+
+    go('success');
+  });
+}
+
+/* ---------------- floating icons ---------------- */
+(function() {
+  const colors = ['#C8C9CD', '#E0293F'];
+  const field = document.getElementById('floatField');
+  const count = window.innerWidth < 700 ? 10 : 22;
+  for (let i = 0; i < count; i++) {
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 40 36');
+    svg.setAttribute('fill', 'none');
+    svg.classList.add('float-icon');
+    svg.innerHTML = `<path d="M20 2 L38 33 L2 33 Z" stroke="${color}" stroke-width="2"/>`;
+    const size = 16 + Math.random() * 46;
+    svg.style.width = size + 'px';
+    svg.style.height = size + 'px';
+    svg.style.opacity = (0.08 + Math.random() * 0.14).toFixed(2);
+    svg.style.left = Math.random() * 100 + 'vw';
+    svg.style.top = Math.random() * 100 + 'vh';
+    svg.style.animationDuration = (7 + Math.random() * 11) + 's';
+    svg.style.animationDelay = (Math.random() * -12) + 's';
+    field.appendChild(svg);
+  }
+})();
+
+render();
+</script>
+</body>
+</html>
